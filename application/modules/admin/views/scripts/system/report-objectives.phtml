@@ -1,0 +1,127 @@
+<script language='Javascript'>
+
+$(document).ready(function() {
+	$(".clsDeleteObjective").click(function (){
+		var obj = $(this);
+		$.prompt(
+		"<?=$this->translate->_('Remove this objective criteria?')?>",{
+		buttons: { Ok: true, Cancel: false },
+		submit:function(e,v,m,f){
+			if(v){
+				$.post("/admin/system/delete-objectives", {ReportObjectivesID: obj.attr("ReportObjectivesID")}, function (data) {
+					console.log(data);
+					obj.parent().parent().remove();
+				});
+			}
+		  }
+		});
+		
+	})
+});
+</script>
+<form action='/admin/system/report-objectives'>
+<table width=900px>
+<TR><TD valign=top>
+
+<h3>Sales Department: Delivery Objectives</h3>
+Delivery Schedule To Customer Not Met Should Not Exceed <BR> __% Of Total Orders On Quarterly Basis<BR>
+<table border=0 class=report_table cellspacing=0 celppadding=3 width=400px>
+<TR><TD class=report_header style='text-align: center'>%</TD><TD class=report_header style='text-align: center'>Year</TD><TD class=report_header style='text-align: center'></TD></TR>
+<?=$this->deliveryobjective?>
+<TR class=report_footer>
+	<TD class=report_cell style='text-align: center'><input type=text name='deliveryobjective' placeholder='%' value=''></TD>
+	<TD class=report_cell style='text-align: center'><input type=text name='deliveryobjective_year' placeholder='Year' value='<?=Date("Y", time())?>'></TD>
+	<TD class=report_cell style='text-align: center'><input type=submit name='add_deliveryobjective' value='Save'></TD>
+</TR>
+</table>
+<BR><BR>
+
+<h3>Purchase Department: Purchase Objectives</h3>
+Purchase Order Issue Out To Principal / Supplier Should Not<BR>be More Than __% Of Total Orders On Quarterly Basis That<BR>Exceed __ Working Days<BR>
+<table border=0 class=report_table cellspacing=0 celppadding=3 width=400px>
+<TR><TD class=report_header style='text-align: center'>%</TD><TD class=report_header style='text-align: center'>Year</TD><TD class=report_header style='text-align: center'></TD></TR>
+<?=$this->purchaseobjective?>
+<TR class=report_footer>
+	<TD class=report_cell style='text-align: center'><input type=text name='purchaseobjective' placeholder='%'></TD>
+	<TD class=report_cell style='text-align: center'><input type=text name='purchaseobjective_year' placeholder='Year' value='<?=Date("Y", time())?>'></TD>
+	<TD class=report_cell style='text-align: center'><input type=submit name='add_purchaseobjective' value='Save'></TD>
+</TR>
+</table>
+<BR>
+<table border=0 class=report_table cellspacing=0 celppadding=3 width=400px>
+<TR><TD class=report_header style='text-align: center'>Working Days</TD><TD class=report_header style='text-align: center'>Year</TD><TD class=report_header style='text-align: center'></TD></TR>
+<?=$this->purchaseobjectivedays?>
+<TR class=report_footer>
+	<TD class=report_cell style='text-align: center'><input type=text name='purchaseobjectivedays' placeholder='days'></TD>
+	<TD class=report_cell style='text-align: center'><input type=text name='purchaseobjectivedays_year' placeholder='Year' value='<?=Date("Y", time())?>'></TD>
+	<TD class=report_cell style='text-align: center'><input type=submit name='add_purchaseobjectivedays' value='Save'></TD>
+</TR>
+</table>
+
+</TD>
+<TD width=50px>&nbsp;</TD>
+<TD valign=top>
+
+
+<h3>Purchase Department: Late Deliveries</h3>
+Late Delivery From Principal / Supplier Should Not Be More<BR>Than __% Of Total Orders Per Quarter<BR>
+<table border=0 class=report_table cellspacing=0 celppadding=3 width=400px>
+<TR><TD class=report_header style='text-align: center'>%</TD><TD class=report_header style='text-align: center'>Year</TD><TD class=report_header style='text-align: center'></TD></TR>
+<?=$this->latedelivery?>
+<TR class=report_footer>
+	<TD class=report_cell style='text-align: center'><input type=text name='latedelivery' placeholder='%'></TD>
+	<TD class=report_cell style='text-align: center'><input type=text name='latedelivery_year' placeholder='Year' value='<?=Date("Y", time())?>'></TD>
+	<TD class=report_cell style='text-align: center'><input type=submit name='add_latedelivery' value='Save'></TD>
+</TR>
+</table>
+<BR><BR>
+
+
+<h3>Purchase Department: Purchase Objectives 2</h3>
+Project Purchase Order Issue Out To Principal / Supplier Should Not<BR>be More Than __% Of Total Orders On Quarterly Basis That<BR>Exceed __ Working Days<BR>
+<table border=0 class=report_table cellspacing=0 celppadding=3 width=400px>
+<TR><TD class=report_header style='text-align: center'>%</TD><TD class=report_header style='text-align: center'>Year</TD><TD class=report_header style='text-align: center'></TD></TR>
+<?=$this->purchaseobjective2?>
+<TR class=report_footer>
+	<TD class=report_cell style='text-align: center'><input type=text name='purchaseobjective2' placeholder='%'></TD>
+	<TD class=report_cell style='text-align: center'><input type=text name='purchaseobjective2_year' placeholder='Year' value='<?=Date("Y", time())?>'></TD>
+	<TD class=report_cell style='text-align: center'><input type=submit name='add_purchaseobjective2' value='Save'></TD>
+</TR>
+</table>
+<BR>
+<table border=0 class=report_table cellspacing=0 celppadding=3 width=400px>
+<TR><TD class=report_header style='text-align: center'>Working Days</TD><TD class=report_header style='text-align: center'>Year</TD><TD class=report_header style='text-align: center'></TD></TR>
+<?=$this->purchaseobjectivedays2?>
+<TR class=report_footer>
+	<TD class=report_cell style='text-align: center'><input type=text name='purchaseobjectivedays2' placeholder='days'></TD>
+	<TD class=report_cell style='text-align: center'><input type=text name='purchaseobjectivedays2_year' placeholder='Year' value='<?=Date("Y", time())?>'></TD>
+	<TD class=report_cell style='text-align: center'><input type=submit name='add_purchaseobjectivedays2' value='Save'></TD>
+</TR>
+</table>
+<!--
+<h3>Project Drawing</h3>
+__ Working Days For "Order Required Customer To Approved<BR>Drawings". It Should Not be More Than __ Cases That<BR>Exceed __ Working Days In One Year<BR>
+<table border=0 class=report_table cellspacing=0 celppadding=3 width=300px>
+<TR><TD class=report_header style='text-align: center'>Working Days</TD><TD class=report_header style='text-align: center'>Year</TD><TD class=report_header style='text-align: center'></TD></TR>
+<?=$this->drawingapproval?>
+<TR class=report_footer>
+	<TD class=report_cell style='text-align: center'><input type=text name='drawingapproval' placeholder='days'></TD>
+	<TD class=report_cell style='text-align: center'><input type=text name='drawingapproval_year' placeholder='Year' value='<?=Date("Y", time())?>'></TD>
+	<TD class=report_cell style='text-align: center'><input type=submit name='add_drawingapproval' value='Save'></TD>
+</TR>
+</table>
+<BR>
+<table border=0 class=report_table cellspacing=0 celppadding=3 width=300px>
+<TR><TD class=report_header style='text-align: center'>No. Cases</TD><TD class=report_header style='text-align: center'>Year</TD><TD class=report_header style='text-align: center'></TD></TR>
+<?=$this->drawingapprovalcases?>
+<TR class=report_footer>
+	<TD class=report_cell style='text-align: center'><input type=text name='drawingapprovalcases' placeholder='cases'></TD>
+	<TD class=report_cell style='text-align: center'><input type=text name='drawingapprovalcases_year' placeholder='Year' value='<?=Date("Y", time())?>'></TD>
+	<TD class=report_cell style='text-align: center'><input type=submit name='add_drawingapprovalcases' value='Save'></TD>
+</TR>
+</table>
+-->
+
+</TD></TR></table>
+
+</form>

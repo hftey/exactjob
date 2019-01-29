@@ -1,0 +1,231 @@
+<?php
+ 
+class Venz_App_System_Acl extends Zend_Db_Table_Abstract
+{
+	protected $_db  = NULL;
+
+	public function __construct($DbMode = Zend_Db::FETCH_ASSOC)
+	{
+		parent::__construct();
+		$this->_db = $this->getAdapter();
+		$this->_db->setFetchMode($DbMode);
+	}
+	
+	public function setFetchMode($DbMode = Zend_Db::FETCH_ASSOC)
+	{
+		$this->_db->setFetchMode($DbMode);
+	}
+	
+	public function updateUserLastLogin($userID)
+	{
+		$this->_db->update("ACLUsers", array("LastLogin"=>new Zend_Db_Expr('now()')), "ID=".$userID);
+	}
+
+    public function getUsers($orderby = null, $ascdesc = null, $recordsPerPage = null, $showPage = null, $searchString = null)
+    {
+		if ($showPage	< 0 || $showPage == "") $showPage = 1;
+				
+		$sql_orderby =  is_null($orderby) ? "ID" : $orderby;
+		$sql_orderby .= strlen($sql_orderby) == 0 ? "" : " " . $ascdesc ;
+		$count = $showPage -1;
+		$sql_limit = isset($recordsPerPage) ? " limit " . ($count * $recordsPerPage) . ", " . $recordsPerPage : "";
+		$sqlAll = "SELECT ACLUsers.ID, ACLUsers.Name, ACLUsers.Username, ACLUsers.ACLRole, ACLUsers.Email,  ".
+		/*5*/ " ACLUsers.Active, ACLUsers.LastLogin, ACLUsers.DateCreated,  ACLUsers.DateModified ".
+			" FROM ACLUsers WHERE 1=1 ";		
+		if ($searchString)
+			$sqlAll .= $searchString;
+		$sql .= $sqlAll." order by $sql_orderby $sql_limit";
+
+
+		return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql));
+    }
+
+    public function getUsersDetail($ID = NULL, $searchString = null)
+    {
+		$sql = "SELECT ACLUsers.* FROM ACLUsers  WHERE 1=1 ";
+		if ($ID)
+			$sql .= " and ID=".$ID;	
+
+		if ($searchString)
+			$sql .= " ".$searchString;	
+		if ($ID)
+			return $this->_db->fetchRow($sql);
+		else
+			return $this->_db->fetchAll($sql);
+
+	}	 	
+	
+	
+
+    public function getResources($orderby = null, $ascdesc = null, $recordsPerPage = null, $showPage = null, $searchString = null)
+    {
+		if ($showPage	< 0 || $showPage == "") $showPage = 1;
+				
+		$sql_orderby =  is_null($orderby) ? "ID" : $orderby;
+		$sql_orderby .= strlen($sql_orderby) == 0 ? "" : " " . $ascdesc ;
+		$count = $showPage -1;
+		$sql_limit = isset($recordsPerPage) ? " limit " . ($count * $recordsPerPage) . ", " . $recordsPerPage : "";
+		$sqlAll = "SELECT ID, Name, Description, Category, ParentName FROM ACLResources WHERE 1=1";		
+		if ($searchString)
+			$sqlAll .= $searchString;
+		$sql .= $sqlAll." order by $sql_orderby $sql_limit";
+
+
+		return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql));
+    }
+
+    public function getResourcesDetail($ID = NULL, $searchString = null)
+    {
+		$sessionUsers = new Zend_Session_Namespace('sessionUsers');	
+		if ($sessionUsers->arrEntity)
+		{
+			$sql = "SELECT ID, Name, Description, Category, ParentName FROM ACLResources WHERE EntityID=".$sessionUsers->arrEntity['ID'];
+			if ($ID)
+				$sql .= " and ID=".$ID;	
+
+			if ($searchString)
+				$sql .= " ".$searchString;	
+			if ($ID)
+				return $this->_db->fetchRow($sql);
+			else
+				return $this->_db->fetchAll($sql);
+		}else
+			return NULL;
+	}	 
+
+
+    public function getPriviledges($orderby = null, $ascdesc = null, $recordsPerPage = null, $showPage = null, $searchString = null)
+    {
+		if ($showPage	< 0 || $showPage == "") $showPage = 1;
+				
+		$sql_orderby =  is_null($orderby) ? "ID" : $orderby;
+		$sql_orderby .= strlen($sql_orderby) == 0 ? "" : " " . $ascdesc ;
+		$count = $showPage -1;
+		$sql_limit = isset($recordsPerPage) ? " limit " . ($count * $recordsPerPage) . ", " . $recordsPerPage : "";
+		$sqlAll = "SELECT ID, Name, Description FROM ACLPriviledges WHERE 1=1";	
+	
+		if ($searchString)
+			$sqlAll .= $searchString;
+		$sql .= $sqlAll." order by $sql_orderby $sql_limit";
+
+
+		return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql));
+    }
+
+    public function getPriviledgesDetail($ID = NULL, $searchString = null)
+    {
+		$sessionUsers = new Zend_Session_Namespace('sessionUsers');	
+		if ($sessionUsers->arrEntity)
+		{
+			$sql = "SELECT ID, Name, Description FROM ACLPriviledges WHERE EntityID=".$sessionUsers->arrEntity['ID'];
+			if ($ID)
+				$sql .= " and ID=".$ID;	
+
+			if ($searchString)
+				$sql .= " ".$searchString;	
+			if ($ID)
+				return $this->_db->fetchRow($sql);
+			else
+				return $this->_db->fetchAll($sql);
+		}else
+			return NULL;
+	}	
+	
+	
+   public function getRoles($orderby = null, $ascdesc = null, $recordsPerPage = null, $showPage = null, $searchString = null)
+    {
+		if ($showPage	< 0 || $showPage == "") $showPage = 1;
+				
+		$sql_orderby =  is_null($orderby) ? "ID" : $orderby;
+		$sql_orderby .= strlen($sql_orderby) == 0 ? "" : " " . $ascdesc ;
+		$count = $showPage -1;
+		$sql_limit = isset($recordsPerPage) ? " limit " . ($count * $recordsPerPage) . ", " . $recordsPerPage : "";
+		$sqlAll = "SELECT ID, Name, Description, ParentName FROM ACLRole WHERE 1=1";	
+	
+		if ($searchString)
+			$sqlAll .= $searchString;
+		$sql .= $sqlAll." order by $sql_orderby $sql_limit";
+
+
+		return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql));
+    }
+
+    public function getRolesDetail($ID = NULL, $searchString = null)
+    {
+		$sessionUsers = new Zend_Session_Namespace('sessionUsers');	
+		if ($sessionUsers->arrEntity)
+		{
+			$sql = "SELECT ID, Name, Description, ParentName FROM ACLRole WHERE EntityID=".$sessionUsers->arrEntity['ID'];
+			if ($ID)
+				$sql .= " and ID=".$ID;	
+
+			if ($searchString)
+				$sql .= " ".$searchString;	
+			if ($ID)
+				return $this->_db->fetchRow($sql);
+			else
+				return $this->_db->fetchAll($sql);
+		}else
+			return NULL;
+	}	
+	
+
+	
+	public function isRolesaccess($role, $resources, $priviledges)
+	{
+		$sessionUsers = new Zend_Session_Namespace('sessionUsers');	
+		if ($sessionUsers->arrEntity)
+		{
+			$sql = "SELECT Count(*) Num FROM ACLMap where Role='".$role."' AND  Resources='".$resources."' AND  Priviledges='".$priviledges."' and EntityID=".$sessionUsers->arrEntity['ID'];
+			$dataRow = $this->_db->fetchRow($sql);
+			return $dataRow['Num'];
+		}else
+			return NULL;
+	}   
+	
+	
+   public function getRolesaccess($orderby = null, $ascdesc = null, $recordsPerPage = null, $showPage = null, $searchString = null)
+    {
+		if ($showPage	< 0 || $showPage == "") $showPage = 1;
+				
+		$sql_orderby =  is_null($orderby) ? "ID" : $orderby;
+		$sql_orderby .= strlen($sql_orderby) == 0 ? "" : " " . $ascdesc ;
+		$count = $showPage -1;
+		$sql_limit = isset($recordsPerPage) ? " limit " . ($count * $recordsPerPage) . ", " . $recordsPerPage : "";
+		$sqlAll = "SELECT ID, Role, Resources, Priviledges, Allow FROM ACLMap WHERE 1=1";	
+	
+		if ($searchString)
+			$sqlAll .= $searchString;
+		$sql .= $sqlAll." order by $sql_orderby $sql_limit";
+
+
+		return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql));
+    }
+
+    public function getRolesaccessDetail($ID = NULL, $searchString = null)
+    {
+		$sessionUsers = new Zend_Session_Namespace('sessionUsers');	
+		if ($sessionUsers->arrEntity)
+		{
+			$sql = "SELECT ID, Role, Resources, Priviledges, Allow FROM ACLMap WHERE EntityID=".$sessionUsers->arrEntity['ID'];
+			if ($ID)
+				$sql .= " and ID=".$ID;	
+
+			if ($searchString)
+				$sql .= " ".$searchString;	
+			if ($ID)
+				return $this->_db->fetchRow($sql);
+			else
+				return $this->_db->fetchAll($sql);
+		}else
+			return NULL;
+	}	
+		
+	
+	
+}
+
+
+
+
+?>

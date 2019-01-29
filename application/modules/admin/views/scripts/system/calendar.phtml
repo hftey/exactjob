@@ -1,0 +1,190 @@
+<link href='/js/jquery/fullcalendar/fullcalendar.css' rel='stylesheet' />
+<link href='/js/jquery/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='/js/jquery/fullcalendar/moment.min.js'></script>
+<script src='/js/jquery/fullcalendar/fullcalendar.min.js'></script>
+
+<script language='JavaScript' type='text/javascript'> 
+$(document).ready(function() {
+	$("#PHDate").datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+		
+	$("#SavePH").click(function() {
+		var PHDate = $("#PHDate").val();
+		var PHDescription = $("#PHDescription").val();
+		var PublicHolidayID = $("#PublicHolidayID").val();
+		$.post("/admin/system/save-calendar", {PHDate:PHDate, PHDescription:PHDescription, PublicHolidayID:PublicHolidayID}, function(data){
+			$("#idDetails").html(data);
+			$("#PHDate").val(""); $("#PHDate").blur();
+			$("#PHDescription").val("");$("#PHDescription").blur();
+			$("#PublicHolidayID").val("");
+			$('#calendar').fullCalendar('refetchEvents');
+		});	
+		
+	})	
+	
+	$("#Cancel").click(function() {
+		$("#PHDate").val(""); $("#PHDate").blur();
+		$("#PHDescription").val("");$("#PHDescription").blur();
+		$("#PublicHolidayID").val("");
+		
+	})	
+	
+	$(document).on("click", "#Delete", function(event, proceed){	
+		var PublicHolidayID = $(this).attr("PublicHolidayID");
+		$.prompt("Are you sure you want to remove this?",{
+			buttons: { Ok: true, Cancel: false },
+			submit:function(e,v,m,f){
+			if(v){
+				$.post("/admin/system/delete-calendar", {PublicHolidayID:PublicHolidayID}, function(data){
+					$("#idDetails").html(data);
+					$("#PHDate").val(""); $("#PHDate").blur();
+					$("#PHDescription").val("");$("#PHDescription").blur();
+					$("#PublicHolidayID").val("");
+					$('#calendar').fullCalendar('refetchEvents');
+				});	
+				}
+			}
+		});	
+			
+		
+	})	
+		
+	
+	$(document).on("click", "#Edit", function(event, proceed){	
+		var PublicHolidayID = $(this).attr("PublicHolidayID");
+		$.get("/admin/system/get-calendar", {PublicHolidayID:PublicHolidayID}, function(data){
+			var obj = $.parseJSON(data);
+			$("#PHDate").val(obj.PHDate);$("#PHDate").blur();
+			$("#PHDescription").val(obj.PHDescription);$("#PHDescription").blur();
+			$("#PublicHolidayID").val(obj.ID);
+			$('#calendar').fullCalendar('refetchEvents');
+		});	
+	})	
+		
+	$('#calendar').fullCalendar({
+		theme: true,
+		editable: true,
+		startEditable: true,
+		selectable: true,
+		selectHelper: true,
+		eventDrop: function(event, delta, revertFunc) {
+			console.log(event.id);
+			console.log(event.title);
+			console.log(event.start.format());
+			
+
+		},
+		eventClick: function(event, jsEvent, view) {
+			
+			console.log(event);
+			var start = moment(event.start).format("DD-MM-YYYY");
+			$("#PHDate").val(start);$("#PHDate").blur();
+			$("#PHDescription").val(event.title);$("#PHDescription").blur();
+			$("#PublicHolidayID").val(event.id);
+						
+
+		},
+		select: function(start, end, jsEvent) {
+			var start = moment(start).format("DD-MM-YYYY");
+			$("#PHDate").val(start);$("#PHDate").blur();
+		},
+		customButtons: {
+			myCustomButton: {
+				text: 'Refresh',
+				click: function() {
+					$('#calendar').fullCalendar('refetchEvents');
+				}
+			}
+		},
+		header: {
+			left: 'prev,next today myCustomButton',
+			center: '',
+			right: 'title'
+		},
+		eventLimit: true, // allow "more" link when too many events
+		events: {
+			url: '/admin/system/ajax-calendar/',
+			type: 'POST',
+			error: function() {
+				alert('there was an error while fetching events!');
+			}
+		}
+
+	});
+});
+</script>
+<style>
+.ui-icon-circle-triangle-e{
+	background-color: rgba(255,255,255,0.7);
+	border-radius: 6px;
+	
+}
+.ui-icon-circle-triangle-w{
+	background-color: rgba(255,255,255,0.7);
+	border-radius: 6px;
+	
+}
+</style>
+
+<div class="md-card">
+	<div class="md-card-content">
+		<div class="uk-grid" data-uk-grid-margin="">
+			<div class="uk-width-medium-1-2 uk-row-first">
+				<div class="md-card">
+					<div class="md-card-toolbar">
+						 <h3 class="md-card-toolbar-heading-text">
+							Public Holiday
+						</h3>
+						
+					</div>
+					<div class="md-card-content">
+						<BR>
+						<div id='calendar'></div>
+						
+					</div>
+				</div>
+			</div>
+			<div class="uk-width-medium-1-2">
+				<div class="md-card">
+					<div class="md-card-toolbar">
+						 <h3 class="md-card-toolbar-heading-text">
+							List of Public Holiday
+						</h3>
+						
+					</div>
+					<div class="md-card-content">
+						
+						<div class="uk-form-row">
+							<div class="uk-grid">
+								<div class="uk-width-medium-1-6">
+									<div class="md-input-wrapper md-input-wrapper-success"><label>Date</label>
+										<input type="text" id="PHDate" name="PHDate" class="md-input" value="<?=$this->PHDate?>"><span class="md-input-bar"></span>
+									</div>
+									
+								</div>
+								<div class="uk-width-medium-3-6">
+									<div class="md-input-wrapper md-input-wrapper-success"><label>Description</label>
+										<input type="text" id="PHDescription" name="PHDescription" class="md-input" value="<?=$this->PHDescription?>"><span class="md-input-bar"></span>
+									</div>
+								</div>
+								<div class="uk-width-medium-2-6">
+									<input type=button name='SavePH' id='SavePH' value='Save'>
+									<input type=button name='Cancel' id='Cancel' value='Cancel'>
+									<input type=hidden name='PublicHolidayID' id='PublicHolidayID' value=''>
+								</div>
+							   
+							</div>
+						</div>
+						
+						<div id='idDetails'>
+							<?=$this->PublicHolidayList?>
+						</div>
+						
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+

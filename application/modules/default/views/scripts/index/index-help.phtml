@@ -1,0 +1,53 @@
+	<table><TR><TD valign=top><img style='height: 30px' src='/images/yfml-logo1.png'></TD>
+	<TD valign=top><B>Delivery Process System (Self Help)</B>
+	</TD></TR>
+	<TR><TD colspan=2>
+		<table>
+		<HR>
+		<TR><TD valign=top width='60px'>
+			<img src='/images/Features.jpg'>
+		</TD>
+		<TD valign=top>
+			<ul class='help'>
+			<? if ($this->userInfo->ACLRole == "loading_warehouse") { ?>
+				<li>This page shows all the deliveries created by YFM Logistics and had assigned the loading process to your warehouse.</li>
+				<li>Click on the view <img src='/images/icons/IconView.png'> icon to view the delivery details.</li>
+				<li>Upload the confirmed loading document for each of the invoices assigned to the delivery.</li>
+				<li>You can optionally provide any note/comment in regards to a particular invoice.</li>
+				<li>To attach the loading document, click on the <span class="glyphicon glyphicon-folder-open"></span> icon and select the document.</li>
+				<li>Click on the upload icon <img width=20px src='/images/icons/IconUpload2.png'> to upload the document.</li>
+				<li>To replace the uploaded document, select a new document and click upload icon to replace the current document..</li>
+			<? }else if ($this->userInfo->ACLRole == "transporter") { ?>
+				<li>This page shows all the deliveries created by YFM Logistics and had assigned the logistical service to you.</li>
+				<li>Click on the view <img src='/images/icons/IconView.png'> icon to view the delivery details.</li>
+				<li>You must enter the actual delivery cost, delivery date and upload the delivery order document for the particular invoice for the delivery.</li>
+				<li>You can optionally provide any note/comment in regards to a particular invoice.</li>
+				<li>To attach the delivery order document, click on the <span class="glyphicon glyphicon-folder-open"></span> icon and select the document.</li>
+				<li>Click on the upload icon <img width=20px src='/images/icons/IconUpload2.png'> to upload the document.</li>
+				<li>To replace the uploaded document, select a new document and click upload icon to replace the current document..</li>
+			<? }else{ ?>
+				<li>This page shows all the deliveries entered into the system.</li>
+				<li>Once the delivery instance is created, invoices can be add or removed from the delivery.</li>
+				<li>The warehouse will be notified by email once delivery details as been confirmed.</li>
+				<li>The warehouse will be notified by email once delivery details as been confirmed.</li>
+				<li>The transporter will be notified by email if the transporter details was selected when the delivery is confirmed.</li>
+				<li>The warehouse will be able to assign transporter details as well.</li>
+				<li>By removing the delivery instance, all the invoices that ties to the delivery will be set to un-delivered and will be available for selection.</li>
+			<? } ?>	
+			</ul>
+		</TD></TR>
+		</table>
+	
+	</TD></TR>
+	<TR><TD colspan=2><HR>
+	
+	
+	</TD></TR>
+	
+	</table>
+	
+	<BR><BR>
+	<div style='float: right; font-size: 10px; text-align:right'>
+	developed by <a target='_blank' href='http://www.venzon-solution.com'>Venzon Solution Services</a><BR>
+	<a href='mailto:info@venzon-solution.com'>info@venzon-solution.com</a>
+	</div>

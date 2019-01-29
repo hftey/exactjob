@@ -1,0 +1,80 @@
+
+		<? if ($this->userInfo->ACLRole == "AdminSystem" || $this->userInfo->ACLRole == "Admin") { ?>	
+		<form enctype="multipart/form-data"  action='/default/index/index/#tabs1' method=POST  data-ajax="false">
+		<div class="md-card">
+			<div class="md-card-toolbar" style='background-color: #87cfe7'>
+				 <h3 class="md-card-toolbar-heading-text">
+					
+					<div>New Purchasing Details</div> 
+					
+					
+				</h3>
+			</div>
+			<div class="md-card-content" style='background-color: #dcf1f8'>
+			
+			<div class="uk-form-row">
+			<div class="uk-grid">
+				<div class="uk-width-medium-1-5">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Currency</label>
+						<input type="text" id="PurchaseCurrency" name="PurchaseCurrency" class="md-input clsPurchaseCurrency" value=""><span class="md-input-bar"></span>
+						<input type="hidden" id="PurchaseCurrencyID" name="PurchaseCurrencyID" class="" value="">
+					</div>
+				</div>
+				<div class="uk-width-medium-1-5 clsPurchasePriceExchangeRateDiv">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Rate</label>
+						<input type="text" id="PurchasePriceExchangeRate" name="PurchasePriceExchangeRate" class="md-input clsPurchasePriceExchangeRate" value="">
+						<span class="md-input-bar"></span></div>
+				</div>
+				<div class="uk-width-medium-2-5">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Buying Price</label>
+						<input type="text" id="PurchasePrice" name="PurchasePrice" class="md-input" value="">
+						<span class="md-input-bar"></span></div>
+				</div>
+				<div class="uk-width-medium-1-5">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Terms</label>
+						<input type="text" id="PurchaseTerms" name="PurchaseTerms" class="md-input clsPurchaseTerms" value=""><span class="md-input-bar"></span>
+						<input type="hidden" id="PurchaseTermsID" name="PurchaseTermsID" value="">
+					</div>
+				</div>
+			   
+			</div>
+		</div>
+			
+			
+			<div class="uk-form-row">
+				<div class="uk-grid">
+					
+					<div class="uk-width-medium-4-5">
+						<div class="md-input-wrapper md-input-wrapper-success"><label>Principle / Suppliers</label>
+							<input type="text" id="SupplierName" name="SupplierName" class="md-input SupplierName" value=""><span class="md-input-bar"></span>
+							<input type="hidden" id="SupplierID" name="SupplierID" Class='clsSupplierID' value="">
+						</div>
+					</div>
+					<div class="uk-width-medium-1-5">
+						<div class="md-input-wrapper md-input-wrapper-success"><label>Code</label>
+							<input type="text" id="SupplierCode" name="SupplierCode" class="md-input" value=""><span class="md-input-bar"></span></div>
+						
+					</div>
+				   
+				</div>
+			</div>
+			
+			<div class="uk-form-row">
+				<div class="uk-grid">
+					<div class="uk-width-medium-1-1">
+						<div class="md-input-wrapper md-input-wrapper-success">
+							
+								<input type=submit name='CreatePurchase' id='CreatePurchase' value='Create'>
+								<input type="hidden" id="JobID" name="JobID" value="<?=$this->edit_job?>">
+						</div>
+					</div>
+					
+				</div>
+			</div>
+				
+			
+			</div>
+		</div>	
+		</form>
+		<? } ?>
+		

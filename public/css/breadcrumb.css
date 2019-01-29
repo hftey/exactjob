@@ -1,0 +1,89 @@
+	
+	.disabledpage{
+		color:grey;
+	}
+	
+
+	.breadcrumbex { 
+		list-style: none; 
+		overflow: hidden; 
+		font: 18px Helvetica, Arial, Sans-Serif;
+		margin:0px;padding:0px;margin-bottom: 5px;
+		
+	}
+	.breadcrumbex li { 
+		float: left; 
+	}
+	.breadcrumbex li a {
+		color: white;
+		text-decoration: none; 
+		padding: 5px 0 5px 55px;
+		background: navy;                   /* fallback color */
+		background: linear-gradient(to right, hsla(214,85%,80%,1), hsla(214,85%,75%,1)); 
+		position: relative; 
+		display: block;
+		float: left;
+	}
+	.breadcrumbex li a:after { 
+		content: " "; 
+		display: block; 
+		width: 0; 
+		height: 0;
+		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+		border-bottom: 50px solid transparent;
+		border-left: 30px solid hsla(214,85%,75%,1);
+		position: absolute;
+		top: 50%;
+		margin-top: -50px; 
+		left: 100%;
+		z-index: 2; 
+	}	
+	.breadcrumbex li a:before { 
+		content: " "; 
+		display: block; 
+		width: 0; 
+		height: 0;
+		border-top: 50px solid transparent;           /* Go big on the size, and let overflow hide */
+		border-bottom: 50px solid transparent;
+		border-left: 30px solid navy; 
+		position: absolute;
+		top: 50%;
+		margin-top: -50px; 
+		margin-left: 0px;
+		left: 100%;
+		z-index: 1; 
+	}	
+	.breadcrumbex li:first-child a {
+		padding-left: 10px;
+	}
+	.breadcrumbex li:nth-child(2) a       { background:        linear-gradient(to right, hsla(214,85%,75%,1), hsla(214,85%,65%,1)); }
+	.breadcrumbex li:nth-child(2) a:after { border-left-color: hsla(214,85%,65%,1); }
+	.breadcrumbex li:nth-child(3) a       { background:        linear-gradient(to right, hsla(214,65%,65%,1), hsla(214,85%,60%,1)); }
+	.breadcrumbex li:nth-child(3) a:after { border-left-color: hsla(214,85%,60%,1); }
+	.breadcrumbex li:nth-child(4) a       { background:        linear-gradient(to right, hsla(214,85%,60%,1), hsla(214,85%,55%,1)); }
+	.breadcrumbex li:nth-child(4) a:after { border-left-color: hsla(214,85%,55%,1); }
+	.breadcrumbex li:nth-child(5) a       { background:        linear-gradient(to right, hsla(214,85%,55%,1), hsla(214,85%,50%,1)); }
+	.breadcrumbex li:nth-child(5) a:after { border-left-color: hsla(214,85%,50%,1); }
+	.breadcrumbex li:last-child a {
+		background: linear-gradient(to right, hsla(214,85%,40%,1), navy); !important;
+		color: white;
+		pointer-events: none;
+		cursor: default;
+	}
+	.breadcrumbex li:last-child a:after { border: 0; }
+	.breadcrumbex li a:hover { background: hsla(214,85%,50%,1); }
+	.breadcrumbex li a:hover:after { border-left-color: hsla(214,85%,50%,1) !important; }
+	
+	.breadcrumbex li a.disabled {
+		background: silver;
+	}
+	.breadcrumbex li:last-child a.disabled:before {
+		border-left: 30px solid silver; 
+	}
+	
+	.breadcrumbex li a.navy {
+		background: navy;
+	}
+	.breadcrumbex li a.navy:after {
+		border-left: 30px solid navy; 
+	}

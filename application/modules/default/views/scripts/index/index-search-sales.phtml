@@ -1,0 +1,245 @@
+<script>
+$(document).ready(function() {
+	$('.clsSearchSales').on('click', function (e, bcontinue) {
+		if (!bcontinue)
+		{
+			event.preventDefault();
+			$('#idSearchForm').attr('action', "/#tabs2|tabs22");
+			$(".clsSearchSales").trigger("click", [true]);
+			
+		}
+	})
+})
+</script>				
+<div class="md-card">
+	<div class="md-card-toolbar">
+		 <h3 class="md-card-toolbar-heading-text">
+			Sales Details
+		</h3>
+	</div>
+	<div class="md-card-content">
+		<div class="uk-form-row">
+			<div class="uk-grid">
+				<div class="uk-width-medium-1-1">
+					<input type="submit" id="SearchSales" name="SearchSales" class='clsSearchSales' value="Search Sales">
+					<input type="button" id="Cancel" name="Cancel" value="Cancel" onclick='document.location="/?<?=time()?>#tabs2"'>
+				</div>
+				
+			</div>
+		</div>		
+	<div class="uk-form-row">
+		<div class="uk-grid">
+			<div class="uk-width-medium-1-5">
+				<div class="md-input-wrapper md-input-wrapper-success"><label>Currency</label>
+					<input type="text" id="SearchSalesCurrency" name="SearchSalesCurrency" class="md-input" value="<?=$this->SearchSalesCurrency?>"><span class="md-input-bar"></span>
+				</div>
+				
+			</div>
+			<div class="uk-width-medium-3-5">
+				<div class="md-input-wrapper md-input-wrapper-success">
+				
+					<div class="md-input-wrapper md-input-filled"><label>Selling Price</label>
+						<div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+							<div class="uk-grid">
+								<div class="uk-width-medium-1-2">
+									<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> From </label>
+										<input type="text" id="SearchSalesPriceFrom" name="SearchSalesPriceFrom" class="md-input" value="<?=$this->SearchSalesPriceFrom?>">
+									</div>
+								</div>
+								<div class="uk-width-medium-1-2">
+									<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
+										<input type="text" id="SearchSalesPriceTo" name="SearchSalesPriceTo" class="md-input" value="<?=$this->SearchSalesPriceTo?>">
+									</div>
+								</div>
+							</div>	
+						</div><span class="md-input-bar"></span>
+					</div>
+				</div>
+			</div>
+			<div class="uk-width-medium-1-5">
+				<div class="md-input-wrapper md-input-wrapper-success"><label>Terms</label>
+					<input type="text" id="SearchSalesTerms" name="SearchSalesTerms" class="md-input" value="<?=$this->SearchSalesTerms?>"><span class="md-input-bar"></span>
+				</div>
+			</div>
+		   
+		</div>
+	</div>
+	<div class="uk-form-row">
+			<div class="uk-grid">
+				<div class="uk-width-medium-1-2">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>EOG & STSB PO</label>
+						<input type="text" id="SearchEOGSTSBPO" name="SearchEOGSTSBPO" class="md-input" value="<?=$this->SearchEOGSTSBPO?>"><span class="md-input-bar"></span></div>
+					
+				</div>
+				<div class="uk-width-medium-1-2">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Customer PO</label>
+						<input type="text" id="SearchCustomerPO" name="SearchCustomerPO" class="md-input" value="<?=$this->SearchCustomerPO?>"><span class="md-input-bar"></span></div>
+				</div>
+				
+			   
+			</div>
+		</div>
+	<div class="uk-form-row">
+		<div class="uk-grid">
+			<div class="uk-width-medium-1-2">
+				<div class="md-input-wrapper md-input-wrapper-success"><label>Inspection Report No.</label>
+					<input type="text" id="SearchSalesInspReportNo" name="SearchSalesInspReportNo" class="md-input" value="<?=$this->SearchSalesInspReportNo?>"><span class="md-input-bar"></span></div>
+				
+			</div>
+			<div class="uk-width-medium-1-2">
+				<div class="md-input-wrapper md-input-wrapper-success"><label>S.O. Acknowledgement</label>
+					<input type="text" id="SearchSalesOrderAckNo" name="SearchSalesOrderAckNo" class="md-input" value="<?=$this->SearchSalesOrderAckNo?>"><span class="md-input-bar"></span></div>
+			</div>
+		   
+		</div>
+	</div>
+	<div class="uk-form-row">
+		<div class="uk-grid">
+			<div class="uk-width-medium-1-1">
+				<div class="md-input-wrapper md-input-filled"><label>Customer Expected Date</label>
+					<div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+						<div class="uk-grid">
+							<div class="uk-width-medium-1-2">
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> From </label>
+									<input type="text" id="SearchSalesExpDateFrom" name="SearchSalesExpDateFrom" class="md-input" value="<?=$this->SearchSalesExpDateFrom?>">
+								</div>
+							</div>
+							<div class="uk-width-medium-1-2">
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
+									<input type="text" id="SearchSalesExpDateTo" name="SearchSalesExpDateTo" class="md-input" value="<?=$this->SearchSalesExpDateTo?>">
+								</div>
+							</div>
+						</div>	
+					</div><span class="md-input-bar"></span>
+				</div>
+			</div>
+		   
+		</div>
+	</div>
+	<div class="uk-form-row">
+		<div class="uk-grid">
+			<div class="uk-width-medium-1-1">
+				<div class="md-input-wrapper md-input-filled"><label>Goods Ready Date</label>
+					<div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+						<div class="uk-grid">
+							<div class="uk-width-medium-1-2">
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> From </label>
+									<input type="text" id="SearchSalesReadyDateFrom" name="SearchSalesReadyDateFrom" class="md-input" value="<?=$this->SearchSalesReadyDateFrom?>">
+								</div>
+							</div>
+							<div class="uk-width-medium-1-2">
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
+									<input type="text" id="SearchSalesReadyDateTo" name="SearchSalesReadyDateTo" class="md-input" value="<?=$this->SearchSalesReadyDateTo?>">
+								</div>
+							</div>
+						</div>	
+					</div><span class="md-input-bar"></span>
+				</div>
+			</div>
+		   
+		</div>
+	</div>
+	<!--
+	<div class="uk-form-row">
+		<div class="uk-grid">
+			<div class="uk-width-medium-1-1">
+				<div class="md-input-wrapper md-input-filled"><label>Invoice Date</label>
+					<div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+						<div class="uk-grid">
+							<div class="uk-width-medium-1-2">
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> From </label>
+									<input type="text" id="SearchSalesInvoiceDateFrom" name="SearchSalesInvoiceDateFrom" class="md-input" value="<?=$this->SearchSalesInvoiceDateFrom?>">
+								</div>
+							</div>
+							<div class="uk-width-medium-1-2">
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
+									<input type="text" id="SearchSalesInvoiceDateTo" name="SearchSalesInvoiceDateTo" class="md-input" value="<?=$this->SearchSalesInvoiceDateTo?>">
+								</div>
+							</div>
+						</div>	
+					</div><span class="md-input-bar"></span>
+				</div>
+			</div>
+		   
+		</div>
+	</div>
+	-->
+	<div class="uk-form-row">
+		<div class="uk-grid">
+			<div class="uk-width-medium-1-1">
+				<div class="md-input-wrapper md-input-filled"><label>Drawing Approved Date</label>
+					<div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+						<div class="uk-grid">
+							<div class="uk-width-medium-1-2">
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> From </label>
+									<input type="text" id="SearchDrawingApprovedDateFrom" name="SearchDrawingApprovedDateFrom" class="md-input" value="<?=$this->SearchDrawingApprovedDateFrom?>">
+								</div>
+							</div>
+							<div class="uk-width-medium-1-2">
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
+									<input type="text" id="SearchDrawingApprovedDateTo" name="SearchDrawingApprovedDateTo" class="md-input" value="<?=$this->SearchDrawingApprovedDateTo?>">
+								</div>
+							</div>
+						</div>	
+					</div><span class="md-input-bar"></span>
+				</div>
+			</div>
+		   
+		</div>
+	</div>
+	<div class="uk-form-row">
+		<div class="uk-grid">
+			<div class="uk-width-medium-1-3">
+				<div class="md-input-wrapper md-input-wrapper-success"><label>Exact Invoice No.</label>
+					<input type="text" id="SearchSalesInvoiceNo" name="SearchSalesInvoiceNo" class="md-input" value="<?=$this->SearchSalesInvoiceNo?>"><span class="md-input-bar"></span>
+				</div>
+				
+			</div>
+			<div class="uk-width-medium-1-3">
+				<div class="md-input-wrapper md-input-wrapper-success"><label>Exact DO No.</label>
+					<input type="text" id="SearchSalesDO" name="SearchSalesDO" class="md-input" value="<?=$this->SearchSalesDO?>"><span class="md-input-bar"></span>
+				</div>
+			</div>
+			<div class="uk-width-medium-1-3">
+				<div class="md-input-wrapper md-input-wrapper-success"><label>EOG & STSB DO No.</label>
+					<input type="text" id="SearchEOGSTSBDO" name="SearchEOGSTSBDO" class="md-input" value="<?=$this->SearchEOGSTSBDO?>"><span class="md-input-bar"></span>
+				</div>
+				
+			</div>
+		   
+		</div>
+	</div>
+	
+	<div class="uk-form-row">
+		<div class="uk-grid">
+			<div class="uk-width-medium-1-3">
+				<div class="md-input-wrapper md-input-wrapper-success"><label>Service Report No.</label>
+					<input type="text" id="SearchServiceReportNo" name="SearchServiceReportNo" class="md-input" value="<?=$this->SearchServiceReportNo?>"><span class="md-input-bar"></span></div>
+				
+			</div>
+			<div class="uk-width-medium-2-3">
+				<div class="md-input-wrapper md-input-wrapper-success"><label>Sales Person</label>
+					<select class="md-input" name='SearchSalesPersonID' id='SearchSalesPersonID'>
+						<option value=''>
+						<?=$this->optionSearchSalesPersonID?>
+					</select>
+					<span class="md-input-bar"></span></div>
+				
+			</div>
+			
+		</div>
+	</div>
+			
+		<div class="uk-form-row">
+			<div class="uk-grid">
+				<div class="uk-width-medium-1-1">
+					<input type="submit" id="SearchSales" name="SearchSales" value="Search Sales" class='clsSearchSales'>
+					<input type="button" id="Cancel" name="Cancel" value="Cancel" onclick='document.location="/?<?=time()?>#tabs2"'>
+				</div>
+				
+			</div>
+		</div>									
+	
+	</div>
+	
+</div>

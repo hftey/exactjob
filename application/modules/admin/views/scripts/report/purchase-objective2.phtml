@@ -1,0 +1,85 @@
+<link rel="stylesheet" type="text/css" media="all" href="/js/jquery/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="/js/jquery/daterangepicker/moment.js"></script>
+<script type="text/javascript" src="/js/jquery/daterangepicker/daterangepicker.js"></script>
+
+<script language='Javascript'>
+$(document).ready(function() {
+	
+	$(document).on("click", ".clsDateImg", function(event, proceed){	
+		var StartDate = $(this).attr("StartDate");
+		var EndDate = $(this).attr("EndDate");
+		var ID = $(this).attr("ID");
+		$('.clsDateRange'+ID).daterangepicker({ locale: {format: 'YYYY-MM-DD'},startDate: StartDate, endDate: EndDate, highlightDates: Array(<?=$this->jsArrPH?>) });
+		$('.clsDateRange'+ID).trigger("click");
+		$('.applyBtn').hide();
+		$('.cancelBtn').hide();
+		$('.daterangepicker').css('left', "auto");
+		$('.daterangepicker').css('right', "10%");
+		$('.daterangepicker').css('top', "40%");
+		$('.daterangepicker_input').hide();
+		$('.prev.available').css("visibility", "hidden");
+		$('.next.available').css("visibility", "hidden");
+		
+		
+	})
+
+	
+	$(".clsLoadDetail").click(function() {
+		var MonthPeriod = $(this).attr("MonthPeriod");
+		var YearPeriod = $(this).attr("YearPeriod");
+		$("#idDetails").html("<img src='/images/icons/IconIndicator.gif'>");
+		$.get("/admin/report/purchase-objective-details2", {MonthPeriod: MonthPeriod, YearPeriod: YearPeriod}, function (data) {
+			$("#idDetails").html(data);
+		});
+		
+	})
+
+});	
+</script>
+<div class="md-card">
+	<div class="md-card-content">
+		<div class="uk-grid" data-uk-grid-margin="">
+			<div class="uk-width-medium-1-2 uk-row-first">
+				<div class="md-card">
+					<div class="md-card-toolbar">
+						 <h3 class="md-card-toolbar-heading-text">
+							Exact Analytical Sdn Bhd - Purchasing Department Objectives 2
+						</h3>
+						
+					</div>
+					<div class="md-card-content">
+						Purchase Order Issue Out To Principal / Supplier Should Not be<BR>
+						More Than <?=$this->percent?>% Of Total Orders On Quarterly Basis That Exceed <?=number_format($this->days, 0)?><BR>
+						Working Days<BR><BR>
+						<table class='report_objective' border=1 cellspacing=4 cellpadding=4 WIDTH=100%>
+						<TR><TD>Month</TD><TD>No. Of Cases</TD><TD>Monthly Project Order</TD><TD>Monthly %</TD><TD>Quarter Average %</TD></TR>
+						<?=$this->content_report?>
+						</table>
+						
+					</div>
+				</div>
+			</div>
+			<div class="uk-width-medium-1-1 uk-row-first">
+				<div class="md-card">
+					<div class="md-card-toolbar">
+						 <h3 class="md-card-toolbar-heading-text">
+							Details
+						</h3>
+						
+					</div>
+					<div class="md-card-content">
+						<div style='font-size: 12px'>*Job purchasing cases where the difference between <u>PO faxed out date</U> and <u>customer PO received date</U> exceeded <U><?=number_format($this->days, 0)?></U> working days.</div><BR>
+						<div id='idDetails'>
+						</div>
+						
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+				
+
+
+

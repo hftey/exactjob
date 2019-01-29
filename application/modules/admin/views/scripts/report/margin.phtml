@@ -1,0 +1,262 @@
+ <link class="include" rel="stylesheet" type="text/css" href="/js/jquery/jqplot/jquery.jqplot.min.css" />
+ <script class="include" type="text/javascript" src="/js/jquery/jqplot/jquery.jqplot.min.js"></script>
+ 
+ <script type="text/javascript" src="/js/jquery/jqplot/plugins/jqplot.highlighter.js"></script>
+<script type="text/javascript" src="/js/jquery/jqplot/plugins/jqplot.cursor.js"></script>
+<script type="text/javascript" src="/js/jquery/jqplot/plugins/jqplot.dateAxisRenderer.js"></script>
+<link rel="stylesheet" type="text/css" href="/js/jquery/jqplot/jquery.jqplot.css" />
+
+
+<script type="text/javascript" src="/js/jquery/jqplot/plugins/jqplot.canvasTextRenderer.js"></script>
+<script type="text/javascript" src="/js/jquery/jqplot/plugins/jqplot.canvasAxisTickRenderer.js"></script>
+
+  <style type="text/css" media="screen">
+    .jqplot-axis {
+      font-size: 0.85em;
+    }
+    .jqplot-title {
+      font-size: 1.1em;
+    }
+    </style>
+
+
+    <div id="chart1" style="margin-top:20px; margin-left:20px; width:1200px; height:500px;"></div>
+
+   
+
+    <script class="code" type="text/javascript" language="javascript">
+    $(document).ready(function(){
+		
+		
+		$(".idDetails").poshytip({ bgImageFrameSize:9, className: 'tip-yellow', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,showTimeout: 100});
+		
+		var line1=[<?=$this->dataSalesAmount?>];
+		var line2=[<?=$this->dataCostAmount?>];
+		var line3=[<?=$this->dataReceivedAmount?>];
+		var line4=[<?=$this->datapaidAmount?>];
+		var ticks = [<?=$this->ticks?>];  
+		  var plot1 = $.jqplot('chart1', [line1, line2, line3, line4], {
+			  title:'Job Profit/Lost Margin',
+			  series: [
+				{
+					color: 'green',
+					fill: true,
+					fillColor: '#00FF00',
+					fillAlpha: 0.4,
+					markerOptions: { size: 1, style:"." }
+				},
+				{
+					color: 'red',
+					fill: true,
+					fillColor: '#FF0000',
+					fillAlpha: 0.4,
+					markerOptions: { size: 1, style:"." }
+				},
+				{
+					color: 'green',
+					fill: true,
+					fillAndStroke: true,
+					fillColor: '#00FF00',
+					fillAlpha: 0.4,
+					markerOptions: { size: 5, style:"."},
+				},
+				{
+					color: 'red',
+					fill: true,
+					fillAndStroke: true,
+					fillColor: '#FF0000',
+					fillAlpha: 0.4,
+					markerOptions: { size: 5, style:"." }
+				}
+			],
+            seriesDefaults: {
+                rendererOptions: {
+                    smooth: true
+                }
+            },
+			  axes:{
+				xaxis:{
+				  ticks: ticks,
+				  renderer:$.jqplot.DateAxisRenderer,
+				  tickOptions:{
+					formatString:'%b&nbsp;%#d'
+				  } 
+				},
+				yaxis:{
+				 min: 0,
+				  tickOptions:{
+					formatString:'RM %.2f'
+					}
+				}
+			  },
+			  highlighter: {
+				show: true,
+				sizeAdjust: 7.5
+			  },
+			  cursor: {
+				show: false
+			  }
+		  });
+  
+  /*
+		
+		
+        var data1 = [<?=$this->dataSalesAmount?>];
+        var data2 = [<?=$this->dataCostAmount?>];
+        var data3 = [<?=$this->dataReceivedAmount?>];
+        var data4 = [<?=$this->datapaidAmount?>];
+       
+		var ticks = [<?=$this->ticks?>];  
+ 
+        var plot1 = $.jqplot("chart1", [data1, data2, data3, data4], {
+            title: "Job Profit/Lost Margin",
+			series: [
+				{
+					color: 'green',
+					fill: true,
+					fillColor: '#00FF00',
+					fillAlpha: 0.4,
+					markerOptions: { size: 1, style:"." }
+				},
+				{
+					color: 'red',
+					fill: true,
+					fillColor: '#FF0000',
+					fillAlpha: 0.4,
+					markerOptions: { size: 1, style:"." }
+				},
+				{
+					color: 'green',
+					fill: true,
+					fillAndStroke: true,
+					fillColor: '#00FF00',
+					fillAlpha: 0.4,
+					markerOptions: { size: 5, style:"."},
+				},
+				{
+					color: 'red',
+					fill: true,
+					fillAndStroke: true,
+					fillColor: '#FF0000',
+					fillAlpha: 0.4,
+					markerOptions: { size: 5, style:"." }
+				}
+			],
+			  highlighter: {
+				show: true,
+				tooltipLocation : 'n',
+				sizeAdjust: 7.5,
+				fadeTooltip : true
+			  },
+			  cursor: {
+				show: false
+			  },
+			axes: {
+			   xaxis: {
+				 	  
+				  max: 20,
+				  min: 0,
+				  numberTicks: 10,
+				  renderer:$.jqplot.DateAxisRenderer,
+				  tickOptions: 
+					{
+						fontSize: '8pt',
+						textColor: '#333333',
+						formatString:'%b&nbsp;%#d'
+					}
+			  },
+			yaxis: {
+				  max: <?=$this->maxAmount?>,
+				  min: 0,
+				  numberTicks: 10,
+				  tickOptions: 
+				{
+						fontSize: '8pt',
+						textColor: '#333333'
+				}
+			  }			  
+			},
+            seriesDefaults: {
+                rendererOptions: {
+                    smooth: true
+                }
+            }
+			
+			
+        });
+*/
+        // bind a function to the change button to update the plot's fillBetween series
+        // and replot().
+        $("button[name=changeFill]").click(function(e) {
+
+            var val1 = $("input[name=series1]").val();
+            var val2 = $("input[name=series2]").val();
+
+            val1 = val1.split(",");
+            val2 = val2.split(",");
+
+            val1.map(function(i) { return parseInt(i); });
+            val2.map(function(i) { return parseInt(i); });
+
+            if (val1.length === 1) {
+                val1 = val1[0];
+            }
+
+            if (val2.length === 1) {
+                val2 = val2[0];
+            }
+
+        	plot1.fillBetween.series1 = val1;
+        	plot1.fillBetween.series2 = val2;
+        	plot1.replot();
+
+        });
+    });
+    </script>
+	<BR><BR><HR>
+	<div class="uk-grid" data-uk-grid-margin="">
+		<div class="uk-width-medium-2-3">
+			
+			<h3>Cash Flow Summary</h3>
+			<table border=0 class=report_table cellspacing=0 celppadding=3 width=100%>
+			<TR>
+				<TD class=report_header style='text-align: center' colspan=2>Job/Project Net</TD>
+				<TD class=report_header style='text-align: center' colspan=2>Current Net</TD>
+				<TD class=report_header style='text-align: center' colspan=2>Projected Net</TD>
+			<TR>
+			<TR  class=report_even>
+				<TD class=report_cell2 style='text-align: right'>Total Receivables:</TD>
+				<TD class=report_cell2 style='text-align: right'> <img class='idDetails' title='<?=$this->listSales?>' src='/images/icons/IconInfo.png'> <?=$this->receiveAmount?></TD>
+				<TD class=report_cell2 style='text-align: right'>Current Received:</TD>
+				<TD class=report_cell2 style='text-align: right'> <?=$this->currentReceived?> </TD>
+				<TD class=report_cell2 style='text-align: right'>Projected Receivables:</TD>
+				<TD class=report_cell2 style='text-align: right'> <?=$this->leftReceivable?> </TD>
+			<TR>
+			<TR class=report_odd>
+				<TD class=report_cell2 style='text-align: right'>Total Payments:</TD>
+				<TD class=report_cell2 style='text-align: right; color: red'> <img class='idDetails' title='<?=$this->listPayments?>' src='/images/icons/IconInfo.png'> <?=$this->payAmount?></TD>
+				<TD class=report_cell2 style='text-align: right'>Current Paid:</TD>
+				<TD class=report_cell2 style='text-align: right; color: red'> <?=$this->currentPaid?> </TD>
+				<TD class=report_cell2 style='text-align: right'>Projected Payments:</TD>
+				<TD class=report_cell2 style='text-align: right; color: red'> <?=$this->leftPayment?> </TD>
+			<TR>
+			<TR class=report_even>
+				<TD class=report_cell2 style='text-align: right'>Job/Project Net:</TD>
+				<TD class=report_cell2 style='text-align: right; <?=$this->netClass?> '><?=$this->netAmount?></TD>
+				<TD class=report_cell2 style='text-align: right'>Current Net:</TD>
+				<TD class=report_cell2 style='text-align: right; <?=$this->currentClass?>'> <?=$this->currentNet?> </TD>
+				<TD class=report_cell2 style='text-align: right'>Projected Net:</TD>
+				<TD class=report_cell2 style='text-align: right; <?=$this->leftClass?>'> <?=$this->leftNet?></TD>
+			<TR>
+			</table>
+
+		</div>
+		
+	</div>
+	<BR>
+	<div class="uk-width-medium-2-3">
+		<h3>Current Cash Flow</h3>
+		<?=$this->tableList?>
+	</div>
+	<BR><BR><BR>
+

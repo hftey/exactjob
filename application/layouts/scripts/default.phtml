@@ -1,0 +1,553 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<title>Exact Analytical: Job Tracking System</title>
+<?php 
+$sessionUsers = new Zend_Session_Namespace('sessionUsers');	
+$systemSetting = new Zend_Session_Namespace('systemSetting');
+$layout = $this->layout(); 
+$layoutname = $layout->getLayout();
+
+
+?>
+
+<?php echo $this->navigation()->breadcrumbs(); ?>
+
+
+<link rel="stylesheet" type="text/css" href="/css/pager.css" />
+
+<!-- jQuery 1.10.2 -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<? if ($this->isMobile) { ?>
+	<link rel="stylesheet" type="text/css" href="/js/jquery/mobile/jquery.mobile-1.4.2.css" />
+	<script type="text/javascript" src="/js/jquery/mobile/jquery.mobile-1.4.2.js"></script>	
+<? } ?>
+
+
+<link href="/js/jquery/jquery-ui-1.10.4.custom/css/redmond/jquery-ui-1.10.4.custom.css" rel="stylesheet">
+<script src="/js/jquery/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js"></script>
+<script src="/js/jquery/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/js/jquery/impromptu/jquery-impromptu.css" />
+<script type="text/javascript" src="/js/jquery/impromptu/jquery-impromptu.js"></script>	
+
+
+<link rel="stylesheet" type="text/css" href="/js/jquery/poshytip/tip-yellow/tip-yellow.css" />
+<script type="text/javascript" src="/js/jquery/poshytip/jquery.poshytip.js"></script>	
+
+
+<script type="text/javascript" src="/js/jquery/searchabledropdown/sh/shCore.js"></script>
+<script type="text/javascript" src="/js/jquery/searchabledropdown/sh/shBrushJScript.js"></script>
+<link type="text/css" rel="stylesheet" href="/js/jquery/searchabledropdown/sh/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="/js/jquery/searchabledropdown/sh/shThemeDefault.css"/>
+<script type="text/javascript">
+	SyntaxHighlighter.all();
+</script>
+<script type="text/javascript" src="/js/jquery/searchabledropdown/jquery.searchabledropdown-1.0.8.src.js"></script>	
+
+<script src="/js/jquery/tabslideout/jquery.tabSlideOut.v1.3.js"></script>
+
+<script type="text/javascript" src="/js/jquery/jscroll/jquery.jscroll.js"></script>	  
+
+    
+<style>
+.slide-out-div {
+	z-index: 999999;
+	background-color: white;
+	border: solid 1px #DFDFDF;
+	padding: 5px;
+	width: 550px;
+}
+</style>
+<script language='Javascript'>
+
+function initInput()
+{
+	$('.md-input').each(function () {
+		if ($(this).val() != ""){
+			$(this).parent().addClass("md-input-filled");
+			$(this).addClass("md-input-success");
+		}
+	});
+}
+
+$(document).ready(function() {
+	$('.shop-toggler').click (function () {
+		$('#shop-container').html("<img src='/images/icons/IconIndicator.gif'>");
+		$.post( "/default/index/ajax-not-read", function( return_data ) { 
+			$('#shop-container').html(return_data);
+			$('.Notification').hide();
+		});
+	})
+	
+	$(document).on("click", ".notification_link", function () {
+		$.post( "/default/index/ajax-notification-clicked", { NotificationID: $(this).attr("NotificationID")}, function( return_data ) { 
+			console.log(return_data);
+		});
+	})
+	
+	$(document).on("click", ".notification_allread", function () {
+		$.post( "/default/index/ajax-notification-allread", function( return_data ) { 
+			$('.notification_item').each(function(i, obj) {
+				$(obj).removeClass( "item_not_read");
+				$(obj).addClass( "item_read");
+			});
+		});
+	})
+
+	
+	//$('.md-input').focus(function () {
+	$(document).on("focus", ".md-input", function () {		
+		$(this).parent().addClass("md-input-filled");
+	});
+	
+	//$('.md-input').focusout(function () {
+	$(document).on("focusout", ".md-input", function () {		
+		var obj = $(this);
+		setTimeout(function(){ 
+			if (obj.val() == "" && !obj.hasClass("md-input-doc") && !obj.hasClass("md-input-group")){
+				obj.parent().removeClass("md-input-filled");
+				obj.removeClass("md-input-success");
+			}
+			else{
+				if (!obj.hasClass("md-input-group")){
+					obj.parent().addClass("md-input-filled");
+					obj.addClass("md-input-success");
+				}
+				
+			}
+		}, 500);
+	
+	});
+	
+		
+	initInput();
+		
+	
+
+		
+		
+<? if ($sessionUsers->helpContent && !$this->isMobile && false) { ?>
+	setTimeout(function(){
+		$('.slide-out-div').tabSlideOut({
+				 tabHandle: '.handle',                              //class of the element that will be your tab
+				 pathToTabImage: '/images/HelpPopUp.png',          //path to the image for the tab (optionaly can be set using css)
+				 imageHeight: '27px',                               //height of tab image
+				 imageWidth: '115px',                               //width of tab image    
+				 tabLocation: 'bottom',                               //side of screen where tab lives, top, right, bottom, or left
+				 leftPos: "55%",
+				 speed: 300,                                        //speed of animation
+				 action: 'click',                                    //position from the top
+				 fixedPosition: false                               //options: true makes it stick(fixed position) on scroll
+			 })
+		
+		}, 1000);	
+<? } ?>
+
+$('input').attr('autocomplete','off');
+
+<? if (strlen($this->appMsg) > 0) { ?> 
+	$.prompt("<?=$this->appMsg?>",{ title: "System Message", buttons: { Ok: true }});
+<? } ?>
+})
+</script>
+</head>
+
+<link rel="stylesheet" href="/altair/bower_components/uikit/css/uikit.almost-flat.css" media="all">
+<link rel="stylesheet" href="/altair/assets/css/main.css" media="all">
+
+  <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+
+<!-- Load Fonts -->
+<link rel="stylesheet" type="text/css" href="/wayout/css/fonts.css" />
+<!-- WAYOUT MENU -->
+<link rel="stylesheet" type="text/css" href="/wayout/css/wayoutmenu.css" />
+<link rel="stylesheet" type="text/css" href="/wayout/css/wayoutmenueffects.css" />
+<link rel="stylesheet" type="text/css" href="/wayout/css/wayoutmenuresponsive.css" />
+  
+<!-- Lightbox stylesheet -->
+<link rel="stylesheet" type="text/css" href="/wayout/css/jquery.lightbox.min.css" />
+<!-- Input slider -->
+<link href="/wayout/css/slider.css" rel="stylesheet" type="text/css" />
+<!-- Color Picker --> 
+<link rel="stylesheet" type="text/css" href="/wayout/css/spectrum.css" />
+
+<link rel="stylesheet" type="text/css" href="/css/login.css">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+
+
+
+
+
+
+
+<!-- Bootstrap -->
+<script src="/wayout/js/bootstrap.min.js"></script>
+<!-- Lightbox -->
+<script src="/wayout/js/jquery.lightbox.min.js"></script>   
+<!-- Wayout Menu -->
+<script src="/wayout/js/wayoutmenu.js"></script> 
+
+
+<script language='Javascript'>
+
+function isValidPassword(input)
+{
+	 if (input.length < 8)
+		return false;
+
+
+	 var reg = /[a-zA-Z]/;
+	 var reg2 = /[0-9]/;
+	 return reg.test(input) && reg2.test(input);
+}  
+
+function checkNewNotification()
+{
+	$.get( "/default/index/ajax-new-notification-count", function( new_notification ) {
+	//	console.log(new_notification);
+		if (parseInt(new_notification) > 0)
+		{
+			$('.Notification').show();
+			$('.Notification').html(new_notification);
+		}
+	
+	});
+	
+	if ($('#shop-container').css("visibility") == "visible"){
+	//	console.log("getting new notification");
+		$.get( "/default/index/ajax-new-notification", function( new_notification ) {
+	//		console.log(new_notification);
+			if (new_notification.length > 0)
+			{
+				$('#shop-container').prepend(new_notification);
+			}
+		
+		});
+	}
+}
+
+
+$(document).ready(function() { 
+
+	$('#ChangePassword').click(function () {
+
+		var error = false;
+		if (!isValidPassword($('#Password').val()))
+		{
+			$('#Password').poshytip({ bgImageFrameSize:8, content: '<img src="/images/icons/IconAlert.png">Password must contain at least 8 alphanumeric characters.', showOn:'none', className: 'tip-yellow', alignTo: 'target', alignX: 'left',alignY: 'center',offsetX: 5,offsetY: 15,timeOnScreen: 3000});
+			$('#Password').poshytip('show');
+					
+			error = true;			
+		}	
+		
+		if ($('#Password').val()!=$('#ConfirmPassword').val()) {   
+			$('#ConfirmPassword').poshytip({bgImageFrameSize:8,  content: '<img src="/images/icons/IconAlert.png">Passwords entered are not the same.', showOn:'none', className: 'tip-yellow', alignTo: 'target', alignX: 'left',alignY: 'center',offsetX: 5,offsetY: 15,timeOnScreen: 3000});
+			$('#ConfirmPassword').poshytip('show');
+			error = true; 
+		}				
+				
+		if (error){
+			return false;
+		}else
+		{
+			$.ajaxSetup({ cache: false });
+			$.post('/admin/acl/changepassword', $('#ChangePasswordForm').serialize(), function( data ) {
+					$('#chgMsg').html("<div class='alert alert-success'> Password Updated</div>");
+					$('#chgForm').html("");
+					$('#login-container').css("height", "150px");
+					
+					$('#Password').val("");
+					$('#ConfirmPassword').val("");
+			});
+			return false;			
+		
+		}
+		
+	})
+	
+	setInterval( "checkNewNotification()",10000 );
+	
+});	
+
+</script>
+
+
+<!--[if lt IE 10]>
+<script type="text/javascript">
+$(document).ready(function() {
+
+
+
+  $('.hidden-menu').css('display','none');
+});
+</script>
+<![endif]-->
+<body style='background: transparent'>
+
+
+  <!-- MAIN CONTAINER -->
+  <div id="main-container" class="container-fluid relative full-height" style='overflow-x: scroll;'>
+            <!-- MENU-BG -->
+            <div class="container-fluid menu-bg" style="width: 100%;">
+              <!-- BM-CONTAINER -->
+			<div class="row-fluid site-width bm-container">
+			
+                <? if ($this->isMobile) { ?>
+					<div class="site-title span1" style='min-width:50px;'><a href='/'><img style='height: 30px' src='/images/Exact-Logo.png'></a></div>
+					<div class="site-title"  style='min-width:50px; height: 30px;'><h1 style='font-size: 12px; position: relative;top: 6px; font-family: Tahoma;'>Order Processing</h1></div>
+				<? }else{ ?>
+					<div class="site-title span1" style='min-width:50px;'><a href='/'><img style='height: 45px' src='/images/Exact-Logo.png'></a></div>
+					<div class="site-title"  style='min-width:70px; height: 45px;'><h1 style='position: relative;top: 6px; font-family: Tahoma;'>Order Processing</h1></div>
+                <? } ?>
+				
+				
+				<!-- Wayout Menu - TOP NAV -->
+			
+                <div class="top-nav hidden-phone">
+				<?
+				$sessionUsers = new Zend_Session_Namespace('sessionUsers');	
+				
+				?>
+				<? if ($this->userInfo) { ?>
+					<ul class="navigation">
+					<li>
+						<a id="menu-home-link" href="/">
+							<div class='nav-icon'>
+								<img style='diaplay: table-cell; vertical-align:middle;' src='/images/icons/IconHome.png'>
+							</div> 
+							<div class='nav-title'><?=$this->translate->_('Home')?></div>
+						</a>
+					</li>
+					<li>
+						<a href="/#"><div class='nav-icon'><img src='/images/icons/IconReport.png'> </div><div class='nav-title'> <?=$this->translate->_('Reports')?></div></a>
+						<ul>
+							<li>
+								<a href="/admin/report/delivery-objective"> <?=$this->translate->_('Delivery Objective')?></a>
+							</li>
+							<li>
+								<a href="/admin/report/purchase-objective"> <?=$this->translate->_('Purchase Objective 1')?></a>
+							</li>
+							<li>
+								<a href="/admin/report/purchase-objective2"> <?=$this->translate->_('Purchase Objective 2')?></a>
+							</li>
+							<li>
+								<a href="/admin/report/late-delivery"> <?=$this->translate->_('Late Delivery')?></a>
+							</li>
+                            <li>
+                                <a href="/admin/report/sales"> <?=$this->translate->_('Sales')?></a>
+                            </li>
+<!--							<li>
+								<a href="/admin/report/drawing-approval-objective"> <?=$this->translate->_('Drawing Approval')?></a>
+							</li>
+-->							
+						</ul>
+					</li>
+					<? if ($this->userInfo->ACLRole == "AdminSystem" || $this->userInfo->ACLRole == "Admin") { ?>
+					<li>
+						<a href="/#"><div class='nav-icon'><img src='/images/icons/IconAdmin.png'> </div><div class='nav-title'> <?=$this->translate->_('Administration')?></div></a>
+						<ul>
+							<? if ($this->userInfo->ACLRole == "AdminSystem") { ?>
+				<!--			<li>
+								<a href="/admin/acl/users"> <?=$this->translate->_('User Management')?></a>
+							</li>
+				-->			<li>
+								<a href="/admin/system/report-objectives"> <?=$this->translate->_('Report Objectives')?></a>
+							</li>
+							<? } ?>
+							<li>
+								<a href="/admin/system/calendar"> <?=$this->translate->_('Public Holiday')?></a>
+							</li>
+							<li>
+								<a href="/admin/system/customers"> <?=$this->translate->_('Customers')?></a>
+							</li>
+							<li>
+								<a href="/admin/system/supplier"> <?=$this->translate->_('Supplier')?></a>
+							</li>
+							<li>
+								<a href="/admin/system/currency"> <?=$this->translate->_('Currency')?></a>
+							</li>
+							<li>
+								<a href="/admin/system/terms"> <?=$this->translate->_('Payment Terms')?></a>
+							</li>
+
+							<!-- <li>
+								<a href="/admin/system/log"> <?=$this->translate->_('System Log')?></a>
+							</li> -->							
+							
+						</ul>
+					</li>
+					<? }else{ ?>
+                        <li>
+                            <a href="/admin/system/customers"> <div class='nav-icon'><img src='/images/icons/IconDelivery.png'> </div> <?=$this->translate->_('Customers')?></a>
+                        </li>
+
+
+                    <? } ?>
+					<li>
+						<a id="menu-logout-link" href="/auth/index/authlogout"><div class='nav-icon'> <img src='/images/icons/IconLogout2.png'> </div><div class='nav-title'><?=$this->translate->_('Log Out')?></div></a>
+					</li>
+
+				</ul>
+							
+
+				<? 
+//				
+//				if ($this->userInfo) {
+//					echo $this->navigation()->menu(); 
+//				}
+				?>
+			
+				
+                </div>
+                <!-- /Wayout Menu - TOP NAV -->
+				
+				<?
+				
+				
+				?>
+				<? if (!$this->isMobile) { ?>
+				<div  class="loginbox-toggler" style='height: 44px;'>
+					<div style='height: 44px; position: absolute; right: 0px; padding: 5px 15px; color: #EFEFEF; font-size: 10px;background: #2693ba;'>
+						<?=$this->userInfo->Username?><BR>
+					</div>
+               </div>
+				<? } ?>
+			<!--	
+				<div class="loginbox-toggler" style='height: 44px;'>
+					<button id="login-form" class="login-toggle"></button>
+               </div>
+			    <div class="shop-toggler">
+					<div class="Notification" style='display: <?=$this->newNotification ? "block" : "none"?>'><?=$this->newNotification?></div>	
+                  <button id="shopping" class="shop-toggle"></button>
+                </div>
+			-->	
+ 				<? } ?>               
+				
+				
+			</div>
+			
+			<div id="shop-container"></div>
+			
+			 <!-- Login Container -->
+              <div id="login-container" style='z-index: 10000;'>
+                <form id='ChangePasswordForm'  data-ajax="false">
+					<div id='chgMsg'></div>
+					<?=$this->translate->_('You are logged in as')?> <B><?=$this->userInfo->Username?></B><BR>
+					<?=$this->translate->_('Last login was')?> <B><?
+					$dispFormat = new Venz_App_Display_Format();
+					echo $dispFormat->format_datetime_simple($this->userInfo->LastLogin);
+					
+					?></B> <BR><BR>
+					<div id='chgForm'>
+
+                  <div class="control-group">
+                    <div class="controls">
+                      <input type="password" id="Password" name="Password" placeholder="<?=$this->translate->_('New Password')?>">
+                    </div>
+                  </div>
+                  <div class="control-group">
+                    <div class="controls">
+                      <input type="password" id="ConfirmPassword" placeholder="<?=$this->translate->_('Confirm Password')?>">
+                    </div>
+                  </div>				  
+                  
+                  <button type="button" id="ChangePassword" name="ChangePassword" style='text-align:center;'><?=$this->translate->_('Change Password')?> </button>
+				  </div>
+				  <BR>
+				  
+                </form>
+              </div>
+              <!-- /Login Container -->
+			
+            <!-- /MENU-BG -->
+          </div>
+          <!-- MAIN -->
+          
+
+          <!-- !!!!!!!!!!! YOUR CONTENT GOES HERE !!!!!!!!!!! -->
+        <script>
+
+		
+function ReSizeIcon()
+{
+	//var $img = obj;
+    $(window).load(function () {
+
+        $(this).resize();
+    });
+
+    $(window).resize(function () {
+        var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+        var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+		
+		console.log(viewportWidth);
+		if (viewportWidth <= 768)
+		{
+			$(".main_row").css("max-width", "768px");
+		}
+		
+		//$(".container").css("max-width", viewportWidth + "px");	
+//		if (viewportWidth < 990)
+//		{
+//			$(".main_row").css("max-width", "240px");
+//		}
+//		else if (viewportWidth > 990)
+//		{
+//			$(".main_row").css("max-width", "80%");
+//		}
+		
+		
+    });
+}
+
+$(document).ready(function() {
+	ReSizeIcon();
+	<? if ($this->isMobile) { ?>
+			$( "[id='MainIcon']" ).each(function( index, element  ) {
+				$(element).attr("width", "90px");
+			
+			});
+	<? } ?>
+	
+
+});
+</script>
+
+
+		<div id="content">
+        <div id="content_main" align=center>
+
+		
+		
+		<? if (strlen($this->appNotice) > 0) { echo $this->appNotice; } ?>
+		<?php echo $this->layout()->content ?>
+		</div>
+
+            
+		</div>
+          <!-- !!!!!!!!!!! /YOUR CONTENT GOES HERE !!!!!!!!!!! -->
+
+
+  </div>
+  <!-- /MAIN CONTAINER -->
+<script>
+  // Initiate Lightbox
+
+</script>
+<? if ($sessionUsers->helpContent && !$this->isMobile && false) { ?>
+<div class="slide-out-div">
+	<a class="handle" href="http://www.inzentory-sys.com">WK Delivery System</a>
+	<div id='slide-content'>
+	<HR style='width:300px; visibility: hidden;'>
+	<? // $sessionUsers->helpContent?>
+	<? include $sessionUsers->helpPath; ?>
+	</div>
+	
+</div>
+<? } ?>
+</body>
+</html>

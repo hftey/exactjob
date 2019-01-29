@@ -1,0 +1,179 @@
+
+<script language='Javascript'>
+
+function validateEmail(email) { 
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+} 
+
+function isValidPassword(input)
+{
+	 if (input.length < 8)
+		return false;
+
+
+	 var reg = /[a-zA-Z]/;
+	 var reg2 = /[0-9]/;
+	 return reg.test(input) && reg2.test(input);
+}  
+
+
+
+$(document).ready(function() {
+	$("#SubmitConfirm").click (function() { 
+		
+		var error = false;
+        if ($('#userID').val()=='') { 
+			
+			$('#userID').poshytip({ bgImageFrameSize:8, content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_('Please enter the username')?>', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5, timeOnScreen: 3000});
+			$('#userID').poshytip('show');
+
+			error = true;
+		}	
+		
+		
+		if ($('#userPassword').val()) {
+			if (!isValidPassword($('#userPassword').val()))
+			{
+				$('#userPassword').poshytip({ bgImageFrameSize:8, content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_('Password must contain at least 8 alphanumeric characters')?>.', showOn:'none', className: 'tip-yellow', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,timeOnScreen: 3000});
+				$('#userPassword').poshytip('show');
+						
+				error = true;			
+			}
+			
+			if ($('#userPassword').val()!=$('#userPassword2').val()) {   
+				$('#userPassword2').poshytip({bgImageFrameSize:8,  content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_('Passwords entered are not the same')?>.', showOn:'none', className: 'tip-yellow', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,timeOnScreen: 3000});
+				$('#userPassword2').poshytip('show');
+				error = true; 
+			}	
+			
+		}
+		
+		if (!$('#idAgreeTerms').prop("checked"))	
+		{   
+				$('#idAgreeTerms').poshytip({bgImageFrameSize:8,  content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_('You must agree to the terms and conditions before using AFC CLAS')?>.', showOn:'none', className: 'tip-yellow', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,timeOnScreen: 3000});
+				$('#idAgreeTerms').poshytip('show');
+				error = true; 
+		}	
+			
+			
+		if (error)
+			return false; 			
+	})
+	
+
+});
+</script>
+
+<div class="loginpg_wrapper">
+
+
+<div class="login_content_wrapper">          
+	<div class="loginbox_verify2">
+    	<div class="input_login_wrapper_verify">
+            <form id='formlogin' action='/auth/index/verification' method='POST'>
+			<div class="toplogin_txtbox_user">
+              <input <?=$disable?> style='border: 0; outline:0; color: black;' type="text" id="userID"  name='userID' placeholder="Username" autocomplete="off" class="input_login" />
+            </div>
+            <div class="toplogin_txtbox_pass_verify">
+              <input <?=$disable?> style='border: 0; outline:0; color: black;'  type="password" id="userPassword" name="userPassword" placeholder="New Password" class="input_login" />
+            </div>
+            <div class="toplogin_txtbox_pass_verify2">
+              <input <?=$disable?> style='border: 0; outline:0; color: black;'  type="password" id="userPassword2" name="userPassword2" placeholder="Repeat Password" class="input_login" />
+            </div>
+			<div style="margin-top: 18px;">
+				<div style='float: left;'><input type=checkbox id='idAgreeTerms' value="1"></div>
+				<div style='float: left; width: 200px; color: #656565; font-size: 12px;'>&nbsp;&nbsp;&nbsp;I agree to the AFC CLAS Usage<BR>Terms & Conditions</div>
+			</div>
+			
+			
+		    <div class="toplogin_button_verif2">&nbsp;
+			<? if ($this->codeok) { ?>
+        	<input type=submit name="SubmitConfirm" id="SubmitConfirm" value="Confirm and Activate">
+			<input type=hidden name="k" value="<?=$this->key?>">
+			<? }else{ ?>
+			<BR><BR><BR><BR>
+			<? } ?>
+			</div>
+			</form>
+        </div>
+
+		<div style="color: silver; width 100%; padding: 10px; margin: 18px 10px 10px 10px; font-size: 12px">
+		Please enter the username that was provided to you along with your new password. You must also agree to the terms & conditions before activate your account to AFC CLAS.
+		</div>
+
+		
+		
+    </div>
+</div>
+<div style='float: left; width: 800px; text-align: justify; text-justify: inter-word;'>
+<h3>AFC CLAS Usage Terms and Conditions</h3><BR>
+Welcome to AFC CLAS. If you continue to browse and use this website, you are agreeing to comply with and be bound by the following terms and conditions of use, which govern AFC's relationship with you in relation to this website. 
+The term 'AFC' or 'us' or 'we' refers to the owner of the website whose registered office is AFC House, 1/155B, Bukit Jalil, 57000, KL. 
+The use of this website is subject to the following terms of use:<BR>
+<ul style='margin-left: 15px; '>
+<li>The content of the pages of this website is for your general information and use only. It is subject to change without notice.</li>
+<li>We have made every effort to suit this site for your needs but it shall be your responsibility to ensure that any products, services or information made available through this website are used appropriately and meet your requirements.</li>
+<li>This website contains material which is owned by or licensed to us. This material includes, but is not limited to, the design, content, layout, look, appearance and graphics. Reproduction is prohibited.</li>
+<li>Unauthorised use of this website may give rise to a claim for damages and/or be a criminal offence.</li>
+<li>From time to time, this website may also include links to other websites. These links are provided for your convenience to provide further information. They do not signify that we endorse the website(s). We have no responsibility for the content of the linked website(s).</li>
+<li>Any data received in this website shall be for the purposes of Club Licensing and shall be processed for the legitimate purpose of club licensing only.</li>
+<li>Your use of this website and any dispute arising out of such use of the website is subject to the laws of Malaysia.</li>
+</ul>
+</div>
+
+
+</div>
+<script language='Javascript'>
+var FinishedOnce = false;
+
+$("#bgvid").bind("loadeddata", function() {
+	$("#idLoadVid").css("visibility", "hidden");
+})
+
+$("#bgvid").bind("ended", function() {
+	if (!FinishedOnce) {
+		setTimeout(function(){
+			$('#divVideo #bgvid source').attr('src', 'video/intro_loop.mp4');
+			$('#divVideo #bgvid').attr('loop', 'loop');
+			$("#divVideo #bgvid")[0].load();	
+			$("#divVideo #bgvid")[0].play();	
+			
+		}, 3000);
+		
+		FinishedOnce = true;
+		$("#idLoadVid").css("visibility", "visible");
+
+	}else
+	{
+		$("#divVideo #bgvid")[0].load();	
+		$("#divVideo #bgvid")[0].play();	
+	}
+ 
+});
+
+</script>
+
+<!--
+<div class="alert alert-info">Please enter your username and password to login into AFC Club Licensing System</div>
+	<div id="login-container-main">
+		<form id='formlogin' action='/auth/index/authlogin' method='POST'>
+		<img src='/images/Logo-Small.png'>
+		<BR><BR>
+		 <div class="control-group">
+			<div class="controls">
+			  <input <?=$disable?> type="text" id="userID"  name='userID' placeholder="Username" autocomplete="off">
+			</div>
+		  </div>
+		  <div class="control-group">
+			<div class="controls">
+			  <input <?=$disable?>  type="password" id="userPassword" name="userPassword" placeholder="Password">
+			</div>
+		  </div>
+		  <button <?=$disable?> type="submit" style='margin-top: 10px;'>Login</button>
+		</form>
+	  </div>
+
+</form> 
+
+-->

@@ -1,0 +1,32 @@
+
+
+<form class='clsFormDoc' enctype="multipart/form-data" action='/default/index/doc-upload' method=POST >
+	<table border=0 cellspacing=2 cellpadding=2 width=100%>
+		<TR><TD width=100%><h3><?=$this->DocTitle?><h3></TD></TR>
+		<TR><TD >
+			<div id='idUploadedDoc' style='width: 100%; height: 250px; overflow-y: scroll; overflow-x: hide; display: block; clear: both;'>
+				<?=$this->listUploads?>
+			
+			</div>
+		</TD></TR>
+	</table>
+	<HR>
+	<BR>
+	<div class="md-input-wrapper md-input-wrapper-success md-input-filled"><label><?=$this->DocName?></label>
+		<input style='margin-bottom: 5px;'  type=text name='Name'  class='clsName md-input' size=40 value='<? // $this->DefaultName?>'>
+	</div>
+	<input style='margin-bottom: 5px;' type=file name='DocUpload' class='clsDocUpload'>
+	
+	<input type=hidden name='JobID' id='JobID' value='<?=$this->JobID?>'>
+	<input type=hidden name='JobPurchaseID' id='JobPurchaseID' value='<?=$this->JobPurchaseID?>'>
+	<input type=hidden name='JobSalesID' id='JobSalesID' value='<?=$this->JobSalesID?>'>
+	<input type=hidden name='DocType' id='DocType' value='<?=$this->DocType?>'>
+	<input type=submit value="Upload"><div id='UploadStatus'></div>
+	
+</form>
+
+<script>
+initInput();
+</script>
+
+

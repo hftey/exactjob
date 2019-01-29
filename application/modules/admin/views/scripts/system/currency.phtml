@@ -1,0 +1,159 @@
+<link type="text/css" rel="stylesheet" href="/js/jquery/responsive-tabs/css/easy-responsive-tabs.css " />
+<script src="/js/jquery/responsive-tabs/js/easyResponsiveTabs.js" type="text/javascript"></script>
+
+
+<script language='Javascript'>
+
+function OnDeleteCurrency(Currency_id){
+	$.prompt(
+		"<?=$this->translate->_('Are you sure you want to remove the currency?')?>",{
+		buttons: { Ok: true, Cancel: false },
+		submit:function(e,v,m,f){
+					if(v){
+						document.location='/admin/system/currency/remove_currency/'+Currency_id;
+					}
+				  }
+	});
+}
+
+$(document).ready(function() {
+
+	$('#add_currency').click(function () {
+		var error = false;
+		if ($('#Name').val()=='') { 
+			$('#Name').poshytip({ bgImageFrameSize:8, content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_("Please enter the name of the currency")?>.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5, timeOnScreen: 3000});
+			$('#Name').poshytip('show');
+			error = true;
+		}
+		
+		if ($('#Code').val()=='') { 
+			$('#Code').poshytip({ bgImageFrameSize:8, content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_("Please enter the currency\'s code")?>.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5, timeOnScreen: 3000});
+			$('#Code').poshytip('show');
+			error = true;
+		}
+
+
+		if (error)
+			return false; 			
+	
+	});
+	
+	$('#add_currency').click(function () {
+		var error = false;
+		if ($('#Name').val()=='') { 
+			
+			$('#Name').poshytip({ bgImageFrameSize:8, content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_("Please enter the name of the currency")?>.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5, timeOnScreen: 3000});
+			$('#Name').poshytip('show');
+
+			error = true;
+		}
+		
+		if ($('#Code').val()=='') { 
+			$('#Code').poshytip({ bgImageFrameSize:8, content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_("Please enter the currency\'s code")?>.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5, timeOnScreen: 3000});
+			$('#Code').poshytip('show');
+			error = true;
+		}
+
+		
+		if (error)
+			return false; 			
+	
+	});
+
+ 
+	$('#tabs').easyResponsiveTabs({
+				type: 'default', //Types: default, vertical, accordion
+				width: 'auto', //auto or any width like 600px
+				fit: true, // 100% fit in a container
+				tabidentify: 'hor_1', // The tab groups identifier
+				activate: function(event) { // Callback function if tab is switched
+					var $tab = $(this);
+					var $info = $('#nested-tabInfo');
+					var $name = $('span', $info);
+					$name.text($tab.text());
+					$info.show();
+				}
+			});
+
+	$('#Name').poshytip({ bgImageFrameSize:9, className: 'tip-yellow', showOn: 'focus', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,showTimeout: 100});
+	$('#Code').poshytip({ bgImageFrameSize:9, className: 'tip-yellow', showOn: 'focus', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,showTimeout: 100});
+	$('#Rate').poshytip({ bgImageFrameSize:9, className: 'tip-yellow', showOn: 'focus', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,showTimeout: 100});
+
+});	
+
+
+
+
+
+</script>
+
+<div id='msg'></div>
+<div id="tabs">
+<ul class="resp-tabs-list hor_1">
+<? if ($this->edit_currency) { ?>	
+	<li>Edit Currency </li>
+<? }else{ ?>
+	<li>Add New Currency</li>
+<? } ?>
+	<li>Search</li>
+</ul>
+<div class='resp-tabs-container hor_1'>
+	
+	<div>
+	<form enctype="multipart/form-data"  action='/admin/system/currency#tabs1' method=POST >
+		<table border=0 cellspacing=2 cellpadding=2>
+			<TR><TD colspan=3><B>
+			<?
+				if ($this->edit_driver)
+					echo $this->translate->_('Currency: Edit');
+				else
+					echo $this->translate->_('Currency: Add');
+			?>
+				
+			</B></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Name')?><font style='color:red;'>*</font></TD><TD class='form_field'><input type='text' name='Name' id='Name' size=45 value='<?=$this->Name?>' title="<?=$this->translate->_("Currency's name")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Code')?><font style='color:red;'>*</font></TD><TD class='form_field'><input type='text' name='Code' id='Code' size=45 value='<?=$this->Code?>' title="<?=$this->translate->_("Currency's code")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Current Rate')?></TD><TD class='form_field'><input type='text' name='Rate' id='Rate' size=20 value='<?=$this->Rate?>' title="<?=$this->translate->_("Currency's rate")?>."></TD></TR>
+			<TR><TD colspan=3 height=10px></TD></TR>
+			<TR><TD colspan=3>
+			
+			<? if ($this->edit_currency) { ?>
+				<input type=submit name='save_currency' id='save_currency' value='<?=$this->translate->_('Save')?>'  title='<?=$this->translate->_("Save the currency's details.")?>.'> | 
+				<input type=button name='clear' id='clear' value='<?=$this->translate->_('Cancel')?>' title='<?=$this->translate->_('Cancel edit')?>.' onclick='document.location="/admin/system/currency"'>
+				<input type=hidden name='currencyID' value='<?=$this->edit_currency?>'>
+			<? }else{ ?>
+				<input type=submit name='add_currency' id='add_currency' value='<?=$this->translate->_('Add a new currency')?>'  title='<?=$this->translate->_('Add to create a new currency.')?>.'> | 
+				<input type=button name='clear' id='clear' value='<?=$this->translate->_('Clear')?>' title='<?=$this->translate->_('Clear all the inputs above')?>.' onclick='document.location="/admin/system/currency"'>
+			
+			<? } ?>
+			
+			
+			</TD></TR>
+		</table>
+	</form>
+	</div>
+	
+	<div>
+	<form action='/admin/system/currency#tabs2' method=POST >
+		<table border=0 cellspacing=2 cellpadding=2>
+			<TR><TD colspan=3><B><?=$this->translate->_('Currency: Search')?></B></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Name')?></TD><TD class='form_field'><input type='text' name='searchName' id='searchName' size=45 value='<?=$this->searchName?>' title="<?=$this->translate->_("Currency's full name")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Code')?></TD><TD class='form_field'><input type='text' name='searchCode' id='searchCode' size=45 value='<?=$this->searchCode?>' title="<?=$this->translate->_("Currency's code")?>."></TD></TR>
+			<TR><TD colspan=3 height=10px></TD></TR>
+
+			<TR><TD colspan=3>
+			<input type=submit name='search_currency' id='search_currency' value='<?=$this->translate->_('Search for currency')?>'  title='<?=$this->translate->_('Click the search button to search for a currency.')?>.'>	|
+			<input type=submit name='clear' id='clear' value='<?=$this->translate->_('Clear')?>' title='<?=$this->translate->_('Clear all the inputs above')?>.' onclick='document.location="/admin/system/currency#tabs2"'> 
+			
+			
+			
+			
+			</TD></TR>
+		</table>
+	</form>
+	</div>
+
+</div>
+<?=$this->content_currency?>
+</div>
+

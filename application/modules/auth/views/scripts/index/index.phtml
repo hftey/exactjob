@@ -1,0 +1,33 @@
+
+
+<div style='position: fixed; bottom: 0; right: 0'>
+	powered by <a href='http://www.venzon-solution.com' target='_blank'><img src='images/vss-logo.png'></a>
+</div>
+
+<div class="loginpg_wrapper">
+
+ <? if (!$this->isMobile) { ?>
+<div id='divVideo' style='background: url(/images/main_background.jpg) no-repeat;  background-size: cover;'></div>
+ <? } ?> 
+ <div id="login-container-main">
+		<form id='formlogin' action='/auth/index/authlogin' method='POST'>
+		<B>System Login</B>
+		<BR><BR>
+		 <div class="control-group">
+			<div class="controls">
+			  <input <?=$disable?> type="text" id="userID"  name='userID' placeholder="Username" autocomplete="off">
+			</div>
+		  </div>
+		  <div class="control-group"  style='margin-top: 15px;'>
+			<div class="controls">
+			  <input <?=$disable?>  type="password" id="userPassword" name="userPassword" placeholder="Password">
+			</div>
+		  </div>
+		  <button <?=$disable?> type="submit" style='margin-top: 15px;'>Login</button>
+		</form>
+	  </div>
+
+
+
+</div>
+

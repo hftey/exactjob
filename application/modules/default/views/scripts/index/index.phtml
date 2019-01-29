@@ -1,0 +1,1440 @@
+
+<style>
+
+.clsDocList{
+	max-height: 100px; overflow-x: auto; padding-top: 5px; padding-bottom: 5px; display: inline-block; white-space: nowrap; 
+	letter-spacing: -1px;
+}
+
+.clsDocList::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.clsDocList::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+
+.clsDocList::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+
+
+
+</style>
+
+<link type="text/css" rel="stylesheet" href="/js/jquery/responsive-tabs/css/easy-responsive-tabs.css " />
+<script src="/js/jquery/responsive-tabs/js/easyResponsiveTabs.js" type="text/javascript"></script>
+<link href="/js/jquery/FileStyle/jquery-filestyle.css" rel="stylesheet" />
+<script type="text/javascript" src="/js/jquery/FileStyle/jquery-filestyle.js"></script>
+
+
+<script language='Javascript'>
+<? if ($this->edit_job) { ?>
+var autocomp_doc_opt={
+	source: function (request, response) {
+		$.get("/default/index/ajax-get-doc", {query: request.term, JobID: <?=$this->edit_job?>, DocType: "ExactInvoiceDoc"}, function (data) {
+			console.log(data);
+			var responseData = $.parseJSON(data);
+			response(responseData);
+		});
+	},
+	minLength: 0,
+	select: function (event, ui) {
+		selecting = true;
+		var value = ui.item.value;
+		var objClient = $(this);
+		$.get("/default/index/ajax-get-doc-details", {query: value, JobID: <?=$this->edit_job?>, DocType: "ExactInvoiceDoc"}, function (data) {
+			var returnData = $.parseJSON(data);
+			console.log(returnData);
+			objClient.parent().find("#JobDocumentID").val(returnData.ID);
+			selecting = false;
+		});
+		
+		
+	}
+}	
+
+var autocomp_doc_purchase_opt={
+	source: function (request, response) {
+		$.get("/default/index/ajax-get-doc", {query: request.term, JobID: <?=$this->edit_job?>, DocType: "PurchaseInvoiceNoDoc"}, function (data) {
+			console.log(data);
+			var responseData = $.parseJSON(data);
+			response(responseData);
+		});
+	},
+	minLength: 0,
+	select: function (event, ui) {
+		selecting = true;
+		var value = ui.item.value;
+		var objClient = $(this);
+		$.get("/default/index/ajax-get-doc-details", {query: value, JobID: <?=$this->edit_job?>, DocType: "PurchaseInvoiceNoDoc"}, function (data) {
+			var returnData = $.parseJSON(data);
+			objClient.parent().find("#JobDocumentID").val(returnData.ID);
+			selecting = false;
+		});
+		
+		
+	}
+}	
+<? } ?>
+
+
+var autocomp_opt={
+	source: function (request, response) {
+		$.get("/default/index/ajax-get-customer", {
+				query: request.term
+			}, function (data) {
+				console.log(data);
+				var responseData = $.parseJSON(data);
+				response(responseData);
+			});
+	},
+	minLength: 0,
+	select: function (event, ui) {
+		selecting = true;
+		var value = ui.item.value;
+		var objClient = $(this);
+		$.get("/default/index/ajax-get-customer-details", {CustomerName: value}, function (data) {
+			console.log(data);
+			var customerData = $.parseJSON(data);
+			objClient.parent().find("#CustomerID").val(customerData.ID);
+			selecting = false;
+		});
+		
+		
+	}
+}	
+
+var autocomp_supplier_opt={
+	source: function (request, response) {
+		$.get("/default/index/ajax-get-supplier", {
+				query: request.term
+			}, function (data) {
+				console.log(data);
+				var responseData = $.parseJSON(data);
+				response(responseData);
+			});
+	},
+	minLength: 3,
+	select: function (event, ui) {
+		selecting = true;
+		var value = ui.item.value;
+		var objClient = $(this);
+		$.get("/default/index/ajax-get-supplier-details", {SupplierName: value}, function (data) {
+			console.log(data);
+			var supplierData = $.parseJSON(data);
+			objClient.parent().find("#SupplierID").val(supplierData.ID);
+			objClient.parent().parent().parent().find("#SupplierCode").val(supplierData.Code);
+			objClient.parent().parent().parent().find("#SupplierCode").focus();
+			objClient.parent().parent().parent().find("#SupplierCode").blur();
+			selecting = false;
+		});
+		
+		
+	}
+}	
+
+
+var autocomp_currency_opt={
+	source: function (request, response) {
+		$.get("/default/index/ajax-get-currency", {
+				query: request.term
+			}, function (data) {
+				console.log(data);
+				var responseData = $.parseJSON(data);
+				response(responseData);
+			});
+	},
+	minLength: 0,
+	select: function (event, ui) {
+		selecting = true;
+		var value = ui.item.value;
+		var objClient = $(this);
+		$.get("/default/index/ajax-get-currency-details", {CurrencyCode: value}, function (data) {
+			//$("#SalesCurrency").trigger("change");
+			objClient.trigger("change");
+			console.log(data);
+			var currencyData = $.parseJSON(data);
+			objClient.parent().find("#SalesCurrencyID").val(currencyData.ID);
+			objClient.parent().parent().parent().find("#SalesPriceExchangeRate").val(currencyData.Rate);
+			objClient.parent().parent().parent().find("#SalesPriceExchangeRate").focus();
+			objClient.parent().parent().parent().find("#SalesPriceExchangeRate").blur();
+
+			objClient.parent().find("#PurchaseCurrencyID").val(currencyData.ID);
+			objClient.parent().parent().parent().find("#PurchasePriceExchangeRate").val(currencyData.Rate);
+			objClient.parent().parent().parent().find("#PurchasePriceExchangeRate").focus();
+			objClient.parent().parent().parent().find("#PurchasePriceExchangeRate").blur();
+			
+			objClient.parent().find("#ClaimCurrencyID").val(currencyData.ID);
+			objClient.parent().parent().parent().find("#ClaimCurrencyExchangeRate").val(currencyData.Rate);
+			objClient.parent().parent().parent().find("#ClaimCurrencyExchangeRate").focus();
+			objClient.parent().parent().parent().find("#ClaimCurrencyExchangeRate").blur();
+			
+			objClient.parent().find("#PaymentCurrencyID").val(currencyData.ID);
+			objClient.parent().parent().parent().find("#PaymentCurrencyExchangeRate").val(currencyData.Rate);
+			objClient.parent().parent().parent().find("#PaymentCurrencyExchangeRate").focus();
+			objClient.parent().parent().parent().find("#PaymentCurrencyExchangeRate").blur();
+			
+		});
+		
+		
+	}
+}	
+
+
+
+var autocomp_terms_opt={
+	source: function (request, response) {
+		$.get("/default/index/ajax-get-terms", {
+				query: request.term
+			}, function (data) {
+				console.log(data);
+				var responseData = $.parseJSON(data);
+				response(responseData);
+			});
+	},
+	minLength: 0,
+	select: function (event, ui) {
+		selecting = true;
+		var value = ui.item.value;
+		var objClient = $(this);
+		$.get("/default/index/ajax-get-terms-details", {termsCode: value}, function (data) {
+			//objClient.trigger("change");
+			console.log(data);
+			var termsData = $.parseJSON(data);
+			objClient.parent().find("#SalesTermsID").val(termsData.ID);
+			objClient.parent().find("#PurchaseTermsID").val(termsData.ID);
+		});
+		
+		
+	}
+}	
+
+
+
+
+var autocomp_items_opt={
+	source: function (request, response) {
+		$.get("/default/index/ajax-get-items", {
+				query: request.term
+			}, function (data) {
+				console.log(data);
+				var responseData = $.parseJSON(data);
+				response(responseData);
+			});
+	},
+	minLength: 0
+}	
+
+
+
+
+$(document).ready(function() {
+	
+	
+	<? if ($this->userInfo->ACLRole != "AdminSystem" && $this->userInfo->ACLRole != "Admin") { ?>
+		$(".md-input").each (function(){
+			var IDName = $(this).prop('id');
+			if (IDName.indexOf("Search") == -1)
+			{
+				$(this).prop('readonly', true);
+				$(this).prop('disabled', true);
+				
+			}
+			
+		})
+		//$(".md-input").prop('readonly', true);
+		//$(".md-input").prop('disabled', true);
+		$("[id=idUploadDoc]").hide();
+	<? } ?>
+	
+	<? if ($this->userInfo->ACLRole == "Sales" || $this->userInfo->ACLRole == "Account") { ?>
+		$(".md-input").each (function(){
+			var IDName = $(this).prop('id');
+			if (IDName.indexOf("Payment") != -1 || IDName.indexOf("Claim") != -1 || $(this).hasClass("PaymentDate") || $(this).hasClass("ClaimDate"))
+			{
+				$(this).prop('readonly', false);
+				$(this).prop('disabled', false);
+				
+			}
+			
+		})
+	<? } ?>
+	
+	<? if ($this->userInfo->ACLRole == "Account") { ?>
+		$("#Closed").prop('readonly', false);
+		$("#Closed").prop('disabled', false);
+		$("#ClosedDate").prop('readonly', false);
+		$("#ClosedDate").prop('disabled', false);
+				
+	<? } ?>
+	
+	
+<? if ($this->userInfo->ACLRole == "AdminSystem" || $this->userInfo->ACLRole == "Admin" || $this->userInfo->ACLRole == "Sales" || $this->userInfo->ACLRole == "Account") { ?>		
+	
+	<? if ($this->edit_job) { ?>
+	$(".PaymentInvoicePurchase").autocomplete(autocomp_doc_purchase_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+	//$('.PaymentInvoicePurchase').change(function () {
+	//	$(this).parent().find("#JobDocumentID").val("");
+	//});
+	
+	
+	$(".PaymentInvoice").autocomplete(autocomp_doc_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+	//$('.PaymentInvoice').change(function () {
+	//	$(this).parent().find("#JobDocumentID").val("");
+	//});
+	<? } ?>
+	
+	$("#SearchCustomerName").autocomplete(autocomp_opt);
+	
+	$("#CustomerName").autocomplete(autocomp_opt);
+	$('#CustomerName').change(function () {
+		$('#CustomerID').val("");
+	});
+	
+	$(".SupplierName").autocomplete(autocomp_supplier_opt);
+	$('.SupplierName').change(function () {
+		$(this).parent().find("#SupplierID").val("");
+	});
+	
+	$("#Items").autocomplete(autocomp_items_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+
+	
+	
+	$(".PaymentCurrency").autocomplete(autocomp_currency_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+
+	$(".ClaimCurrency").autocomplete(autocomp_currency_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+	
+	$("#SearchSalesCurrency").autocomplete(autocomp_currency_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+	
+	$("#SalesCurrency").autocomplete(autocomp_currency_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+	
+	$(".SalesCurrency").autocomplete(autocomp_currency_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+	
+	
+	$('#SalesCurrency').change(function () {
+		$('#SalesCurrencyID').val("");
+	});
+	
+	$("#SearchSalesTerms").autocomplete(autocomp_terms_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+
+	$("#SalesTerms").autocomplete(autocomp_terms_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+
+	$(".SalesTerms").autocomplete(autocomp_terms_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+
+
+	$('#SalesTerms').change(function () {
+		$('#SalesTermsID').val("");
+	});
+
+	
+	
+	$(".clsPurchaseCurrency").autocomplete(autocomp_currency_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+	$('.clsPurchaseCurrency').change(function () {
+		$(this).parent().find("#PurchaseCurrencyID").val("");
+	});
+	
+	$(".clsPurchaseTerms").autocomplete(autocomp_terms_opt).focus(function(){            
+        $(this).autocomplete("search");
+    });
+	$('.clsPurchaseTerms').change(function () {
+		$(this).parent().find("#PurchaseTermsID").val("");
+	});
+
+	$(".clsRemarks").poshytip({ bgImageFrameSize:9, className: 'tip-yellow', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,showTimeout: 100});
+	
+	$('#CreatePurchase').click(function () {
+		var Obj = $(this).parent().parent().parent().parent().parent();
+		var error = false;
+		if (Obj.find("#PONo").val()=='') { 
+			Obj.find("#PONo").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter PO number.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+			Obj.find("#PONo").poshytip('show');
+			Obj.find("#PONo").addClass("md-input-danger");
+			error = true;
+		}
+
+		if (Obj.find(".PODate").val()=='') { 
+			Obj.find(".PODate").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter PO date.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+			Obj.find(".PODate").poshytip('show');
+			Obj.find(".PODate").addClass("md-input-danger");
+			error = true;
+		}
+		
+		if (Obj.find("#SupplierName").val()=='') { 
+			Obj.find("#SupplierName").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter principal / supplier.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'bottom', offsetX: 80, timeOnScreen: 3000});
+			Obj.find("#SupplierName").poshytip('show');
+			Obj.find("#SupplierName").addClass("md-input-danger");
+			error = true;
+		}
+		if (Obj.find("#SupplierCode").val()=='') { 
+			Obj.find("#SupplierCode").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter principal / supplier code.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'bottom', offsetX: 10, timeOnScreen: 3000});
+			Obj.find("#SupplierCode").poshytip('show');
+			Obj.find("#SupplierCode").addClass("md-input-danger");
+			error = true;
+		}
+				
+		if (error)
+			return false; 			
+	
+	});
+	/////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////// CLAIMS ///////////////////////////////////
+	
+	$('#SaveClaims').click(function () {
+		var Obj = $(this).parent().parent();
+		var error = false;
+		if (Obj.find("#ClaimDate").val()=='') { 
+			Obj.find("#ClaimDate").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter claim date.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+			Obj.find("#ClaimDate").poshytip('show');
+			Obj.find("#ClaimDate").addClass("md-input-danger");
+			error = true;
+		}
+		
+		if (Obj.find("#ClaimDescription").val()=='') { 
+			Obj.find("#ClaimDescription").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter claim description.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'bottom', offsetX: 10, timeOnScreen: 3000});
+			Obj.find("#ClaimDescription").poshytip('show');
+			Obj.find("#ClaimDescription").addClass("md-input-danger");
+			error = true;
+		}
+		
+		if (Obj.find("#ClaimCurrency").val()=='') { 
+			Obj.find("#ClaimCurrency").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter claim currency.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+			Obj.find("#ClaimCurrency").poshytip('show');
+			Obj.find("#ClaimCurrency").addClass("md-input-danger");
+			error = true;
+		}
+		
+		if (Obj.find("#ClaimAmount").val()=='') { 
+			Obj.find("#ClaimAmount").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter claim amount.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'bottom', offsetX: 10, timeOnScreen: 3000});
+			Obj.find("#ClaimAmount").poshytip('show');
+			Obj.find("#ClaimAmount").addClass("md-input-danger");
+			error = true;
+		}		
+		
+		if (Obj.find("#ClaimUserID").val()=='') { 
+			Obj.find("#ClaimUserID").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please select claim by.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+			Obj.find("#ClaimUserID").poshytip('show');
+			Obj.find("#ClaimUserID").addClass("md-input-danger");
+			error = true;
+		}
+				
+		if (error)
+			return false; 			
+	
+	});
+	
+	$(document).on("click", ".clsDeleteClaims", function(event, proceed){	
+		if (!proceed)
+		{
+			event.preventDefault();
+			var objDelete = $(this);
+			$.prompt("<?=$this->translate->_('Remove the claim?')?>",{
+				buttons: { Ok: true, Cancel: false },
+				submit:function(e,v,m,f){
+				if(v){
+						objDelete.trigger("click", [true]);
+					}
+				}
+			});	
+			
+		}
+	})
+	
+	
+	$(document).on("click", ".clsDeletePayment", function(event, proceed){	
+		if (!proceed)
+		{
+			event.preventDefault();
+			var objDelete = $(this);
+			$.prompt("<?=$this->translate->_('Remove the payment details?')?>",{
+				buttons: { Ok: true, Cancel: false },
+				submit:function(e,v,m,f){
+				if(v){
+						objDelete.trigger("click", [true]);
+					}
+				}
+			});	
+			
+		}
+	})
+	
+	$(document).on("click", ".clsDeleteDelivery", function(event, proceed){	
+		if (!proceed)
+		{
+			event.preventDefault();
+			var objDelete = $(this);
+			$.prompt("<?=$this->translate->_('Remove the purchase details?')?>",{
+				buttons: { Ok: true, Cancel: false },
+				submit:function(e,v,m,f){
+				if(v){
+						objDelete.trigger("click", [true]);
+					}
+				}
+			});	
+			
+		}
+	})
+	
+	$(document).on("click", ".clsDeletePurchase", function(event, proceed){	
+		if (!proceed)
+		{
+			event.preventDefault();
+			var objDelete = $(this);
+			var JobPurchaseID = $(this).parent().find("#JobPurchaseID").attr("JobPurchaseID");
+			$.prompt("<?=$this->translate->_('Remove the purchase details?')?>",{
+				buttons: { Ok: true, Cancel: false },
+				submit:function(e,v,m,f){
+				if(v){
+						objDelete.trigger("click", [true]);
+					}
+				}
+			});	
+			
+		}
+	})
+	
+	$(document).on("click", ".clsDeleteSales", function(event, proceed){	
+		if (!proceed)
+		{
+			event.preventDefault();
+			var objDelete = $(this);
+			var JobSalesID = $(this).parent().find("#JobSalesID").attr("JobSalesID");
+			$.prompt("<?=$this->translate->_('Remove the sales details?')?>",{
+				buttons: { Ok: true, Cancel: false },
+				submit:function(e,v,m,f){
+				if(v){
+						objDelete.trigger("click", [true]);
+					}
+				}
+			});	
+			
+		}
+	})
+		
+	
+	$('#CreateClaims').click(function () {
+		var error = false;
+		if ($('#ClaimDate').val()=='') { 
+			$('#ClaimDate').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter claim date.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+			$('#ClaimDate').poshytip('show');
+			$('#ClaimDate').addClass("md-input-danger");
+			error = true;
+		}
+
+		if ($('#ClaimDescription').val()=='') { 
+			$('#ClaimDescription').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter claim description.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'bottom', offsetX: 10, timeOnScreen: 3000});
+			$('#ClaimDescription').poshytip('show');
+			$('#ClaimDescription').addClass("md-input-danger");
+			error = true;
+		}
+		
+		if ($('#ClaimCurrency').val()=='') { 
+			$('#ClaimCurrency').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter claim currency.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+			$('#ClaimCurrency').poshytip('show');
+			$('#ClaimCurrency').addClass("md-input-danger");
+			error = true;
+		}
+		
+		if ($('#ClaimAmount').val()=='') { 
+			$('#ClaimAmount').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter claim amount.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'bottom', offsetX: 10, timeOnScreen: 3000});
+			$('#ClaimAmount').poshytip('show');
+			$('#ClaimAmount').addClass("md-input-danger");
+			error = true;
+		}		
+		
+		if ($('#ClaimUserID').val()=='') { 
+			$('#ClaimUserID').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please select claim by.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+			$('#ClaimUserID').poshytip('show');
+			$('#ClaimUserID').addClass("md-input-danger");
+			error = true;
+		}		
+		
+		if (error)
+			return false; 			
+	
+	});
+	
+	$('#Create').click(function () {
+		var error = false;
+		
+		if ($('#CustomerName').val()=='') { 
+			$('#CustomerName').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter customer name.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, offsetY: 10, timeOnScreen: 3000});
+			$('#CustomerName').poshytip('show');
+			$('#CustomerName').addClass("md-input-danger");
+			error = true;
+		}
+		
+		if ($('#JobType').val()=='') { 
+			$('#JobType').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please select a job type.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, offsetY: 10, timeOnScreen: 3000});
+			$('#JobType').poshytip('show');
+			$('#JobType').addClass("md-input-danger");
+			error = true;
+		}
+		
+		
+		if ($('#CustomerPOReceivedDate').val()=='') { 
+			$('#CustomerPOReceivedDate').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter customer PO received date.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'bottom', offsetX: 10, offsetY: 10, timeOnScreen: 3000});
+			$('#CustomerPOReceivedDate').poshytip('show');
+			$('#CustomerPOReceivedDate').addClass("md-input-danger");
+			error = true;
+		}
+		
+		if ($('#Items').val()=='') { 
+			$('#Items').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter item details.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, offsetY: 10, timeOnScreen: 3000});
+			$('#Items').poshytip('show');
+			$('#Items').addClass("md-input-danger");
+			error = true;
+		}		
+		
+		
+		if (error)
+			return false; 			
+	
+	});
+	
+	$('#Save').click(function () {
+		var error = false;
+		if ($('#JobNo').val()=='') { 
+			$('#JobNo').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter job no.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+			$('#JobNo').poshytip('show');
+			$('#JobNo').addClass("md-input-danger");
+			error = true;
+		}
+
+		if ($('#CustomerName').val()=='') { 
+			$('#CustomerName').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter customer name.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, offsetY: 10, timeOnScreen: 3000});
+			$('#CustomerName').poshytip('show');
+			$('#CustomerName').addClass("md-input-danger");
+			error = true;
+		}
+		
+		if ($('#JobType').val()=='') { 
+			$('#JobType').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please select a job type.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, offsetY: 10, timeOnScreen: 3000});
+			$('#JobType').poshytip('show');
+			$('#JobType').addClass("md-input-danger");
+			error = true;
+		}
+		
+		
+		if ($('#CustomerPOReceivedDate').val()=='') { 
+			$('#CustomerPOReceivedDate').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter customer PO received date.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'bottom', offsetX: 10, offsetY: 10, timeOnScreen: 3000});
+			$('#CustomerPOReceivedDate').poshytip('show');
+			$('#CustomerPOReceivedDate').addClass("md-input-danger");
+			error = true;
+		}
+		
+		if ($('#Items').val()=='') { 
+			$('#Items').poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter item details.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, offsetY: 10, timeOnScreen: 3000});
+			$('#Items').poshytip('show');
+			$('#Items').addClass("md-input-danger");
+			error = true;
+		}			
+		
+		
+		if (error)
+			return false; 			
+	
+	});
+	
+	
+	
+	
+	//////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////
+	$(document).on("click", "#idDeleteDoc", function(event){	
+		var JobDocumentsID = $(this).attr("JobDocumentsID");
+		$objDel = $(this);
+		$.prompt("<?=$this->translate->_('Delete the document?')?>",{
+			buttons: { Ok: true, Cancel: false },
+			submit:function(e,v,m,f){
+			if(v){
+					$.post("/default/index/doc-delete",{JobDocumentsID:JobDocumentsID},function(result){
+						$objDel.parent().remove();
+					 });
+				}
+			}
+		});
+		
+			
+	});
+	
+	$(document).on("click", "#idUploadDoc", function(event){	
+		var JobID = $(this).attr("JobID");
+		var JobPurchaseID = $(this).attr("JobPurchaseID");
+		var JobSalesID = $(this).attr("JobSalesID");
+		var objUpload = $(this).parent().parent();
+		var DocType = $(this).attr("DocType");
+		$('#idDialog').dialog({title: "Job Supporting Documents", modal: true, minWidth: 500,maxHeight: 600,
+		  position: {my: "top+50%", at: "top", of: window},
+		  buttons: {
+				'Close': function() {
+					$('#idDialog').dialog('close');
+					objUpload.html("<img src='/images/icons/IconIndicator.gif'>");
+					$.post("/default/index/doc-get-list",{JobID:JobID,JobPurchaseID:JobPurchaseID,JobSalesID:JobSalesID,DocType:DocType},function(result){
+						console.log(result);
+						objUpload.html(result);
+						objUpload.addClass("md-input-success");
+					});
+					
+				//	location.reload();
+				}
+			},
+			open: function( event, ui ) {
+				$(this).html("<img src='/images/icons/IconIndicator.gif'>");
+				$(this).load("/default/index/doc-upload-form",{JobID:JobID, JobPurchaseID:JobPurchaseID, JobSalesID:JobSalesID, DocType:DocType});
+				
+				
+			},
+			destroy: function( event, ui ) {
+			}
+		});				
+	});
+	
+	
+	
+	$(document).on("submit", ".clsFormDoc", function(event){	
+		event.preventDefault();
+		var objEntry = $(this);
+		var formData = new FormData(this);
+
+		
+		if ($(this).find(".clsName").val() == "")
+		{
+			$.prompt("Please enter the document name.", {buttons: { Ok: true}});
+			$(this).find(".clsName").addClass("md-input-danger");
+			return false;
+		}
+		
+		if ($(this).find(".clsDocUpload").val() == "")
+		{
+			$.prompt("Please select a document to upload.", {buttons: { Ok: true}});
+			$(this).find(".clsDocUpload").addClass("md-input-danger");
+			return false;
+		}				
+		objEntry.find("#UploadStatus").html("<img src='/images/icons/IconIndicator.gif'>");
+		var JobID = objEntry.find("#JobID").val();
+		var url=objEntry.attr("action");
+		$.ajax({
+			url: url,
+			type: objEntry.attr("method"),
+			dataType: "html",
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function (data, status)
+			{
+				console.log(data);
+				if (data == "ERRORSIZE")
+				{
+					$.prompt("Please upload file that is less than 5MB in size.", {buttons: { Ok: true}});
+				}else if (data == "ERROR_IMAGETYPE")
+				{
+					$.prompt("Please upload files with jpg, png, pdf, doc, docx, xls or xlsx file types.", {buttons: { Ok: true}});
+				}else
+				{
+					$("#idUploadedDoc").prepend(data);
+				}
+				objEntry.find("#UploadStatus").html("");
+				objEntry.find(".clsDocUpload").val("");
+				objEntry.find(".clsName").val("");
+				  
+			}
+			  
+		})					
+
+	})
+	
+	
+	
+	$(".PaymentCurrency").each(function(){
+		if ($(this).val() != "RM")
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-2-6");
+			$(this).parent().parent().addClass("uk-width-medium-1-6");
+			$(this).parent().parent().parent().find(".clsPaymentCurrencyRate").show(); 					
+		}else
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-1-6");
+			$(this).parent().parent().addClass("uk-width-medium-2-6");
+			$(this).parent().parent().parent().find(".clsPaymentCurrencyRate").hide(); 			
+			
+		}
+	})
+	
+	$(".PaymentCurrency").change(function(){
+		
+		if ($(this).val() != "RM")
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-2-6");
+			$(this).parent().parent().addClass("uk-width-medium-1-6");
+			$(this).parent().parent().parent().find(".clsPaymentCurrencyRate").show(); 					
+		}else
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-1-6");
+			$(this).parent().parent().addClass("uk-width-medium-2-6");
+			$(this).parent().parent().parent().find(".clsPaymentCurrencyRate").hide(); 			
+			
+			
+		}
+	})
+
+	$(".SalesCurrency").each(function(){
+		if ($(this).val() != "RM")
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-2-5");
+			$(this).parent().parent().addClass("uk-width-medium-1-5");
+			$(this).parent().parent().parent().find(".clsCurrencyRate").show(); 			
+		}else
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-1-5");
+			$(this).parent().parent().addClass("uk-width-medium-2-5");
+			$(this).parent().parent().parent().find(".clsCurrencyRate").hide(); 			
+			
+		}
+	})
+	
+	$(".SalesCurrency").change(function(){
+		
+		if ($(this).val() != "RM")
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-2-5");
+			$(this).parent().parent().addClass("uk-width-medium-1-5");
+			$(this).parent().parent().parent().find(".clsCurrencyRate").show(); 	
+		}else
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-1-5");
+			$(this).parent().parent().addClass("uk-width-medium-2-5");
+			$(this).parent().parent().parent().find(".clsCurrencyRate").hide(); 	
+			
+			
+		}
+	})
+	
+	$(".clsPurchaseCurrency").change(function(){
+		if ($(this).val() != "RM")
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-2-5");
+			$(this).parent().parent().addClass("uk-width-medium-1-5");
+			console.log($(this).parent().parent().parent().find(".clsPurchasePriceExchangeRateDiv"));
+			$(this).parent().parent().parent().find(".clsPurchasePriceExchangeRateDiv").show();
+			
+		}else
+		{
+			$(this).parent().parent().removeClass("uk-width-medium-1-5");
+			$(this).parent().parent().addClass("uk-width-medium-2-5");
+			$(this).parent().parent().parent().find(".clsPurchasePriceExchangeRateDiv").hide();
+			
+			
+		}
+	})
+	
+	$("#Completed").click(function (){
+		if ($("#Completed").is(':checked'))
+		{
+			$("#idCompletedDate").css("visibility", "visible");
+		}
+		else
+			$("#idCompletedDate").css("visibility", "hidden");
+			
+			
+	})
+	
+	$("#Closed").click(function (){
+		if ($("#Closed").is(':checked'))
+		{
+			$("#idClosedDate").css("visibility", "visible");
+		}
+		else
+			$("#idClosedDate").css("visibility", "hidden");
+			
+			
+	})
+	
+<? } ?>	
+	/////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////
+	
+	$('.clsPurchaseExpand').click(function () {
+		if ($(this).attr("status") == "show")
+		{
+			$(this).parent().parent().parent().find(".P1").hide();
+			$(this).attr("status", "hide");
+			$(this).attr("src", "/images/icons/IconExpand.png")
+		}else
+		{
+			$(this).parent().parent().parent().find(".P1").show();
+			$(this).attr("status", "show");
+			$(this).attr("src", "/images/icons/IconExpandHide.png")
+			
+		}
+	})
+		
+	$('.clsSalesExpand').click(function () {
+		if ($(this).attr("status") == "show")
+		{
+			$(this).parent().parent().parent().find(".S1").hide();
+			$(this).attr("status", "hide");
+			$(this).attr("src", "/images/icons/IconExpand.png")
+		}else
+		{
+			$(this).parent().parent().parent().find(".S1").show();
+			$(this).attr("status", "show");
+			$(this).attr("src", "/images/icons/IconExpandHide.png")
+			
+		}
+	})
+		
+	
+	
+	
+	$('#tog').click(function () {
+		$('.P1').toggle();
+	});
+	
+	$( ".DrawingApprovedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( ".CustomerPOReceivedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( ".SalesExpDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( ".SalesReadyDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+//	$( ".SalesInvoiceDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	
+	
+	$( ".PODate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( ".POFaxedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( ".PurchaseShippingDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( ".PurchaseShippingActualDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( ".PurchasePaymentDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( ".DeliveryReceivedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( ".ClaimDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	
+	$( "#SearchCustomerPOReceivedDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchCustomerPOReceivedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchSalesExpDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchSalesExpDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchSalesReadyDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchSalesReadyDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchSalesInvoiceDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchSalesInvoiceDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	
+	$( "#SearchPODateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchPODateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchPOFaxedDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchPOFaxedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	
+	$( "#SearchPurchaseShippingDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchPurchaseShippingDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchPurchaseShippingActualDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchPurchaseShippingActualDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchPurchasePaymentDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchPurchasePaymentDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchDeliveryReceivedDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchDeliveryReceivedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchDrawingApprovedDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#SearchDrawingApprovedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	
+	$( "#CompletedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	$( "#ClosedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	
+	
+	$( ".PaymentDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+	
+ 
+ 
+	$('#tabs').easyResponsiveTabs({
+		type: 'default', //Types: default, vertical, accordion
+		width: 'auto', //auto or any width like 600px
+		fit: true, // 100% fit in a container
+		tabidentify: 'hor_1', // The tab groups identifier
+		activate: function(event) { // Callback function if tab is switched
+			var $tab = $(this);
+			var $info = $('#nested-tabInfo');
+			var $name = $('span', $info);
+			$name.text($tab.text());
+			$info.show();
+		}
+	});	
+	
+	$('#tabs2').easyResponsiveTabs({
+		type: 'default', //Types: default, vertical, accordion
+		width: 'auto', //auto or any width like 600px
+		fit: true, // 100% fit in a container
+		tabidentify: 'hor_2', // The tab groups identifier
+		disabled_tab: [<?=$this->disbabledTab?>], 
+		activate: function(event) { // Callback function if tab is switched
+			var $tab = $(this);
+			var $info = $('#nested-tabInfo');
+			var $name = $('span', $info);
+			$name.text($tab.text());
+			$info.show();
+		}
+	});
+	
+	
+	
+});	
+
+
+
+
+
+</script>
+<div id='idDialog'></div>
+<div id='msg'></div>
+
+
+
+
+<div id="tabs">
+<ul class="resp-tabs-list hor_1">
+	<li>Job Details</li>
+	<li>Search</li>
+</ul>
+<div class='resp-tabs-container hor_1'>
+	
+	<div>
+		<div class="uk-grid" data-uk-grid-margin="">
+			<div class="uk-width-medium-1-2 uk-row-first">
+				<? include "index-job-summary.phtml" ?>
+				
+			</div>
+			<div class="uk-width-medium-1-2">
+				
+			</div>
+		</div>
+		
+		<div class="uk-grid" data-uk-grid-margin="">
+			<div class="uk-width-medium-1-2 uk-row-first">
+				<? if ($this->edit_job) { ?>
+					<?=$this->salesForm?>
+				<? } ?>	
+			</div>
+			<div class="uk-width-medium-1-2">
+				<? if ($this->edit_job) { ?>
+					<?=$this->purchaseForm?>
+				<? } ?>
+			</div>
+		</div>
+		
+		<div class="uk-grid" data-uk-grid-margin="">
+			<div class="uk-width-medium-1-2 uk-row-first">
+				<? if ($this->edit_job) { ?>
+					<? include "index-job-sales.phtml" ?>
+				<? } ?>	
+			</div>
+			<div class="uk-width-medium-1-2">
+				<? if ($this->edit_job) { ?>
+					<? include "index-job-purchase.phtml" ?>
+				<? } ?>
+			</div>
+		</div>		
+
+		<? if ($this->edit_job) { ?>
+		<HR>
+		<? if ($this->userInfo->ACLRole == "AdminSystem" || $this->userInfo->ACLRole == "Admin" || $this->userInfo->ACLRole == "Sales" || $this->userInfo->ACLRole == "Account") { ?>	
+		<div class="uk-grid" data-uk-grid-margin="">
+				<div class="uk-width-medium-1-2 uk-row-first">
+
+						<div class="md-card">
+							<div class="md-card-toolbar">
+								 <h3 class="md-card-toolbar-heading-text">
+									
+									<div>Payment Received</div> 
+									
+									
+								</h3>
+							</div>
+							<div class="md-card-content">
+							<?=$this->listPaymentReceived?>
+							
+							<form enctype="multipart/form-data"  action='/default/index/index/#tabs1' method=POST  data-ajax="false">
+							<input type=hidden name='PaymentReceive' value="1">
+							<div class="uk-form-row" >
+								<div class="uk-grid">
+									<div class="uk-width-medium-1-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Date</label>
+											<input type="text" name="PaymentDate" class="md-input PaymentDate" value=""><span class="md-input-bar"></span></div>
+									</div>
+									<div class="uk-width-medium-3-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Description</label>
+											<input type="text" name="PaymentDescription" id="PaymentDescription" class="md-input"><span class="md-input-bar"></span></div>
+										
+									</div>
+									<div class="uk-width-medium-2-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Invoice</label>
+											<input type="text" name="PaymentInvoice" id="PaymentInvoice" class="md-input PaymentInvoice"><span class="md-input-bar"></span>
+											<input type=hidden name='JobDocumentID' ID='JobDocumentID' value="">
+										</div>
+										
+									</div>
+								   
+								</div>
+							</div>
+							<div class="uk-form-row">
+								<div class="uk-grid">
+								
+									<div class="uk-width-medium-1-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Currency</label>
+											<input type="text" id="PaymentCurrency" name="PaymentCurrency" class="md-input PaymentCurrency" value=""><span class="md-input-bar"></span>
+											<input type="hidden" id="PaymentCurrencyID" name="PaymentCurrencyID" value="">
+											<span class="md-input-bar"></span></div>
+									</div>
+									<div class="uk-width-medium-1-6">
+											<div class="md-input-wrapper md-input-wrapper-success"><label>Rate</label>
+												<input type="text" id="PaymentCurrencyExchangeRate" name="PaymentCurrencyExchangeRate" class="md-input" value="">
+												<span class="md-input-bar"></span></div>
+										</div>
+									<div class="uk-width-medium-3-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Amount</label>
+											<input type="text" name="PaymentAmount" id="PaymentAmount" class="md-input" value=""><span class="md-input-bar"></span></div>
+									</div>
+									<div class="uk-width-medium-1-6">
+										<input type=submit name='CreatePayment' id='CreatePayment' value='Add'>
+										<input type="hidden" id="JobID" name="JobID" value="<?=$this->edit_job?>">
+									</div>
+								
+								
+								</div>
+							</div>
+							
+							
+							</form>
+							
+							</div>
+						</div>	
+				
+					
+				</div>
+		
+			    <div class="uk-width-medium-1-2 uk-row-first">
+						<div class="md-card">
+							<div class="md-card-toolbar">
+								 <h3 class="md-card-toolbar-heading-text">
+									
+									<div>Payment Made</div> 
+									
+									
+								</h3>
+							</div>
+							<div class="md-card-content">
+							<?=$this->listPaymentMade?>
+							<form enctype="multipart/form-data"  action='/default/index/index/#tabs1' method=POST  data-ajax="false">
+							<input type=hidden name='PaymentReceive' value="0">
+							<div class="uk-form-row">
+								<div class="uk-grid">
+									<div class="uk-width-medium-1-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Date</label>
+											<input type="text" name="PaymentDate" class="md-input PaymentDate" value=""><span class="md-input-bar"></span></div>
+									</div>
+									<div class="uk-width-medium-3-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Description</label>
+											<input type="text" name="PaymentDescription" id="PaymentDescription" class="md-input"><span class="md-input-bar"></span></div>
+										
+									</div>
+									<div class="uk-width-medium-2-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Invoice</label>
+											<input type="text" name="PaymentInvoice" id="PaymentInvoice" class="md-input PaymentInvoice"><span class="md-input-bar"></span>
+											<input type=hidden name='JobDocumentID' ID='JobDocumentID' value="">
+										</div>
+										
+									</div>
+								   
+								</div>
+							</div>
+							<div class="uk-form-row">
+								<div class="uk-grid">
+								
+									<div class="uk-width-medium-1-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Currency</label>
+											<input type="text" id="PaymentCurrency" name="PaymentCurrency" class="md-input PaymentCurrency" value=""><span class="md-input-bar"></span>
+											<input type="hidden" id="PaymentCurrencyID" name="PaymentCurrencyID" value="">
+											<span class="md-input-bar"></span></div>
+									</div>
+									<div class="uk-width-medium-1-6">
+											<div class="md-input-wrapper md-input-wrapper-success"><label>Rate</label>
+												<input type="text" id="PaymentCurrencyExchangeRate" name="PaymentCurrencyExchangeRate" class="md-input" value="">
+												<span class="md-input-bar"></span></div>
+										</div>
+									<div class="uk-width-medium-3-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Amount</label>
+											<input type="text" name="PaymentAmount" id="PaymentAmount" class="md-input" value=""><span class="md-input-bar"></span></div>
+									</div>
+									<div class="uk-width-medium-1-6">
+										<input type=submit name='CreatePayment' id='CreatePayment' value='Add'>
+										<input type="hidden" id="JobID" name="JobID" value="<?=$this->edit_job?>">
+									</div>
+								
+								
+								</div>
+							</div>
+							
+							
+							</form>
+							
+							</div>
+						</div>	
+						
+						<div class="md-card">
+							<div class="md-card-toolbar">
+								 <h3 class="md-card-toolbar-heading-text">
+									
+									<div>Claims</div> 
+									
+									
+								</h3>
+							</div>
+							<div class="md-card-content">
+							<?=$this->listClaims?>
+							<form enctype="multipart/form-data"  action='/default/index/index/#tabs1' method=POST  data-ajax="false">
+						
+							<div class="uk-form-row">
+								<div class="uk-grid">
+									<div class="uk-width-medium-2-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Claim Date.</label>
+											<input type="text" name="ClaimDate" class="md-input ClaimDate" value=""><span class="md-input-bar"></span></div>
+									</div>
+									<div class="uk-width-medium-4-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Description</label>
+											<input type="text" name="ClaimDescription" id="ClaimDescription" class="md-input"><span class="md-input-bar"></span></div>
+										
+									</div>
+									
+								   
+								</div>
+							</div>
+							<div class="uk-form-row">
+								<div class="uk-grid">
+								
+									<div class="uk-width-medium-1-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Currency</label>
+											<input type="text" id="ClaimCurrency" name="ClaimCurrency" class="md-input ClaimCurrency" value=""><span class="md-input-bar"></span>
+											<input type="hidden" id="ClaimCurrencyID" name="ClaimCurrencyID" value="">
+											<span class="md-input-bar"></span></div>
+									</div>
+									<div class="uk-width-medium-1-6">
+											<div class="md-input-wrapper md-input-wrapper-success"><label>Rate</label>
+												<input type="text" id="ClaimCurrencyExchangeRate" name="ClaimCurrencyExchangeRate" class="md-input" value="">
+												<span class="md-input-bar"></span></div>
+										</div>
+									<div class="uk-width-medium-2-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Amount</label>
+											<input type="text" name="ClaimAmount" id="ClaimAmount" class="md-input" value=""><span class="md-input-bar"></span></div>
+									</div>
+									<div class="uk-width-medium-1-6">
+										<div class="md-input-wrapper md-input-wrapper-success"><label>Claim By</label>
+												<select class="md-input" name='ClaimUserID' id='ClaimUserID'>
+													<option value=''>
+													<?=$this->optionClaimUserID?>
+												</select>
+												<span class="md-input-bar"></span>
+											</div>
+											
+									</div>
+									<div class="uk-width-medium-1-6">
+										<input type=submit name='CreateClaims' id='CreateClaims' value='Add'>
+										<input type="hidden" id="JobID" name="JobID" value="<?=$this->edit_job?>">
+									</div>
+								
+								
+								</div>
+							</div>
+							
+							
+							</form>
+							
+							</div>
+						</div>	
+					
+						
+					
+				</div>
+			</div>
+			<? } ?>
+		<? } ?>
+	
+	</div>
+
+	<div>
+	<!-- ---------------------------------------------------------- -->
+	<!-- ---------------------------------------------------------- -->
+	<!-- ---------------------------------------------------------- -->
+	<!-- ------------------- SEARCH FROM -------------------------- -->
+	<!-- ---------------------------------------------------------- -->
+	<!-- ---------------------------------------------------------- -->
+	<!-- ---------------------------------------------------------- -->
+	
+	
+	<div class="md-card">
+			<div class="md-card-content">
+			<form action='' method=POST ID='idSearchForm' data-ajax="false">
+				<div class="uk-grid" data-uk-grid-margin="">
+					<div class="uk-width-medium-1-2 uk-row-first">
+						
+						<div class="md-card">
+							<div class="md-card-toolbar">
+								 <h3 class="md-card-toolbar-heading-text">
+									Search Job
+								</h3>
+							</div>
+							<div class="md-card-content">
+								<div class="uk-form-row">
+									<div class="uk-grid">
+										<div class="uk-width-medium-1-6">
+											<div class="md-input-wrapper md-input-wrapper-success"><label>Job No.</label>
+												<input type="text" id="SearchJobNo" name="SearchJobNo" class="md-input" value="<?=$this->SearchJobNo?>"><span class="md-input-bar"></span></div>
+											
+										</div>
+										<div class="uk-width-medium-3-6">
+											<div class="md-input-wrapper md-input-wrapper-success"><label>Customer</label>
+												<input type="text" id="SearchCustomerName" name="SearchCustomerName" class="md-input" value="<?=$this->SearchCustomerName?>"><span class="md-input-bar"></span>
+											</div>
+										</div>
+										<div class="uk-width-medium-2-6">
+											<div class="md-input-wrapper md-input-wrapper-success"><label>End User</label>
+												<input type="text" id="SearchPrincipleName" name="SearchPrincipleName" class="md-input" value="<?=$this->SearchPrincipleName?>"><span class="md-input-bar"></span>
+											</div>
+										</div>
+										
+									</div>
+								</div>
+								
+								<div class="uk-form-row">
+									<div class="uk-grid">
+										
+										<div class="uk-width-medium-1-3">
+											<div class="md-input-wrapper md-input-wrapper-success"><label>Type*</label>
+												<select class="md-input" name='SearchJobType' id='SearchJobType'>
+												<option value=''>
+												<?=$this->optionSearchJobType?>
+											</select>
+											</div>
+										</div>
+										<div class="uk-width-medium-2-3">
+											<div class="md-input-wrapper md-input-filled"><label>Customer PO Received Date</label>
+												<div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+													<div class="uk-grid">
+														<div class="uk-width-medium-1-2">
+															<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> From </label>
+																<input type="text" id="SearchCustomerPOReceivedDateFrom" name="SearchCustomerPOReceivedDateFrom" class="md-input" value="<?=$this->SearchCustomerPOReceivedDateFrom?>">
+															</div>
+														</div>
+														<div class="uk-width-medium-1-2">
+															<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
+																<input type="text" id="SearchCustomerPOReceivedDateTo" name="SearchCustomerPOReceivedDateTo" class="md-input" value="<?=$this->SearchCustomerPOReceivedDateTo?>">
+															</div>
+														</div>
+													</div>	
+												</div><span class="md-input-bar"></span>
+											</div>
+										</div>
+									   
+									</div>
+								</div>								
+								
+								<div class="uk-form-row">
+									<div class="uk-grid">
+										<div class="uk-width-medium-1-1">
+											<div class="md-input-wrapper md-input-wrapper-success"><label>Items</label>
+												<input type="text" id="SearchItems" name="SearchItems" class="md-input" value="<?=$this->SearchItems?>"><span class="md-input-bar"></span></div>
+											
+										</div>
+									</div>
+								</div>
+								
+								<div class="uk-form-row">
+									<div class="uk-grid">
+										<div class="uk-width-medium-1-3">
+											<input type=checkbox name='SearchCompleted' value='1' class="md-input"  <?=($this->SearchCompleted ? "checked" : "")?>> Completed
+										</div>
+										<div class="uk-width-medium-1-3">
+											<input type=checkbox name='SearchClosed' value='1' class="md-input"  <?=($this->SearchClosed ? "checked" : "")?>> Closed
+										</div>
+										<div class="uk-width-medium-1-3">
+											<input type=checkbox name='SearchCancelled' value='1' class="md-input"  <?=($this->SearchCancelled ? "checked" : "")?>> Cancelled
+										</div>
+										
+									</div>
+								</div>
+								
+								<div class="uk-form-row">
+									<div class="uk-grid">
+										<div class="uk-width-medium-1-1">
+											<input type="submit" id="SearchJob" name="SearchJob" value="Search Job">
+											<input type="button" id="Cancel" name="Cancel" value="Cancel" onclick='document.location="/?<?=time()?>#tabs2"'>
+										</div>
+										
+									</div>
+								</div>		
+							</div>
+						</div>
+						
+						<? include "index-search-sales.phtml" ?>
+						
+					</div>
+					<div class="uk-width-medium-1-2">
+						<? include "index-search-purchase.phtml" ?>
+					</div>
+				
+		</div>
+		</form>
+
+	
+			
+		</div>		
+	</form>
+	</div>
+</div>
+</div>
+
+<BR><BR>	
+<div id="tabs2">
+<ul class="resp-tabs-list hor_2">
+	<li>Job List</li>
+	<li>Sales List</li>
+	<li>Purchase List</li>
+	<li>Margin</li>
+</ul>
+<div class='resp-tabs-container hor_2' style='width: auto; max-width: auto;'>
+	<div>
+		<?=$this->content_jobs?>
+	</div>
+	<div>
+	<?=$this->content_jobssales?>
+	</div>
+	<div>
+	<?=$this->content_jobspurchase?>
+	</div>
+	<div>
+		<?=$this->content_jobsmargin?>
+	</div>
+</div>
+
+<BR><BR><BR><BR><BR>
+
+
+
