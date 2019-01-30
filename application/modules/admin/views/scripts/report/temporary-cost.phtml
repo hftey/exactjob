@@ -1,0 +1,215 @@
+
+<script language='Javascript'>
+
+
+    var autocomp_opt={
+        source: function (request, response) {
+            $.get("/default/index/ajax-get-customer", {
+                query: request.term
+            }, function (data) {
+                console.log(data);
+                var responseData = $.parseJSON(data);
+                response(responseData);
+            });
+        },
+        minLength: 0
+    }
+
+
+    $(document).ready(function() {
+
+        $("#SearchCustomerName").autocomplete(autocomp_opt);
+        $( "#SearchCustomerPOReceivedDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+        $( "#SearchCustomerPOReceivedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+
+
+        $(document).on("click", ".clsDateImg", function(event, proceed){
+		var StartDate = $(this).attr("StartDate");
+		var EndDate = $(this).attr("EndDate");
+		var ID = $(this).attr("ID");
+		$('.clsDateRange'+ID).daterangepicker({ locale: {format: 'YYYY-MM-DD'},startDate: StartDate, endDate: EndDate, highlightDates: Array(<?=$this->jsArrPH?>) });
+		$('.clsDateRange'+ID).trigger("click");
+		$('.applyBtn').hide();
+		$('.cancelBtn').hide();
+		$('.daterangepicker').css('left', "auto");
+		$('.daterangepicker').css('right', "10%");
+		$('.daterangepicker').css('top', "40%");
+		$('.daterangepicker_input').hide();
+		$('.prev.available').css("visibility", "hidden");
+		$('.next.available').css("visibility", "hidden");
+
+
+	})
+
+	
+	$(".clsLoadDetail").click(function() {
+		var MonthPeriod = $(this).attr("MonthPeriod");
+		var YearPeriod = $(this).attr("YearPeriod");
+		$("#idDetails").html("<img src='/images/icons/IconIndicator.gif'>");
+		$.get("/admin/report/purchase-objective-details", {MonthPeriod: MonthPeriod, YearPeriod: YearPeriod}, function (data) {
+			$("#idDetails").html(data);
+		});
+		
+	})
+
+        $(".report_table").last().append("<TR><TD class='report_header' colspan='7' style='text-align: right'><B>Total:</B></TD>"+
+            "<TD class='report_header'  style='text-align: right'><?=$this->totalSellingPrice?></TD><TD class='report_header'  style='text-align: right'><?=$this->totalCost?></TD>"+
+            "<TD class='report_header' style='text-align: right'><?=$this->totalProjectMargin?></TD>"+
+            "<TD class='report_header'  style='text-align: right'><?=$this->totalCurrentMargin?></TD><TD class='report_header'></TD></TR>");
+        //$(".report_footer").html("asdasdasd");
+
+        console.log($(".report_footer"));
+
+
+
+    });
+</script>
+<div class="md-card">
+	<div class="md-card-content">
+		<div class="uk-grid" data-uk-grid-margin="">
+			<div class="uk-width-medium-1-2 uk-row-first">
+                <form enctype="multipart/form-data"  action='/admin/report/sales/' method=POST  data-ajax="false">
+
+                    <div class="md-card">
+                        <div class="md-card-toolbar">
+                            <h3 class="md-card-toolbar-heading-text">
+                                Temporary Cost Report
+                            </h3>
+                        </div>
+                        <div class="md-card-content">
+                            <div class="uk-form-row">
+                                <div class="uk-grid">
+                                    <div class="uk-width-medium-1-5">
+                                        <div class="md-input-wrapper md-input-wrapper-success"><label>Job No.</label>
+                                            <input type="text" id="SearchJobNo" name="SearchJobNo" class="md-input"  value="<?=$this->SearchJobNo?>" autocomplete="off"><span class="md-input-bar"></span></div>
+
+                                    </div>
+
+                                    <div class="uk-width-medium-1-5">
+                                        <div class="md-input-wrapper md-input-wrapper-success"><label>Type</label>
+                                            <select class="md-input" name='SearchJobType' id='SearchJobType'>
+                                                <option value=''>
+                                                    <?=$this->optionJobType?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="uk-width-medium-3-5">
+                                        <div class="md-input-wrapper md-input-wrapper-success"><label>Customer</label>
+                                            <input type="text" id="SearchCustomerName" name="SearchCustomerName" class="md-input" value="<?=$this->SearchCustomerName?>"><span class="md-input-bar"></span>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+
+
+                            <div class="uk-form-row">
+                                <div class="uk-width-medium-1-1">
+                                    <div class="md-input-wrapper md-input-filled"><label>Customer PO Received Date</label>
+                                        <div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+                                            <div class="uk-grid">
+                                                <div class="uk-width-medium-1-2">
+                                                    <div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> From </label>
+                                                        <input type="text" id="SearchCustomerPOReceivedDateFrom" name="SearchCustomerPOReceivedDateFrom" class="md-input" value="<?=$this->SearchCustomerPOReceivedDateFrom?>">
+                                                    </div>
+                                                </div>
+                                                <div class="uk-width-medium-1-2">
+                                                    <div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
+                                                        <input type="text" id="SearchCustomerPOReceivedDateTo" name="SearchCustomerPOReceivedDateTo" class="md-input" value="<?=$this->SearchCustomerPOReceivedDateTo?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><span class="md-input-bar"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="uk-form-row">
+                                <div class="uk-grid">
+                                    <div class="uk-width-medium-1-2">
+                                        <div class="md-input-wrapper md-input-wrapper-success"><label>Items</label>
+                                            <input type="text" id="SearchItems" name="SearchItems" class="md-input" value="<?=$this->SearchItems?>"><span class="md-input-bar"></span></div>
+
+                                    </div>
+                                    <div class="uk-width-medium-1-2">
+                                        <div class="md-input-wrapper md-input-wrapper-success"><label>Sales Person</label>
+                                            <select class="md-input" name='SearchSalesPersonID' id='SearchSalesPersonID'>
+                                                <option value=''>
+                                                    <?=$this->optionSearchSalesPersonID?>
+                                            </select>
+                                            <span class="md-input-bar"></span></div>
+
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+
+
+
+                            <div class="uk-form-row">
+                                <div class="uk-grid">
+                                    <div class="uk-width-medium-1-3">
+                                        <input type=checkbox name='SearchCompleted' value='1' class="md-input"  <?=($this->SearchCompleted ? "checked" : "")?>> Completed
+                                    </div>
+                                    <div class="uk-width-medium-1-3">
+                                        <input type=checkbox name='SearchClosed' value='1' class="md-input"  <?=($this->SearchClosed ? "checked" : "")?>> Closed
+                                    </div>
+                                    <div class="uk-width-medium-1-3">
+                                        <input type=checkbox name='SearchCancelled' value='1' class="md-input"  <?=($this->SearchCancelled ? "checked" : "")?>> Cancelled
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+
+
+
+                            <? if (!$this->edit_job) { ?>
+                                <? if ($this->userInfo->ACLRole == "AdminSystem" || $this->userInfo->ACLRole == "Admin") { ?>
+                                    <div class="uk-form-row">
+                                        <div class="uk-grid">
+                                            <div class="uk-width-medium-1-1">
+                                                <input type="submit" class="md-input" name='Search' id='Search' value="Search">
+                                                <input type="button" class="md-input" name='Clear' id='Clear' value="Clear" onclick="document.location='/admin/report/sales/'"><span class="md-input-bar"></span><BR>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                <? } ?>
+                            <? } ?>
+
+                        </div>
+                    </div>
+                </form>
+			</div>
+            <div class="uk-width-medium-1-1">
+                <BR>
+            </div>
+
+			<div class="uk-width-medium-1-1">
+				<div class="md-card">
+					<div class="md-card-toolbar">
+						 <h3 class="md-card-toolbar-heading-text">
+							Sales Report
+						</h3>
+						
+					</div>
+					<div class="md-card-content">
+
+                        <?= $this->content_jobsmargin?>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+				
+
+
+
