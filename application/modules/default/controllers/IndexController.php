@@ -2,7 +2,7 @@
 
 class IndexController extends Venz_Zend_Controller_Action {
 
-	private $_PathJobDoc = 'D:/Doc/ExactJobDoc';
+	private $_PathJobDoc = '/var/www/html/raymond/exact/exactjob/Doc';
 
 	public function init()
 	{

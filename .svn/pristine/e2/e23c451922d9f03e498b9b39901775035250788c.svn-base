@@ -1,0 +1,59 @@
+	<table><TR><TD valign=top><img style='height: 30px' src='/images/WKC-Logo2.png'></TD>
+	<TD valign=top><B>Delivery Process System (Self Help)</B>
+	</TD></TR>
+	<TR><TD colspan=2>
+		<table>
+		<HR>
+		<TR><TD valign=top width='60px'>
+			<img src='/images/Features.jpg'>
+		</TD>
+		<TD valign=top>
+			<ul class='help'>
+				<li>This page shows all the deliveries entered into the system.</li>
+				<li>Delivery can be added as well into the system in this page.</li>
+				<li>Create an instance of a delivery first before adding invoices into the delivery.</li>
+				<li>Delivery instance can be created by first entering the driver and the delivery date information.</li>
+				<li>Once the delivery instance is created, invoices can be add or removed from the delivery.</li>
+				<li>Only the invoices that had not been marked as delivery will be available for selection.</li>
+				<li>Administrator can also search for a particular delivery details by clicking on the Search tab.</li>
+				
+			</ul>
+		</TD></TR>
+		</table>
+	
+	</TD></TR>
+	<TR><TD colspan=2><HR>
+	<table>
+	<TR><TD valign=top width='60px'>
+		<img src='/images/QuickTips.jpg'>
+	</TD>
+	<TD valign=top>
+		<ul class='help'>
+			<li>By removing the delivery instance, all the invoices that ties to the delivery will be set to un-delivered and will be available for selection.</li>
+			</ul>
+	</TD></TR></table>
+	
+	</TD></TR>
+	<!--
+	<TR><TD colspan=2><HR>
+	<table>
+	<TR><TD valign=top width='60px'>
+		<img src='/images/Questions.jpg'>
+	</TD>
+	<TD valign=top>
+		<B>Got question in regards to this page?</B><BR>
+		Drop us a line here:<BR>
+		<form action='/admin/system/message' method=POST>
+		<textarea cols=45 rows=4 name='message'></textarea><BR>
+		<input type=submit name='SubmitMessage' value='Submit'>
+		</form>
+	</TD></TR></table>
+	
+	
+	</TD></TR>
+	-->
+	
+	
+	</table>
+	
+	<BR><BR><BR>
