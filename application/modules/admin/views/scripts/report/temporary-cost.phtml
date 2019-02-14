@@ -1,0 +1,91 @@
+
+<script language='Javascript'>
+
+
+    var autocomp_opt={
+        source: function (request, response) {
+            $.get("/default/index/ajax-get-customer", {
+                query: request.term
+            }, function (data) {
+                console.log(data);
+                var responseData = $.parseJSON(data);
+                response(responseData);
+            });
+        },
+        minLength: 0
+    }
+
+
+    $(document).ready(function() {
+
+        $("#SearchCustomerName").autocomplete(autocomp_opt);
+        $( "#SearchCustomerPOReceivedDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+        $( "#SearchCustomerPOReceivedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+
+
+        $(document).on("click", ".clsDateImg", function(event, proceed){
+		var StartDate = $(this).attr("StartDate");
+		var EndDate = $(this).attr("EndDate");
+		var ID = $(this).attr("ID");
+		$('.clsDateRange'+ID).daterangepicker({ locale: {format: 'YYYY-MM-DD'},startDate: StartDate, endDate: EndDate, highlightDates: Array(<?=$this->jsArrPH?>) });
+		$('.clsDateRange'+ID).trigger("click");
+		$('.applyBtn').hide();
+		$('.cancelBtn').hide();
+		$('.daterangepicker').css('left', "auto");
+		$('.daterangepicker').css('right', "10%");
+		$('.daterangepicker').css('top', "40%");
+		$('.daterangepicker_input').hide();
+		$('.prev.available').css("visibility", "hidden");
+		$('.next.available').css("visibility", "hidden");
+
+
+	})
+
+	
+	$(".clsLoadDetail").click(function() {
+		var MonthPeriod = $(this).attr("MonthPeriod");
+		var YearPeriod = $(this).attr("YearPeriod");
+		$("#idDetails").html("<img src='/images/icons/IconIndicator.gif'>");
+		$.get("/admin/report/purchase-objective-details", {MonthPeriod: MonthPeriod, YearPeriod: YearPeriod}, function (data) {
+			$("#idDetails").html(data);
+		});
+		
+	})
+
+        $(".report_table").last().append("<TR><TD class='report_header' colspan='7' style='text-align: right'><B>Total:</B></TD>"+
+            "<TD class='report_header'  style='text-align: right'><?=$this->totalSellingPrice?></TD><TD class='report_header'  style='text-align: right'><?=$this->totalCost?></TD>"+
+            "<TD class='report_header' style='text-align: right'><?=$this->totalProjectMargin?></TD>"+
+            "<TD class='report_header'  style='text-align: right'><?=$this->totalCurrentMargin?></TD><TD class='report_header'></TD></TR>");
+        //$(".report_footer").html("asdasdasd");
+
+        console.log($(".report_footer"));
+
+
+
+    });
+</script>
+<div class="md-card">
+	<div class="md-card-content">
+		<div class="uk-grid" data-uk-grid-margin="">
+			<div class="uk-width-medium-1-1">
+				<div class="md-card">
+					<div class="md-card-toolbar">
+						 <h3 class="md-card-toolbar-heading-text">
+							Sales Report
+						</h3>
+						
+					</div>
+					<div class="md-card-content">
+
+                        <?= $this->content_tempcost?>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+				
+
+
+

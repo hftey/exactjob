@@ -1550,8 +1550,338 @@ END;
 		$this->view->tableList .= "</table>";
 		
 		
-    }	
-	
+    }
+
+
+    public function temporaryCostAction(){
+
+        $Request = $this->getRequest();
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $sysHelper = new Venz_App_System_Helper();
+        $dispFormat = new Venz_App_Display_Format();
+        $sysNotification = new Venz_App_System_Notification();
+        $libDb = new Venz_App_Db_Table();
+
+
+
+        $sortbyJob = $Request->getParam('sortbyJob');
+        if (strlen($sortbyJob) == 0) $sortbyJob = 'Job.ID';
+
+        $ascdescJob = $Request->getParam('ascdescJob');
+        if (strlen($ascdescJob) == 0) $ascdescJob = 'desc';
+
+        $showPageJob = $Request->getParam('PagerJobpagenum');
+        if (!$showPageJob) $showPageJob = 1;
+
+        $pagerNextJob = $Request->getParam('PagerJob_next_page');
+        if (strlen($pagerNextJob) > 0) $showPageJob++;
+
+        $pagerPrevJob = $Request->getParam('PagerJob_prev_page');
+        if (strlen($pagerPrevJob) > 0) $showPageJob--;
+
+        $recordsPerPageJob = 30 ;
+
+        $sqlSearch = "";
+        $SearchJobNo = $Request->getParam('SearchJobNo');
+        $SearchJobType = $Request->getParam('SearchJobType');
+        $SearchCustomerName = $Request->getParam('SearchCustomerName');
+        $SearchCustomerPOReceivedDateFrom = $Request->getParam('SearchCustomerPOReceivedDateFrom');
+        $SearchCustomerPOReceivedDateTo = $Request->getParam('SearchCustomerPOReceivedDateTo');
+        $SearchItems = $Request->getParam('SearchItems');
+        $SearchSalesPersonID = $Request->getParam('SearchSalesPersonID');
+        $SearchCompleted = $Request->getParam('SearchCompleted');
+        $SearchClosed = $Request->getParam('SearchClosed');
+        $SearchCancelled = $Request->getParam('SearchCancelled');
+
+
+
+
+
+        $sqlSearch .= $SearchJobNo ? " and Job.JobNo LIKE '%".$SearchJobNo."%'" : "";
+        $sqlSearch .= $SearchJobType ? " and Job.JobType LIKE '%".$SearchJobType."%'" : "";
+        $sqlSearch .= $SearchCustomerName ? " and Job.CustomerName LIKE \"%".trim($SearchCustomerName)."%\"" : "";
+        $sqlSearch .= $SearchCustomerPOReceivedDateFrom ? " and Job.CustomerPOReceivedDate >= '".$dispFormat->format_date_simple_to_db($SearchCustomerPOReceivedDateFrom)."'" : "";
+        $sqlSearch .= $SearchCustomerPOReceivedDateTo ? " and Job.CustomerPOReceivedDate <= '".$dispFormat->format_date_simple_to_db($SearchCustomerPOReceivedDateTo)."'" : "";
+        $sqlSearch .= $SearchItems ? " and Job.Items LIKE '%".$SearchItems."%'" : "";
+        $sqlSearch .= $SearchSalesPersonID ? " and JobSalesData.SalesPersonGroupID IN (".$SearchSalesPersonID.")" : "";
+        $sqlSearch .= $SearchCompleted ? " and Job.Completed = ".$SearchCompleted : "";
+        $sqlSearch .= $SearchClosed ? " and Job.Closed = ".$SearchClosed : "";
+        $sqlSearch .= $SearchCancelled ? " and Job.Cancelled = ".$SearchCancelled : "";
+
+
+
+        $this->view->SearchJobNo = $SearchJobNo ? $SearchJobNo : "";
+        $this->view->SearchJobType = $SearchJobType ? $SearchJobType : "";
+        $this->view->SearchCustomerName = $SearchCustomerName ? $SearchCustomerName : "";
+        $this->view->SearchCustomerPOReceivedDateFrom = $SearchCustomerPOReceivedDateFrom ? $SearchCustomerPOReceivedDateFrom : "";
+        $this->view->SearchCustomerPOReceivedDateTo = $SearchCustomerPOReceivedDateTo ? $SearchCustomerPOReceivedDateTo : "";
+        $this->view->SearchItems = $SearchItems ? $SearchItems : "";
+        $this->view->SearchSalesPersonID = $SearchSalesPersonID ? $SearchSalesPersonID : "";
+        $this->view->SearchCompleted = $SearchCompleted ? $SearchCompleted : "";
+        $this->view->SearchClosed = $SearchClosed ? $SearchClosed : "";
+        $this->view->SearchCancelled = $SearchCancelled ? $SearchCancelled : "";
+
+
+        $strHiddenSearch = "<input type=hidden name='Search' value='true'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchJobNo' value='".$SearchJobNo."'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchJobType' value='".$SearchJobType."'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchCustomerName' value='".$SearchCustomerName."'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchCustomerPOReceivedDateFrom' value='".$SearchCustomerPOReceivedDateFrom."'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchCustomerPOReceivedDateTo' value='".$SearchCustomerPOReceivedDateTo."'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchItems' value='".$SearchItems."'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchSalesPersonID' value='".$SearchSalesPersonID."'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchCompleted' value='".$SearchCompleted."'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchClosed' value='".$SearchClosed."'>";
+        $strHiddenSearch .= "<input type=hidden name='SearchCancelled' value='".$SearchCancelled."'>";
+
+        $this->view->optionJobType = $libDb->getSystemOptions("arrJobType", $this->view->SearchJobType);
+        $this->view->optionSearchSalesPersonID = $libDb->getTableOptions("ACLUsers", "Name", "ID", $this->view->SearchSalesPersonID, "Name");
+
+        $sysHelper->setFetchMode(Zend_Db::FETCH_NUM);
+        $arrJobs = $sysHelper->getTempCost($sortbyJob, $ascdescJob, $recordsPerPageJob, $showPageJob,  $sqlSearch);
+        $dataJobs = $arrJobs[1];
+        $exportSql = $arrJobs[2];
+
+        $sessionJobs = new Zend_Session_Namespace('sessionJobs');
+        $sessionJobs->numCounter = $recordsPerPageJob * ($showPageJob-1);
+        function format_counterJob($colnum, $rowdata)
+        {
+            $sessionJobs = new Zend_Session_Namespace('sessionJobs');
+            $sessionJobs->numCounter++;
+            return $sessionJobs->numCounter;
+        }
+
+
+        function format_jobno($colnum, $rowdata, $export)
+        {
+            $completedDate = "";
+            if ($rowdata[28])
+                $completedDate = " on " .Date("d-m-Y", strtotime($rowdata[28]));
+
+            if (!$export)
+                $status = ($rowdata[22] ? "<img title='Job Completed ".$completedDate."' style='width: 15px' src='/images/icons/IconColorGreen.png'>" : "<img title='Job Pending'  style='width: 15px' src='/images/icons/IconColorOrange.png'>");
+            else
+                $status = ($rowdata[22] ? "(Completed)<BR>" : "(Pending)<BR>");
+            return $status.$rowdata[1] . "<BR>".(($rowdata[20] == "P") ? "Project" : "Trade");
+        }
+
+
+        function format_jobstatus($colnum, $rowdata, $export)
+        {
+            if (!$export){
+                $status = "";
+                if ($rowdata[5])
+                {
+                    $status .= "<img style='width: 15px' src='/images/icons/IconColorGreen.png'> Completed<BR>";
+                    if ($rowdata[6]){
+                        $status .= Date("d-m-Y", strtotime($rowdata[6]))."<BR>";
+                    }
+                }
+                if ($rowdata[19]){
+                    $status .= "<img style='width: 15px' src='/images/icons/IconColorDarkGreen.png'> Closed<BR>";
+                    if ($rowdata[20]){
+                        $status .= Date("d-m-Y", strtotime($rowdata[20]))."<BR>";
+                    }
+                }
+                if ($rowdata[14])
+                    $status = "<img style='width: 15px' src='/images/icons/IconColorGray.png'> Cancelled<BR>";
+
+                if (!$rowdata[19] && !$rowdata[5] && !$rowdata[14])
+                {
+                    $status .= "<img title='Job Pending'  style='width: 15px' src='/images/icons/IconColorOrange.png'> On Going<BR>";
+                }
+
+            }
+            else
+            {
+                $status = "";
+                if ($rowdata[5])
+                {
+                    $status .= "Completed";
+                    if ($rowdata[6]){
+                        $status .= " (" . Date("d-m-Y", strtotime($rowdata[6])).")<BR>";
+                    }else
+                        $status .= "<BR>";
+
+                }
+                if ($rowdata[19]){
+                    $status .= "Closed";
+                    if ($rowdata[20]){
+                        $status .= " (" . Date("d-m-Y", strtotime($rowdata[20])).")<BR>";
+                    }else
+                        $status .= "<BR>";
+
+                }
+                if ($rowdata[14])
+                    $status = "Cancelled<BR>";
+
+                if (!$rowdata[19] && !$rowdata[5] && !$rowdata[14])
+                {
+                    $status .= "On Going<BR>";
+                }
+
+            }
+
+            return $status;
+        }
+
+        function format_action($colnum, $rowdata, $export)
+        {
+            if ($export)
+                return "";
+            $systemSetting = new Zend_Session_Namespace('systemSetting');
+            if ($systemSetting->userInfo->ACLRole == "AdminSystem" || $systemSetting->userInfo->ACLRole == "Admin")
+                $strReturn = "<a href='/default/index/index/edit_job/".$rowdata[0]."#tabs1'><img border=0 style='max-width: 20px;' src='/images/icons/IconEdit.gif'></a>";
+            else
+                $strReturn = "<a href='/default/index/index/edit_job/".$rowdata[0]."#tabs1'><img border=0 style='max-width: 20px;' src='/images/icons/IconView3.png'></a>";
+
+            return $strReturn;
+
+        }
+
+        function format_customer($colnum, $rowdata)
+        {
+            $strPrinciple = "";
+            if ($rowdata[15])
+                $strPrinciple = "<BR>(".$rowdata[15].")";
+
+            return $rowdata[2].$strPrinciple;
+
+        }
+
+
+        function format_item($colnum, $rowdata){
+            return $rowdata[3];
+
+        }
+
+        function format_jobtype($colnum, $rowdata)
+        {
+            $systemSetting = new Zend_Session_Namespace('systemSetting');
+            return $systemSetting->arrJobType[$rowdata[4]];
+        }
+
+
+        function format_total_duty($colnum, $rowdata, $export)
+        {
+            $dispFormat = new Venz_App_Display_Format();
+            if ($export)
+                return number_format($rowdata[8],2);
+
+            if ($rowdata[8])
+                return "<span style='color: red'>".$dispFormat->format_currency($rowdata[8])."<span>";
+            else
+                return "";
+        }
+
+        function format_received_date($colnum, $rowdata, $export)
+        {
+            $dispFormat = new Venz_App_Display_Format();
+            return $dispFormat->format_date_simple($rowdata[7]);
+        }
+
+        function format_total_freight($colnum, $rowdata, $export)
+        {
+            $dispFormat = new Venz_App_Display_Format();
+            if ($export)
+                return number_format($rowdata[9],2);
+
+            if ($rowdata[9])
+                return "<span style='color: red'>".$dispFormat->format_currency($rowdata[9])."<span>";
+            else
+                return "";
+        }
+
+
+        function format_total_purchase($colnum, $rowdata, $export)
+        {
+            $dispFormat = new Venz_App_Display_Format();
+            if ($export)
+                return number_format($rowdata[10],2);
+
+            if ($rowdata[10])
+                return "<span style='color: red'>".$dispFormat->format_currency($rowdata[10])."<span>";
+            else
+                return "";
+        }
+
+        function format_total_cost($colnum, $rowdata, $export)
+        {
+            $dispFormat = new Venz_App_Display_Format();
+            if ($export)
+                return number_format($rowdata[11],2);
+
+            if ($rowdata[11])
+                return "<span style='color: red'>".$dispFormat->format_currency($rowdata[11])."<span>";
+            else
+                return "";
+        }
+
+        function format_total_sales($colnum, $rowdata, $export)
+        {
+            $dispFormat = new Venz_App_Display_Format();
+            if ($export)
+                return number_format($rowdata[12],2);
+
+            if ($rowdata[12])
+                return $dispFormat->format_currency($rowdata[12]);
+            else
+                return "";
+        }
+
+        $arrHeaderMargin = array('','','Job No', 'Customer', 'Item', 'Job Type','Latest<BR>Received Date','Total<BR>Duty Tax', 'Total<BR>Freight Cost', 'Total<BR>Purchase Price', 'Total Cost', 'Total<BR>Sales Price');
+        $arrFormatMargin = array('{format_counterJob}', '{format_action}', '%1%', '{format_customer}', '{format_item}', '{format_jobtype}', '{format_received_date}', '{format_total_duty}', '{format_total_freight}',  '{format_total_purchase}',  '{format_total_cost}', '{format_total_sales}');
+        $arrSortMargin = array('','','Job.ID', 'Job.CustomerName', 'Job.Items', 'Job.JobType', 'JobPurchase.LatestReceivedDate', 'JobSales.TotalSalesPriceRM','TotalCostRM','ProjectMarginRM','MarginRM', '');
+        $arrColParamMargin = array('width=20px','width=50px','width=50px','', '', 'width=100px','width=100px','width=100px', 'nowrap width=120px','nowrap width=120px','width=120px','width=120px', 'width=120px');
+        $aligndataMargin = 'CCCLLCCRRRRR'; $tablewidthMargin = '1650px';
+
+        $exportReportJobMargin = new Venz_App_Report_Excel(array('exportsql'=> $exportSql,  'export_name'=>'export_excel_jobmargin',  'hiddenparam'=>$strHiddenSearch));
+
+        $displayTableMargin= new Venz_App_Display_Table(
+            array (
+                'data' => $dataJobs,
+                'headings' => $arrHeaderMargin,
+                'format' 		=> $arrFormatMargin,
+                'sort_column' 	=> $arrSortMargin,
+                'alllen' 		=> $arrJobs[0],
+                'title'		=> 'Job with item delivered which havent shipped out: '.$arrJobs[0],
+                'aligndata' 	=> $aligndataMargin,
+                'pagelen' 		=> $recordsPerPageJob,
+                'numcols' 		=> sizeof($arrHeaderMargin),
+                'colparam' 	=> $arrColParamMargin,
+                'tablewidth' 	=> $tablewidthMargin,
+                'formname'   	=> 'dform',
+                'sortby_name'   => 'sortbyJob',
+                'ascdesc_name'  => 'ascdescJob',
+                'prefix'        => 'PagerJob',
+                'page'          => 'Page ',
+                'sortby' 		=> $sortbyJob,
+                'ascdesc' 		=> $ascdescJob,
+                'hiddenparam' 	=> $strHiddenSearch,
+                'export_excel' => $exportReportJobMargin->display_icon()
+            )
+        );
+
+        $this->view->content_tempcost = $displayTableMargin->render();
+        $sessionJobs->numCounter = $recordsPerPage * ($showPage-1);
+
+
+
+        $export_excel_jobmargin_x = $Request->getParam('export_excel_jobmargin_x');
+        if ($export_excel_jobmargin_x)
+        {
+
+            $db = Zend_Db_Table::getDefaultAdapter();
+            $exportsql = $Request->getParam('exportsql');
+            $exportReportJob = new Venz_App_Report_Excel(array('exportsql'=> base64_decode($exportsql), 'db'=>$db, 'exit'=>'No', 'hiddenparam' 	=> $strHiddenSearch, 'headings'=>$arrHeaderMargin, 'format'=>$arrFormatMargin));
+            $exportReportJob->render();
+            echo ",,,,,,,".$totalSellingPrice.",".$totalCost.",".$totalProjectMargin.",".$totalCurrentMargin.",\n";
+            exit();
+
+        }
+    }
+
+
     public function indexAction()
     {
 		exit();

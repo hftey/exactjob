@@ -242,15 +242,40 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
 		
 		
 		return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql));
-    }	
-	
-	
+    }
 
-	 
-  
+
+
+    public function getTempCost($orderby = null, $ascdesc = null, $recordsPerPage = null, $showPage = null, $searchString = null)
+    {
+        if ($showPage	< 0 || $showPage == "") $showPage = 1;
+
+        $sql_orderby =  is_null($orderby) ? "ID" : $orderby;
+        $sql_orderby .= strlen($sql_orderby) == 0 ? "" : " " . $ascdesc ;
+        $count = $showPage -1;
+
+        $sql_limit = isset($recordsPerPage) ? " limit " . ($count * $recordsPerPage) . ", " . $recordsPerPage : "";
+        $sqlAll = "SELECT Job.ID, Job.JobNo, Job.CustomerName, Job.Items, Job.JobType, Job.Completed, Job.CompletedDate, ".
+            /*7*/"JobPurchase.LatestReceivedDate, JobPurchase.TotalDutyTax, JobPurchase.TotalFreightCost, JobPurchase.TotalPurchasePriceRM, ".
+            /*11*/"(IF(JobPurchase.TotalDutyTax IS NULL,0,JobPurchase.TotalDutyTax)+IF(JobPurchase.TotalFreightCost IS NULL,0,JobPurchase.TotalFreightCost)+JobPurchase.TotalPurchasePriceRM) as TotalPurchase, ".
+            /*12*/"JobSales.TotalSalesPriceRM FROM Job LEFT JOIN
+            (
+                SELECT Count(*) as TotalPurchase, Job.ID as JobID, MAX(DeliveryReceivedDate) as LatestReceivedDate, Sum(DutyTax) as TotalDutyTax, Sum(FreightCost) as TotalFreightCost, Sum(JobPurchaseDelivery.PurchasePriceRM) TotalPurchasePriceRM FROM Job
+                LEFT JOIN
+                (SELECT (JobPurchase.PurchasePrice * JobPurchase.PurchasePriceExchangeRate) as PurchasePriceRM, JobPurchaseDelivery.ID, JobPurchaseDelivery.JobID, sum(DutyTax) as DutyTax,sum(FreightCost) as FreightCost, MAX(DeliveryReceivedDate) as DeliveryReceivedDate FROM JobPurchase, JobPurchaseDelivery WHERE JobPurchase.ID=JobPurchaseDelivery.JobPurchaseID AND DeliveryReceivedDate IS NOT NULL GROUP BY JobPurchaseDelivery.JobPurchaseID) as JobPurchaseDelivery
+                ON (JobPurchaseDelivery.JobID=Job.ID AND DeliveryReceivedDate IS NOT NULL)
+                WHERE JobPurchaseDelivery.ID IS NOT NULL AND (Job.JobType!='R' AND Job.JobType!='L') GROUP BY Job.ID
+            ) as JobPurchase ON Job.ID=JobPurchase.JobID LEFT JOIN
+            (
+                SELECT Count(*) as TotalSales, Job.ID as JobID, Sum(JobSales.SalesPrice * SalesPriceExchangeRate) as TotalSalesPriceRM, JobSales.SalesReadyDate FROM Job LEFT JOIN JobSales ON (JobSales.JobID=Job.ID) WHERE (Job.JobType!='R' AND Job.JobType!='L') GROUP BY Job.ID
+            ) as JobSales ON Job.ID=JobSales.JobID WHERE JobPurchase.LatestReceivedDate IS NOT NULL AND JobSales.SalesReadyDate IS NULL ";
+        if ($searchString)
+            $sqlAll .= $searchString;
+        $sql .= $sqlAll." order by $sql_orderby $sql_limit";
+
+        $sqlExport = $sqlAll." order by $sql_orderby ";
+        return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql), $sqlExport);
+    }
+ 
 }
-
-
-
-
 ?>
