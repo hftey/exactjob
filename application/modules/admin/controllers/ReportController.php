@@ -1642,6 +1642,20 @@ END;
         $dataJobs = $arrJobs[1];
         $exportSql = $arrJobs[2];
 
+        $arrJobsTotalAmount = $sysHelper->getTempCostAmount($sqlSearch);
+
+        $this->view->totalDutyTax = number_format($arrJobsTotalAmount[0], 2, ".", ",");
+        $this->view->totalFreightCost = number_format($arrJobsTotalAmount[1], 2, ".", ",");
+        $this->view->totalPurchasePriceRM = number_format($arrJobsTotalAmount[2], 2, ".", ",");
+        $this->view->totalPurchase = number_format($arrJobsTotalAmount[3], 2, ".", ",");
+        $this->view->totalSales = number_format($arrJobsTotalAmount[4], 2, ".", ",");
+        $totalDutyTax = $arrJobsTotalAmount[0];
+        $totalFreightCost = $arrJobsTotalAmount[1];
+        $totalPurchasePriceRM = $arrJobsTotalAmount[2];
+        $totalPurchase = $arrJobsTotalAmount[3];
+        $totalSales = $arrJobsTotalAmount[4];
+
+
         $sessionJobs = new Zend_Session_Namespace('sessionJobs');
         $sessionJobs->numCounter = $recordsPerPageJob * ($showPageJob-1);
         function format_counterJob($colnum, $rowdata)
@@ -1875,7 +1889,7 @@ END;
             $exportsql = $Request->getParam('exportsql');
             $exportReportJob = new Venz_App_Report_Excel(array('exportsql'=> base64_decode($exportsql), 'db'=>$db, 'exit'=>'No', 'hiddenparam' 	=> $strHiddenSearch, 'headings'=>$arrHeaderMargin, 'format'=>$arrFormatMargin));
             $exportReportJob->render();
-            echo ",,,,,,,".$totalSellingPrice.",".$totalCost.",".$totalProjectMargin.",".$totalCurrentMargin.",\n";
+            echo ",,,,,,,".$totalDutyTax.",".$totalFreightCost.",".$totalPurchasePriceRM.",".$totalPurchase.",".$totalSales.",\n";
             exit();
 
         }

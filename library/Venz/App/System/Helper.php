@@ -276,6 +276,32 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
         $sqlExport = $sqlAll." order by $sql_orderby ";
         return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql), $sqlExport);
     }
+
+
+    public function getTempCostAmount($searchString = null){
+
+        $sqlAll = "SELECT sum(JobPurchase.TotalDutyTax) as TotalDutyTax, sum(JobPurchase.TotalFreightCost) as TotalFreightCost, sum(JobPurchase.TotalPurchasePriceRM) as TotalPurchasePriceRM, ".
+            /*3*/"sum((IF(JobPurchase.TotalDutyTax IS NULL,0,JobPurchase.TotalDutyTax)+IF(JobPurchase.TotalFreightCost IS NULL,0,JobPurchase.TotalFreightCost)+JobPurchase.TotalPurchasePriceRM)) as TotalPurchase, ".
+            /*4*/"sum(JobSales.TotalSalesPriceRM) as TotalSalesPriceRM FROM Job LEFT JOIN
+            (
+                SELECT Count(*) as TotalPurchase, Job.ID as JobID, MAX(DeliveryReceivedDate) as LatestReceivedDate, Sum(DutyTax) as TotalDutyTax, Sum(FreightCost) as TotalFreightCost, Sum(JobPurchaseDelivery.PurchasePriceRM) TotalPurchasePriceRM FROM Job
+                LEFT JOIN
+                (SELECT (JobPurchase.PurchasePrice * JobPurchase.PurchasePriceExchangeRate) as PurchasePriceRM, JobPurchaseDelivery.ID, JobPurchaseDelivery.JobID, sum(DutyTax) as DutyTax,sum(FreightCost) as FreightCost, MAX(DeliveryReceivedDate) as DeliveryReceivedDate FROM JobPurchase, JobPurchaseDelivery WHERE JobPurchase.ID=JobPurchaseDelivery.JobPurchaseID AND DeliveryReceivedDate IS NOT NULL GROUP BY JobPurchaseDelivery.JobPurchaseID) as JobPurchaseDelivery
+                ON (JobPurchaseDelivery.JobID=Job.ID AND DeliveryReceivedDate IS NOT NULL)
+                WHERE JobPurchaseDelivery.ID IS NOT NULL AND (Job.JobType!='R' AND Job.JobType!='L') GROUP BY Job.ID
+            ) as JobPurchase ON Job.ID=JobPurchase.JobID LEFT JOIN
+            (
+                SELECT Count(*) as TotalSales, Job.ID as JobID, Sum(JobSales.SalesPrice * SalesPriceExchangeRate) as TotalSalesPriceRM, JobSales.SalesReadyDate FROM Job LEFT JOIN JobSales ON (JobSales.JobID=Job.ID) WHERE (Job.JobType!='R' AND Job.JobType!='L') GROUP BY Job.ID
+            ) as JobSales ON Job.ID=JobSales.JobID WHERE JobPurchase.LatestReceivedDate IS NOT NULL AND JobSales.SalesReadyDate IS NULL ";
+
+
+
+
+        if ($searchString)
+            $sqlAll .= $searchString;
+
+        return $this->_db->fetchRow($sqlAll);
+    }
  
 }
 ?>

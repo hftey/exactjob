@@ -53,9 +53,11 @@
 	})
 
         $(".report_table").last().append("<TR><TD class='report_header' colspan='7' style='text-align: right'><B>Total:</B></TD>"+
-            "<TD class='report_header'  style='text-align: right'><?=$this->totalSellingPrice?></TD><TD class='report_header'  style='text-align: right'><?=$this->totalCost?></TD>"+
-            "<TD class='report_header' style='text-align: right'><?=$this->totalProjectMargin?></TD>"+
-            "<TD class='report_header'  style='text-align: right'><?=$this->totalCurrentMargin?></TD><TD class='report_header'></TD></TR>");
+            "<TD class='report_header' style='text-align: right'><?=$this->totalDutyTax?></TD>"+
+            "<TD class='report_header' style='text-align: right'><?=$this->totalFreightCost?></TD>"+
+            "<TD class='report_header' style='text-align: right'><?=$this->totalPurchasePriceRM?></TD>"+
+            "<TD class='report_header' style='text-align: right'><?=$this->totalPurchase?></TD>"+
+            "<TD class='report_header' style='text-align: right'><?=$this->totalSales?></TD></TR>");
         //$(".report_footer").html("asdasdasd");
 
         console.log($(".report_footer"));
