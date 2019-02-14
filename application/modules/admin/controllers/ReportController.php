@@ -1638,19 +1638,9 @@ END;
         $this->view->optionSearchSalesPersonID = $libDb->getTableOptions("ACLUsers", "Name", "ID", $this->view->SearchSalesPersonID, "Name");
 
         $sysHelper->setFetchMode(Zend_Db::FETCH_NUM);
-        $arrJobs = $sysHelper->getJobs($sortbyJob, $ascdescJob, $recordsPerPageJob, $showPageJob,  $sqlSearch);
+        $arrJobs = $sysHelper->getTempCost($sortbyJob, $ascdescJob, $recordsPerPageJob, $showPageJob,  $sqlSearch);
         $dataJobs = $arrJobs[1];
         $exportSql = $arrJobs[2];
-
-        $arrJobsTotalAmount = $sysHelper->getJobsTotalAmount($sqlSearch);
-        $this->view->totalSellingPrice = number_format($arrJobsTotalAmount[0], 2, ".", ",");
-        $this->view->totalProjectMargin = number_format($arrJobsTotalAmount[1], 2, ".", ",");
-        $this->view->totalCurrentMargin = number_format($arrJobsTotalAmount[2], 2, ".", ",");
-        $this->view->totalCost = number_format($arrJobsTotalAmount[3], 2, ".", ",");
-        $totalSellingPrice = $arrJobsTotalAmount[0];
-        $totalProjectMargin = $arrJobsTotalAmount[1];
-        $totalCurrentMargin = $arrJobsTotalAmount[2];
-        $totalCost = $arrJobsTotalAmount[3];
 
         $sessionJobs = new Zend_Session_Namespace('sessionJobs');
         $sessionJobs->numCounter = $recordsPerPageJob * ($showPageJob-1);
@@ -1749,15 +1739,6 @@ END;
 
         }
 
-        function format_poreceived($colnum, $rowdata, $export)
-        {
-            if ($export)
-                return $rowdata[9];
-
-            $dispFormat = new Venz_App_Display_Format();
-            return  $dispFormat->format_date_db_to_simple($rowdata[9]);
-        }
-
         function format_customer($colnum, $rowdata)
         {
             $strPrinciple = "";
@@ -1780,71 +1761,79 @@ END;
             return $systemSetting->arrJobType[$rowdata[4]];
         }
 
-        function format_balance($colnum, $rowdata, $export)
+
+        function format_total_duty($colnum, $rowdata, $export)
         {
-            if ($rowdata[7]){
-                $Margin = $rowdata[7];
-                if (!$export)
-                    $linkChart = "<a target='_blank' href='/admin/report/margin/JobID/".$rowdata[0]."'><img src='/images/icons/IconChart.png'></a>";
-                if ($Margin < 0)
-                    return "<div style='color: red; text-align: right'>".(!$export ? "RM " : "" ). number_format($Margin, 2, ".", ",").$linkChart."</div>";
-                else
-                    return "<div style='color: blue; text-align: right'>".(!$export ? "RM " : "" ). number_format($Margin, 2, ".", ",").$linkChart."</div>";
-            }
+            $dispFormat = new Venz_App_Display_Format();
+            if ($export)
+                return number_format($rowdata[8],2);
+
+            if ($rowdata[8])
+                return "<span style='color: red'>".$dispFormat->format_currency($rowdata[8])."<span>";
             else
                 return "";
         }
 
-        function format_balanceproject($colnum, $rowdata, $export)
+        function format_received_date($colnum, $rowdata, $export)
         {
-            if ($rowdata[8]){
-                $Margin = $rowdata[8];
-                if (!$export)
-                    $linkChart = "<a target='_blank' href='/admin/report/margin/JobID/".$rowdata[0]."'><img src='/images/icons/IconChart.png'></a>";
-                if ($Margin < 0)
-                    return "<div style='color: red; text-align: right'>".(!$export ? "RM " : "" ). number_format($Margin, 2, ".", ",").$linkChart."</div>";
-                else
-                    return "<div style='color: blue; text-align: right'>".(!$export ? "RM " : "" ). number_format($Margin, 2, ".", ",").$linkChart."</div>";
-            }
+            $dispFormat = new Venz_App_Display_Format();
+            return $dispFormat->format_date_simple($rowdata[7]);
+        }
+
+        function format_total_freight($colnum, $rowdata, $export)
+        {
+            $dispFormat = new Venz_App_Display_Format();
+            if ($export)
+                return number_format($rowdata[9],2);
+
+            if ($rowdata[9])
+                return "<span style='color: red'>".$dispFormat->format_currency($rowdata[9])."<span>";
             else
                 return "";
         }
 
 
-
-        function format_sellingprice_margin($colnum, $rowdata, $export)
+        function format_total_purchase($colnum, $rowdata, $export)
         {
-            return $rowdata[16];
-        }
-
-        function format_sellingpricerm_margin($colnum, $rowdata, $export)
-        {
+            $dispFormat = new Venz_App_Display_Format();
             if ($export)
                 return number_format($rowdata[10],2);
 
             if ($rowdata[10])
-                return number_format($rowdata[10],2,".", ",");
+                return "<span style='color: red'>".$dispFormat->format_currency($rowdata[10])."<span>";
             else
                 return "";
         }
 
-
-        function format_salesperson($colnum, $rowdata, $export)
+        function format_total_cost($colnum, $rowdata, $export)
         {
-            return $rowdata[18];
+            $dispFormat = new Venz_App_Display_Format();
+            if ($export)
+                return number_format($rowdata[11],2);
+
+            if ($rowdata[11])
+                return "<span style='color: red'>".$dispFormat->format_currency($rowdata[11])."<span>";
+            else
+                return "";
         }
 
-        function format_totalcost($colnum, $rowdata, $export)
+        function format_total_sales($colnum, $rowdata, $export)
         {
-            return number_format($rowdata[24],2);
+            $dispFormat = new Venz_App_Display_Format();
+            if ($export)
+                return number_format($rowdata[12],2);
+
+            if ($rowdata[12])
+                return $dispFormat->format_currency($rowdata[12]);
+            else
+                return "";
         }
 
-
-        $arrHeaderMargin = array('', '', 'Job No',  'PO Received<BR>Date', 'Customer', 'Item', 'Job Type','Selling Price<BR>RM', 'Total Cost<BR>RM', 'Job/Project<BR>Margin', 'Current<BR>Margin', 'Sales Person');
-        $arrFormatMargin = array('{format_counterJob}', '{format_action}','%1%', '{format_poreceived}', '{format_customer}', '{format_item}', '{format_jobtype}', '{format_sellingpricerm_margin}', '{format_totalcost}',  '{format_balanceproject}',  '{format_balance}', '{format_salesperson}');
-        $arrSortMargin = array('','','Job.ID', 'Job.CustomerPOReceivedDate', 'Job.CustomerName', 'Job.Items', 'Job.JobType', 'JobSales.TotalSalesPriceRM','TotalCostRM','ProjectMarginRM','MarginRM', '');
-        $arrColParamMargin = array('width=20px','width=20px','width=50px', '', '', 'width=100px', 'width=100px', 'nowrap width=120px','nowrap width=120px','width=120px','width=120px', 'width=120px');
-        $aligndataMargin = 'CCCCLLCCCRRR'; $tablewidthMargin = '1650px';
+        $arrHeaderMargin = array('','','Job No', 'Customer', 'Item', 'Job Type','Latest<BR>Received Date','Total<BR>Duty Tax', 'Total<BR>Freight Cost', 'Total<BR>Purchase Price', 'Total Cost', 'Total<BR>Sales Price');
+        $arrFormatMargin = array('{format_counterJob}', '{format_action}', '%1%', '{format_customer}', '{format_item}', '{format_jobtype}', '{format_received_date}', '{format_total_duty}', '{format_total_freight}',  '{format_total_purchase}',  '{format_total_cost}', '{format_total_sales}');
+        $arrSortMargin = array('','','Job.ID', 'Job.CustomerName', 'Job.Items', 'Job.JobType', 'JobPurchase.LatestReceivedDate', 'JobSales.TotalSalesPriceRM','TotalCostRM','ProjectMarginRM','MarginRM', '');
+        $arrColParamMargin = array('width=20px','width=50px','width=50px','', '', 'width=100px','width=100px','width=100px', 'nowrap width=120px','nowrap width=120px','width=120px','width=120px', 'width=120px');
+        $aligndataMargin = 'CCCLLCCRRRRR'; $tablewidthMargin = '1650px';
 
         $exportReportJobMargin = new Venz_App_Report_Excel(array('exportsql'=> $exportSql,  'export_name'=>'export_excel_jobmargin',  'hiddenparam'=>$strHiddenSearch));
 
@@ -1855,7 +1844,7 @@ END;
                 'format' 		=> $arrFormatMargin,
                 'sort_column' 	=> $arrSortMargin,
                 'alllen' 		=> $arrJobs[0],
-                'title'		=> 'Job List: '.$arrJobs[0],
+                'title'		=> 'Job with item delivered which havent shipped out: '.$arrJobs[0],
                 'aligndata' 	=> $aligndataMargin,
                 'pagelen' 		=> $recordsPerPageJob,
                 'numcols' 		=> sizeof($arrHeaderMargin),
@@ -1873,7 +1862,7 @@ END;
             )
         );
 
-        $this->view->content_jobsmargin = $displayTableMargin->render();
+        $this->view->content_tempcost = $displayTableMargin->render();
         $sessionJobs->numCounter = $recordsPerPage * ($showPage-1);
 
 
