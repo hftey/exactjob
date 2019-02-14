@@ -1,0 +1,165 @@
+<link type="text/css" rel="stylesheet" href="/js/jquery/responsive-tabs/css/easy-responsive-tabs.css " />
+<script src="/js/jquery/responsive-tabs/js/easyResponsiveTabs.js" type="text/javascript"></script>
+
+
+<script language='Javascript'>
+
+function OnDeleteCustomer(Customer_id){
+	$.prompt(
+		"<?=$this->translate->_('Are you sure you want to remove the customer?')?>",{
+		buttons: { Ok: true, Cancel: false },
+		submit:function(e,v,m,f){
+					if(v){
+						document.location='/admin/system/customers/remove_customer/'+Customer_id;
+					}
+				  }
+	});
+}
+
+$(document).ready(function() {
+
+	$('#add_customer').click(function () {
+		var error = false;
+		if ($('#Name').val()=='') { 
+			$('#Name').poshytip({ bgImageFrameSize:8, content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_("Please enter the name of the customer")?>.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5, timeOnScreen: 3000});
+			$('#Name').poshytip('show');
+			error = true;
+		}
+
+		if (error)
+			return false; 			
+	
+	});
+	
+	$('#add_customer').click(function () {
+		var error = false;
+		if ($('#Name').val()=='') { 
+			
+			$('#Name').poshytip({ bgImageFrameSize:8, content: '<img src="/images/icons/IconAlert.png"><?=$this->translate->_("Please enter the name of the customer")?>.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5, timeOnScreen: 3000});
+			$('#Name').poshytip('show');
+
+			error = true;
+		}
+		
+		if (error)
+			return false; 			
+	
+	});
+
+ 
+	$('#tabs').easyResponsiveTabs({
+				type: 'default', //Types: default, vertical, accordion
+				width: 'auto', //auto or any width like 600px
+				fit: true, // 100% fit in a container
+				tabidentify: 'hor_1', // The tab groups identifier
+				activate: function(event) { // Callback function if tab is switched
+					var $tab = $(this);
+					var $info = $('#nested-tabInfo');
+					var $name = $('span', $info);
+					$name.text($tab.text());
+					$info.show();
+				}
+			});
+
+	$('#Name').poshytip({ bgImageFrameSize:9, className: 'tip-yellow', showOn: 'focus', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,showTimeout: 100});
+	$('#Phone').poshytip({ bgImageFrameSize:9, className: 'tip-yellow', showOn: 'focus', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,showTimeout: 100});
+	$('#Email').poshytip({ bgImageFrameSize:9, className: 'tip-yellow', showOn: 'focus', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,showTimeout: 100});
+	$('#Address').poshytip({ bgImageFrameSize:9, className: 'tip-yellow', showOn: 'focus', alignTo: 'target', alignX: 'right',alignY: 'center',offsetX: 5,showTimeout: 100});
+	$('#clear').poshytip({ bgImageFrameSize:9,className: 'tip-yellow', alignTo: 'target', showOn: 'hover', offsetY: 10, offsetX: 1, alignX: 'inner-left',  showTimeout: 100, allowTipHover:false});
+
+});	
+
+
+
+
+
+</script>
+
+<div id='msg'></div>
+<div id="tabs">
+<ul class="resp-tabs-list hor_1">
+<? if ($this->edit_customer) { ?>	
+	<li>Edit Customer </li>
+<? }else{ ?>
+	<li>Add New Customer</li>
+<? } ?>
+	<li>Search</li>
+</ul>
+<div class='resp-tabs-container hor_1'>
+	
+	<div>
+	<form enctype="multipart/form-data"  action='/admin/system/customers#tabs1' method=POST >
+		<table border=0 cellspacing=2 cellpadding=2>
+			<TR><TD colspan=3><B>
+			<?
+				if ($this->edit_driver)
+					echo $this->translate->_('Customer: Edit');
+				else
+					echo $this->translate->_('Customer: Add');
+			?>
+				
+			</B></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Name')?><font style='color:red;'>*</font></TD><TD class='form_field'><input type='text' name='Name' id='Name' size=45 value='<?=$this->Name?>' title="<?=$this->translate->_("Customer's full name")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Code')?></TD><TD class='form_field'><input type='text' name='Code' id='Code' size=10 value='<?=$this->Code?>' title="<?=$this->translate->_("Customer's Code")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Phone #')?></TD><TD class='form_field'><input type='text' name='Phone' id='Phone' size=20 value='<?=$this->Phone?>' title="<?=$this->translate->_("Customer's contact number")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Fax No')?></TD><TD class='form_field'><input type='text' name='FaxNo' id='FaxNo' size=20 value='<?=$this->FaxNo?>' title="<?=$this->translate->_("Customer's fax number")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Payment Terms')?></TD><TD class='form_field'><input type='text' name='PaymentTerms' id='PaymentTerms' size=10 value='<?=$this->PaymentTerms?>' title="<?=$this->translate->_("Customer's payment terms")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Credit Limit')?></TD><TD class='form_field'><input type='text' name='CreditLimit' id='CreditLimit' size=10 value='<?=$this->CreditLimit?>' title="<?=$this->translate->_("Customer's credit limit")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Email')?></TD><TD class='form_field'><input type='text' name='Email' id='Email' size=20 value='<?=$this->Email?>' title="<?=$this->translate->_("Customer's email address")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Address')?></TD><TD class='form_field'>
+				<textarea name='Address' id='Address' title="<?=$this->translate->_("Customer's office address")?>." cols=35 rows=3><?=$this->Address?></textarea></TD></TR>
+			<TR><TD colspan=3 height=10px></TD></TR>
+			<TR><TD colspan=3>
+			
+			<? if ($this->edit_customer) { ?>
+				<input type=submit name='save_customer' id='save_customer' value='<?=$this->translate->_('Save')?>'  title='<?=$this->translate->_("Save the customer's details.")?>.'> | 
+				<input type=button name='clear' id='clear' value='<?=$this->translate->_('Cancel')?>' title='<?=$this->translate->_('Cancel edit')?>.' onclick='document.location="/admin/system/customers"'>
+				<input type=hidden name='customerID' value='<?=$this->edit_customer?>'>
+			<? }else{ ?>
+				<input type=submit name='add_customer' id='add_customer' value='<?=$this->translate->_('Add a new customer')?>'  title='<?=$this->translate->_('Add to create a new customer.')?>.'> | 
+				<input type=button name='clear' id='clear' value='<?=$this->translate->_('Clear')?>' title='<?=$this->translate->_('Clear all the inputs above')?>.' onclick='document.location="/admin/system/customers"'>
+			
+			<? } ?>
+			
+			
+			</TD></TR>
+		</table>
+	</form>
+	</div>
+	
+	<div>
+	<form action='/admin/system/customers#tabs2' method=POST >
+		<table border=0 cellspacing=2 cellpadding=2>
+			<TR><TD colspan=3><B><?=$this->translate->_('Customer: Search')?></B></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Name')?></TD><TD class='form_field'><input type='text' name='searchName' id='searchName' size=45 value='<?=$this->searchName?>' title="<?=$this->translate->_("Customer's full name")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Code')?></TD><TD class='form_field'><input type='text' name='SearchCode' id='SearchCode' size=10 value='<?=$this->SearchCode?>' title="<?=$this->translate->_("Customer's Code")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Phone #')?></TD><TD class='form_field'><input type='text' name='searchPhone' id='searchPhone' size=20 value='<?=$this->searchPhone?>' title="<?=$this->translate->_("Customer's contact number")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Fax No')?></TD><TD class='form_field'><input type='text' name='searchFaxNo' id='searchFaxNo' size=20 value='<?=$this->searchFaxNo?>' title="<?=$this->translate->_("Customer's fax number")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Payment Terms')?></TD><TD class='form_field'><input type='text' name='SearchPaymentTerms' id='SearchPaymentTerms' size=10 value='<?=$this->SearchPaymentTerms?>' title="<?=$this->translate->_("Customer's payment terms")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Credit Limit')?></TD><TD class='form_field'>
+				<input type='text' name='SearchCreditLimit' id='SearchCreditLimit' size=10 value='<?=$this->SearchCreditLimit?>' title="<?=$this->translate->_("Customer's credit limit")?>.">
+				
+			</TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Email')?></TD><TD class='form_field'><input type='text' name='searchEmail' id='searchEmail' size=20 value='<?=$this->searchEmail?>' title="<?=$this->translate->_("Customer's contact number")?>."></TD></TR>
+			<TR><TD class='form_label' width=170px><?=$this->translate->_('Address')?></TD><TD class='form_field'><input type='text' name='searchAddress' id='searchAddress' size=35 value='<?=$this->searchAddress?>' title="<?=$this->translate->_("Customer's email address")?>."></TD></TR>
+			<TR><TD colspan=3 height=10px></TD></TR>
+
+			<TR><TD colspan=3>
+			<input type=submit name='search_customer' id='search_customer' value='<?=$this->translate->_('Search for customer')?>'  title='<?=$this->translate->_('Click the search button to search for a customer.')?>.'>	|
+			<input type=submit name='clear' id='clear' value='<?=$this->translate->_('Clear')?>' title='<?=$this->translate->_('Clear all the inputs above')?>.' onclick='document.location="/admin/system/customers#tabs2"'> 
+			
+			
+			
+			
+			</TD></TR>
+		</table>
+	</form>
+	</div>
+	
+
+
+
+</div>
+<?=$this->content_customer?>
+</div>
+

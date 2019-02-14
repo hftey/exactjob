@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<title>AFC Club Licensing System (ACLS)</title>
+
+
+</head>
+
+
+  <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+
+<!-- Load Fonts -->
+<link rel="stylesheet" type="text/css" href="/wayout/css/fonts.css" />
+<!-- WAYOUT MENU -->
+<link rel="stylesheet" type="text/css" href="/wayout/css/wayoutmenu.css" />
+<link rel="stylesheet" type="text/css" href="/wayout/css/wayoutmenueffects.css" />
+<link rel="stylesheet" type="text/css" href="/wayout/css/wayoutmenuresponsive.css" />
+  
+<!-- Lightbox stylesheet -->
+<link rel="stylesheet" type="text/css" href="/wayout/css/jquery.lightbox.min.css" />
+<!-- Input slider -->
+<link href="/wayout/css/slider.css" rel="stylesheet" type="text/css" />
+<!-- Color Picker --> 
+<link rel="stylesheet" type="text/css" href="/wayout/css/spectrum.css" />
+
+<link rel="stylesheet" type="text/css" href="/css/login.css">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+
+
+
+
+<!-- Bootstrap -->
+<script src="/wayout/js/bootstrap.min.js"></script>
+<!-- Lightbox -->
+<script src="/wayout/js/jquery.lightbox.min.js"></script>   
+<!-- Wayout Menu -->
+<script src="/wayout/js/wayoutmenu.js"></script> 
+
+
+
+<body>
+
+
+  <!-- MAIN CONTAINER -->
+  <div id="main-container" class="container-fluid relative full-height">
+    <!-- WRAPPER -->
+    <div class="wrapper relative full-height">
+      
+      <!-- ST-CONTENT -->
+      <div class="st-content relative full-height"><!-- this is the wrapper for the content -->
+        <!-- ST-CONTENT-INNER -->
+        <div class="st-content-inner relative">
+          <!-- MAIN -->
+          <div id="mainn" class="main" style='position: relative;'>
+            <!-- MENU-BG -->
+            <div class="container-fluid menu-bg" style="width: 100%;">
+              <!-- BM-CONTAINER -->
+			<div class="row-fluid site-width bm-container">
+			
+                <div class="site-title span1" style='min-width:50px;'><img src='/images/Logo-Icon-small.png'></div>
+				<div class="site-title"  style='min-width:70px; height: 45px; float: right; margin-right: 10px'><h1 style='position: relative;top: 6px; font-family: arial;'>ACLS</h1></div>
+                <!-- Wayout Menu - TOP NAV -->
+			
+							
+              
+				
+				
+			</div>
+			
+			<div id="shop-container"></div>
+			
+              <!-- /Login Container -->
+			
+            <!-- /MENU-BG -->
+          </div>
+          <!-- MAIN -->
+ <div id="content">
+<div id="content_main" align=center>
+<? if (strlen($this->appNotice) > 0) { echo $this->appNotice; } ?>
+<?php echo $this->layout()->content ?>
+</div></div>
+
+            
+		</div>         
+
+</div></div></div></div></div>
+
+</body>
+</html>

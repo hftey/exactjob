@@ -276,14 +276,6 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
         $sqlExport = $sqlAll." order by $sql_orderby ";
         return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql), $sqlExport);
     }
-	
-	
-
-	 
-  
+ 
 }
-
-
-
-
 ?>

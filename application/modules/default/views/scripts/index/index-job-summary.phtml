@@ -147,4 +147,158 @@
 		<? } ?>
 	</div>
 </div>
+=======
+<form enctype="multipart/form-data"  action='/default/index/index/#tabs1' method=POST  data-ajax="false">
+                            
+<div class="md-card">
+	<div class="md-card-toolbar">
+		 <h3 class="md-card-toolbar-heading-text">
+			Job Summary 
+		</h3>
+		<div style='float: right; margin-top: 12px'><a target='_blank' href='/admin/report/margin/JobID/<?=$this->edit_job?>'>Job Chart <img src='/images/icons/IconChart.png'></a></div>
+	</div>
+	<div class="md-card-content">
+		<div class="uk-form-row">
+			<div class="uk-grid">
+				<div class="uk-width-medium-1-3">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Job No.</label>
+						<input type="text" id="JobNo" name="JobNo" class="md-input" value="<?=$this->JobNo?>"><span class="md-input-bar"></span></div>
+					
+				</div>
+				<div class="uk-width-medium-1-3">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Type*</label>
+						<select class="md-input" name='JobType' id='JobType'>
+						<option value=''>
+						<?=$this->optionJobType?>
+					</select>
+				</div>
+				</div><div class="uk-width-medium-1-3">
+					<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Cust. PO Received* </label>
+						<input type="text" name="CustomerPOReceivedDate" class="md-input CustomerPOReceivedDate" value="<?=$this->CustomerPOReceivedDate?>"><span class="md-input-bar"></span>
+					</div>
+				</div>
+				
+			   
+			</div>
+		</div>
+		<div class="uk-form-row">
+			<div class="uk-grid">
+				<div class="uk-width-medium-1-2">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Customer*</label>
+						<input type="text" id="CustomerName" name="CustomerName" class="md-input" value="<?=$this->CustomerName?>"><span class="md-input-bar"></span>
+						<input type="hidden" id="CustomerID" name="CustomerID" value="<?=$this->CustomerID?>">
+					</div>
+				</div>
+<!--				<div class="uk-width-medium-1-3">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Credit Term</label>
+						<input type="text" id="CustomerPaymentTerms" name="CustomerPaymentTerms" class="md-input" value="<?=$this->CustomerPaymentTerms?>"><span class="md-input-bar"></span>
+					</div>
+				</div>
+-->				<div class="uk-width-medium-1-2">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>End User</label>
+						<input type="text" id="PrincipleName" name="PrincipleName" class="md-input" value="<?=$this->PrincipleName?>"><span class="md-input-bar"></span>
+					</div>
+				</div>
+			   
+			</div>
+		</div>
+		
+											
+		<div class="uk-form-row">
+			<div class="uk-grid">
+				<div class="uk-width-medium-2-3">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Items*</label>
+						<input type="text" id="Items" name="Items" class="md-input" value="<?=$this->Items?>"><span class="md-input-bar"></span></div>
+					
+				</div>
+                <div class="uk-width-medium-1-3">
+                    <div class="md-input-wrapper md-input-wrapper-success"><label>Initial Cost in Value</label>
+                        <input type="text" id="InitialGrossMargin" name="InitialGrossMargin" class="md-input" value="<?=$this->InitialGrossMargin?>"><span class="md-input-bar"></span></div>
+
+                </div>
+
+				
+			</div>
+		</div>
+		
+
+		<? if (!$this->edit_job) { ?>
+			<? if ($this->userInfo->ACLRole == "AdminSystem" || $this->userInfo->ACLRole == "Admin") { ?>	
+			<div class="uk-form-row">
+				<div class="uk-grid">
+					<div class="uk-width-medium-1-1">
+						<input type="submit" class="md-input" name='Create' id='Create' value="Create"><span class="md-input-bar"></span><BR>
+						<P style='font-size: 12px;'>*Leave the <B>Job No.</B> blank to allow the system to automatically generate the Job No.</P>
+					</div>
+				</div>
+			</div>
+			<? } ?>
+		<? } ?>
+		
+		<? if ($this->edit_job) { ?>
+		<div class="md-input-wrapper md-input-wrapper-success">
+			<div class="md-input-wrapper md-input-filled"><label>Job Status</label>
+				<div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+
+					<div class="uk-form-row">
+						<div class="uk-grid">
+							<div class="uk-width-medium-2-6">
+								<input type=checkbox name='Completed' ID='Completed'  class="md-input" value='1' <?=($this->Completed ? "checked" : "")?>> Completed
+							</div>
+							<div class="uk-width-medium-2-6">
+							<?
+							$strDisabledClose = "";
+							if ($this->Closed)
+							{
+								$strDisabledClose = "disabled";
+								if ($this->userInfo->ACLRole == "AdminSystem") {
+									$strDisabledClose = "";
+								
+								}
+							}
+							?>
+							<input type=checkbox name='Closed' ID='Closed'  class="md-input" value='1' <?=($this->Closed ? "checked" : "")?> <?=$strDisabledClose?>> Closed
+							</div>
+							<div class="uk-width-medium-2-6">
+								<input type=checkbox name='Cancelled' ID='Cancelled'  class="md-input" value='1' <?=($this->Cancelled ? "checked" : "")?>> Cancelled
+							</div>
+
+						</div>
+					</div>
+
+					
+					<div class="uk-form-row">
+						<div class="uk-grid">
+							<div class="uk-width-medium-2-6" id='idCompletedDate' style='<?=$this->displayCompletedDate?>'>
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Completed Date</label>
+									<input type="text" id="CompletedDate" name="CompletedDate" class="md-input" value="<?=$this->CompletedDate?>">
+								</div>
+							</div>
+							<div class="uk-width-medium-2-6" id='idClosedDate' style='<?=$this->displayClosedDate?>'>
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Closed Date</label>
+									<input type="text" id="ClosedDate" name="ClosedDate" class="md-input" value="<?=$this->ClosedDate?>" <?=$strDisabledClose?>>
+								</div>
+							</div>
+						</div>
+					</div>
+		
+		
+				</div>
+			</div>
+		</div>
+		<? if ($this->userInfo->ACLRole == "AdminSystem" || $this->userInfo->ACLRole == "Admin" || $this->userInfo->ACLRole == "Account") { ?>	
+		<div class="uk-form-row">
+			<div class="uk-grid">
+				<div class="uk-width-medium-1-1">
+					<input type="submit" id="Save" name="Save" value="Save">
+					<input type="submit" id="Cancel" name="Cancel" value="Cancel" onclick='document.location="/"'>
+					<input type="hidden" id="JobID" name="JobID" value="<?=$this->edit_job?>">
+				</div>
+			</div>
+		</div>
+		<? } ?>
+		
+		<? } ?>
+	</div>
+</div>
 </form>
