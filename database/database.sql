@@ -443,3 +443,23 @@ ALTER TABLE `Job` ADD INDEX(`CustomerID`);
 
 /* 01 Nov 2018 */
 ALTER TABLE `Job` ADD InitialGrossMargin float(14,2) default NULL;
+
+/* 18 Feb 2019 */
+ALTER TABLE `JobPurchase` ADD PartialDelivery int(2) default 0;
+ALTER TABLE `JobPurchaseDelivery` ADD PartialDelivery int(2) default 0;
+ALTER TABLE `JobPurchaseDelivery` ADD PartialDeliveryAmount float(14,2) default NULL;
+
+ALTER TABLE `JobSales` ADD PartialDelivery int(2) default 0;
+
+
+CREATE TABLE IF NOT EXISTS `JobSalesDelivery` (
+  `ID` int(11) NOT NULL auto_increment,
+  `JobID` int(11) DEFAULT NULL,
+  `JobSalesID` int(11) DEFAULT NULL,
+  `SalesReadyDatePartial` date DEFAULT NULL,
+  `PartialDeliveryAmount` float(14,2) DEFAULT NULL,
+  `Remarks` varchar(2048) DEFAULT NULL,
+  `CreatedOn` datetime DEFAULT NULL,
+  `CreatedBy` int(11) DEFAULT NULL,
+  PRIMARY KEY  (`ID`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;

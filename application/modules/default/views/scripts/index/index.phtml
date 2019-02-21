@@ -233,6 +233,166 @@ var autocomp_items_opt={
 
 
 $(document).ready(function() {
+
+    $(".SaveDelivery").click(function(e){
+        var objform = $(this).parents("form:first");
+        var error = false;
+
+        if ((objform.find(".DeliveryReceivedDate").val()) == ""){
+            objform.find(".DeliveryReceivedDate").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter Good Received date.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+            objform.find(".DeliveryReceivedDate").poshytip('show');
+            objform.find(".DeliveryReceivedDate").addClass("md-input-danger");
+            error = true;
+        }
+
+        if (objform.find(".PartialDeliveryAmount").val() == ""  && objform.find(".PartialDelivery").val() == "1"){
+            objform.find(".PartialDeliveryAmount").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter Partial Price Amount.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+            objform.find(".PartialDeliveryAmount").poshytip('show');
+            objform.find(".PartialDeliveryAmount").addClass("md-input-danger");
+            error = true;
+        }
+
+
+        if (error){
+            e.preventDefault();
+            return false;
+        }
+        else{
+            return true;
+        }
+
+    })
+
+    $(".CreateDelivery").click(function(e){
+        var objform = $(this).parents("form:first");
+        var error = false;
+
+        if ((objform.find(".DeliveryReceivedDate").val()) == ""){
+            objform.find(".DeliveryReceivedDate").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter Good Received date.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+            objform.find(".DeliveryReceivedDate").poshytip('show');
+            objform.find(".DeliveryReceivedDate").addClass("md-input-danger");
+            error = true;
+        }
+        if (objform.find(".PartialDeliveryAmount").val() == "" && objform.find(".PartialDelivery").val() == "1"){
+            objform.find(".PartialDeliveryAmount").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter Partial Price Amount.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+            objform.find(".PartialDeliveryAmount").poshytip('show');
+            objform.find(".PartialDeliveryAmount").addClass("md-input-danger");
+            error = true;
+        }
+
+        if (error){
+            e.preventDefault();
+            return false;
+        }
+        else{
+            return true;
+        }
+
+    })
+
+
+    $(".SaveDeliverySales").click(function(e){
+        var objform = $(this).parents("form:first");
+        var error = false;
+
+        if ((objform.find(".SalesReadyDatePartial").val()) == ""){
+            objform.find(".SalesReadyDatePartial").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter Good Ready date.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+            objform.find(".SalesReadyDatePartial").poshytip('show');
+            objform.find(".SalesReadyDatePartial").addClass("md-input-danger");
+            error = true;
+        }
+
+        if ((objform.find(".PartialDeliveryAmount").val()) == ""){
+            objform.find(".PartialDeliveryAmount").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter Partial Price Amount.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+            objform.find(".PartialDeliveryAmount").poshytip('show');
+            objform.find(".PartialDeliveryAmount").addClass("md-input-danger");
+            error = true;
+        }
+
+
+        if (error){
+            e.preventDefault();
+            return false;
+        }
+        else{
+            return true;
+        }
+
+    })
+
+
+    $(".CreateDeliverySales").click(function(e){
+        var objform = $(this).parents("form:first");
+        var error = false;
+
+        if ((objform.find(".SalesReadyDatePartial").val()) == ""){
+            objform.find(".SalesReadyDatePartial").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter Good Ready date.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'top', offsetX: 10, timeOnScreen: 3000});
+            objform.find(".SalesReadyDatePartial").poshytip('show');
+            objform.find(".SalesReadyDatePartial").addClass("md-input-danger");
+            error = true;
+        }
+        if ((objform.find(".PartialDeliveryAmount").val()) == ""){
+            objform.find(".PartialDeliveryAmount").poshytip({ bgImageFrameSize:6, content: '<img src="/images/icons/IconAlert.png">Please enter Partial Price Amount.', className: 'tip-yellow', showOn:'none', alignTo: 'target', alignX: 'inner-left', alignY: 'bottom', offsetX: 10, timeOnScreen: 3000});
+            objform.find(".PartialDeliveryAmount").poshytip('show');
+            objform.find(".PartialDeliveryAmount").addClass("md-input-danger");
+            error = true;
+        }
+
+        if (error){
+            e.preventDefault();
+            return false;
+        }
+        else{
+            return true;
+        }
+
+    })
+
+
+
+
+    $(".PartialDeliverySales").click(function(){
+        var objCheck = $(this);
+        var objform = $(this).parents("form:first");
+        var JobSalesID = $(this).attr('JobSalesID');
+        var PartialDelivery = objCheck.is(':checked') ? 1 : 0;
+        $.post("/default/index/ajax-update-sales-partial", {JobSalesID: JobSalesID, PartialDelivery:PartialDelivery}, function (data) {
+
+        });
+
+        objform.find(".divPartialDelivery").each(function(){
+            if (objCheck.is(':checked')){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        })
+
+    })
+
+
+    $(".PartialDelivery").click(function(){
+        var objCheck = $(this);
+        var JobPurchaseID = $(this).attr('JobPurchaseID');
+        var PartialDelivery = objCheck.is(':checked') ? 1 : 0;
+        $.post("/default/index/ajax-update-purchase-partial", {JobPurchaseID: JobPurchaseID, PartialDelivery:PartialDelivery}, function (data) {
+
+        });
+
+        var objParent = $(this).parent().parent().parent().parent().parent();
+        objParent.find(".divPartialDeliveryAmount").each(function(){
+            var objPartialDelivery = $(this).find(".PartialDelivery");
+            if (objCheck.is(':checked')){
+                objPartialDelivery.val('1');
+                $(this).show();
+            }else{
+                objPartialDelivery.val('');
+                $(this).hide();
+            }
+        })
+
+    })
+
 	
 	
 	<? if ($this->userInfo->ACLRole != "AdminSystem" && $this->userInfo->ACLRole != "Admin") { ?>
@@ -484,13 +644,31 @@ $(document).ready(function() {
 			
 		}
 	})
+
+
+    $(document).on("click", ".clsDeleteDeliverySales", function(event, proceed){
+        if (!proceed)
+        {
+            event.preventDefault();
+            var objDelete = $(this);
+            $.prompt("<?=$this->translate->_('Remove the delivery details?')?>",{
+                buttons: { Ok: true, Cancel: false },
+                submit:function(e,v,m,f){
+                    if(v){
+                        objDelete.trigger("click", [true]);
+                    }
+                }
+            });
+
+        }
+    })
 	
 	$(document).on("click", ".clsDeleteDelivery", function(event, proceed){	
 		if (!proceed)
 		{
 			event.preventDefault();
 			var objDelete = $(this);
-			$.prompt("<?=$this->translate->_('Remove the purchase details?')?>",{
+			$.prompt("<?=$this->translate->_('Remove the delivery details?')?>",{
 				buttons: { Ok: true, Cancel: false },
 				submit:function(e,v,m,f){
 				if(v){
@@ -922,6 +1100,7 @@ $(document).ready(function() {
 	$( ".CustomerPOReceivedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 	$( ".SalesExpDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 	$( ".SalesReadyDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+    $( ".SalesReadyDatePartial" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 //	$( ".SalesInvoiceDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 	
 	

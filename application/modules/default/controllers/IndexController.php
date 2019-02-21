@@ -35,6 +35,15 @@ class IndexController extends Venz_Zend_Controller_Action {
 		$SalesData[SalesReadyDate] = $dispFormat->format_date_db_to_simple($SalesData['SalesReadyDate']);
 		$SalesData[DrawingApprovedDate] = $dispFormat->format_date_db_to_simple($SalesData['DrawingApprovedDate']);
 
+        $chkPartialDelivery = $strPartialDelivery= "";$displayPartialDelivery= "none";
+        if ($SalesData['PartialDelivery']){
+            $chkPartialDelivery = "checked";
+            $strPartialDelivery = "1";
+            $displayPartialDelivery = "block";
+        }
+
+
+
 		$arrDocESPOAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='ESPODoc' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID."  AND JobSalesID=".$JobSalesID." ORDER BY DateSubmitted DESC");
 		$listDocESPO = ""; $DocESPOCSS = "";
 		foreach ($arrDocESPOAll as $arrUploads)
@@ -145,7 +154,63 @@ class IndexController extends Venz_Zend_Controller_Action {
 			$defaultDisplay = "display: block";
 			
 		}
+
+        $strDelivery = "";
+        $arrDeliveryAll = $db->fetchAll("SELECT JobSalesDelivery.* FROM JobSalesDelivery WHERE JobSalesDelivery.JobSalesID=".$JobSalesID);
+        foreach ($arrDeliveryAll as $arrDelivery)
+        {
+
+            $strButtons = "";
+            if ($this->userInfo->ACLRole == "AdminSystem" || $this->userInfo->ACLRole == "Admin")
+            {
+                $strButtons =<<<END
+				<div class="uk-width-medium-1-4">
+					<div class="md-input-wrapper md-input-wrapper-success">
+						<input type=submit name='SaveDeliverySales' ID='SaveDeliverySales' class='SaveDeliverySales' value="Update">
+						<input type=submit name='DeleteDeliverySales' ID='DeleteDeliverySales' class="clsDeleteDeliverySales" value="Delete">
+						<input type="hidden" id="JobSalesDeliveryID" name="JobSalesDeliveryID" value="$arrDelivery[ID]">
 		
+					<span class="md-input-bar"></span></div>
+					
+				</div>
+END;
+            }
+
+            $arrDelivery[SalesReadyDatePartial] = $dispFormat->format_date_db_to_simple($arrDelivery['SalesReadyDatePartial']);
+
+            $strDelivery .=<<<END
+		<form enctype="multipart/form-data" action='/default/index/index/#tabs1' method=POST  data-ajax="false" class="clsFormPurchase">
+		<input type="hidden" id="JobID" name="JobID" value="$SalesData[JobID]">
+		<input type="hidden" id="JobSalesID" name="JobSalesID" value="$SalesData[ID]">
+		
+
+		<div class="uk-form-row">
+			<div class="uk-grid">
+			<div class="uk-width-medium-1-4">
+				<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Goods Ready Date</label>
+						<input type="text" name="SalesReadyDatePartial" class="md-input SalesReadyDatePartial" value="$arrDelivery[SalesReadyDatePartial]"><span class="md-input-bar"></span></div>
+				</div>
+				<div class="uk-width-medium-1-4">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Partial Price Amount (RM)</label>
+						<input type="text" id="PartialDeliveryAmount" name="PartialDeliveryAmount" class="md-input PartialDeliveryAmount" value="$arrDelivery[PartialDeliveryAmount]">
+						<span class="md-input-bar"></span></div>
+					
+				</div>
+				<div class="uk-width-medium-1-4">
+					<div class="md-input-wrapper md-input-wrapper-success"><label>Remarks</label>
+						<input type="text" id="Remarks" name="Remarks" class="md-input" value="$arrDelivery[Remarks]"><span class="md-input-bar"></span></div>
+					
+				</div>
+			
+				$strButtons
+			</div>
+		</div>
+	
+		</form>
+		<HR>
+END;
+        }
+
 		
 		$strButtons = "";
 		if ($this->userInfo->ACLRole == "AdminSystem" || $this->userInfo->ACLRole == "Admin")
@@ -166,6 +231,17 @@ class IndexController extends Venz_Zend_Controller_Action {
 			</div>
 		</div>
 END;
+
+
+            $strButtonsCreateDeliverySales =<<<END
+				<div class="uk-width-medium-1-4">
+				<div class="md-input-wrapper md-input-wrapper-success">
+					<input type=submit name='CreateDeliverySales' ID='CreateDeliverySales' class='CreateDeliverySales' value="Create">
+				<span class="md-input-bar"></span></div>
+				
+			</div>
+END;
+
 		}		
 		
 		
@@ -391,18 +467,85 @@ END;
 	</div>	
 	<div class="uk-form-row">
 		<div class="uk-grid">
-			<div class="uk-width-medium-1-1">
+			<div class="uk-width-medium-3-4">
 				<div class="md-input-wrapper md-input-wrapper-success"><label>Remarks</label>
-					<input type="text" id="Remarks" name="Remarks" class="md-input" value="$SalesData[Remarks]"><span class="md-input-bar"></span></div>
+					<textarea id="Remarks" name="Remarks" class="md-input" value="">$SalesData[Remarks]</textarea><span class="md-input-bar"></span></div>
 			</div>
+			<div class="uk-width-medium-1-4">
+					<div class="md-input-wrapper md-input-wrapper-success">
+						<input type="checkbox" name="PartialDelivery" class="md-input PartialDeliverySales" value="1" JobSalesID=$JobSalesID $chkPartialDelivery><span class="md-input-bar"></span>  Partial Delivery
+							<BR><span class="divPartialDelivery" style="display: $displayPartialDelivery">*Please leave the Goods Ready Date above <U>blank</U> until all partial delivery has 
+							been completed. <U>Enter the last Goods Ready Date to the above once all delivery are completed.</U>
+							The total Partial Price Amount below <B>must be the same</B> (in RM value) as Selling Price once all delivery has been completed
+							</span>
+						</div>
+				</div>
 			
 		</div>
 	</div>
 	$strButtons								
+</form>		
+	
+	
+	<div class="uk-form-row divPartialDelivery" style="display: $displayPartialDelivery">
+			<div class="md-card">
+				<div class="md-card-toolbar" style='background: rgba(80,183,220, 0.1);'>
+					 <h3 class="md-card-toolbar-heading-text">
+						Partial Delivery Details
+					</h3>
+				</div>
+				
+				
+				<div class="md-card-content">
+				
+				$strDelivery
+				
+				<form enctype="multipart/form-data"  action='/default/index/index/#tabs1' method=POST  data-ajax="false">
+				<input type="hidden" id="JobID" name="JobID" value="$SalesData[JobID]">
+				<input type="hidden" id="JobSalesID" name="JobSalesID" value="$SalesData[ID]">
+					<div class="uk-form-row">
+						<div class="uk-grid">
+							<div class="uk-width-medium-1-4">
+								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Goods Ready Date</label>
+									<input type="text" name="SalesReadyDatePartial" class="md-input SalesReadyDatePartial" value=""><span class="md-input-bar"></span></div>
+							</div>
+							<div class="uk-width-medium-1-4">
+								<div class="md-input-wrapper md-input-wrapper-success"><label>Partial Price Amount (RM)</label>
+									<input type="text" id="PartialDeliveryAmount" name="PartialDeliveryAmount" class="md-input PartialDeliveryAmount" value=""><span class="md-input-bar"></span></div>
+								
+							</div>
+							<div class="uk-width-medium-1-4">
+								<div class="md-input-wrapper md-input-wrapper-success"><label>Remarks</label>
+									<input type="text" id="Remarks" name="Remarks" class="md-input"><span class="md-input-bar"></span></div>
+								
+							</div>
+							$strButtonsCreateDeliverySales
+						</div>
+					</div>
+				
+				</div>
+			</div>
+		
+		</div>	
+		</form>	
+	
 	
 	</div>
+	
+	
+	
+	
+	
+	
+	
+	
 </div>
-</form>	
+
+
+
+
+
+
 <BR>
 END;
 		return $content;
@@ -436,6 +579,14 @@ END;
 		$SupplierCode = "";
 		if ($PurchaseData[SupplierCode])
 			$SupplierCode = "(".$PurchaseData[SupplierCode].")";
+
+
+		$chkPartialDelivery = $strPartialDelivery= "";$displayPartialDelivery= "none";
+		if ($PurchaseData['PartialDelivery']){
+            $chkPartialDelivery = "checked";
+            $strPartialDelivery = "1";
+            $displayPartialDelivery = "block";
+        }
 		
 		//$strPurchasePrice = $PurchaseData[PurchasePrice];
 		
@@ -494,7 +645,7 @@ END;
 				$strButtons =<<<END
 				<div class="uk-width-medium-1-4">
 					<div class="md-input-wrapper md-input-wrapper-success">
-						<input type=submit name='SaveDelivery' ID='SaveDelivery' value="Update">
+						<input type=submit name='SaveDelivery' ID='SaveDelivery' class='SaveDelivery' value="Update">
 						<input type=submit name='DeleteDelivery' ID='DeleteDelivery' class="clsDeleteDelivery" value="Delete">
 						<input type="hidden" id="JobPurchaseDeliveryID" name="JobPurchaseDeliveryID" value="$arrDelivery[ID]">
 		
@@ -507,7 +658,7 @@ END;
 			$arrDelivery[DeliveryReceivedDate] = $dispFormat->format_date_db_to_simple($arrDelivery['DeliveryReceivedDate']);
 			
 				$strDelivery .=<<<END
-<form enctype="multipart/form-data"  action='/default/index/index/#tabs1' method=POST  data-ajax="false">
+		<form enctype="multipart/form-data" action='/default/index/index/#tabs1' method=POST  data-ajax="false" class="clsFormPurchase">
 		<input type="hidden" id="JobID" name="JobID" value="$PurchaseData[JobID]">
 		<input type="hidden" id="JobPurchaseID" name="JobPurchaseID" value="$PurchaseData[ID]">
 		
@@ -538,10 +689,16 @@ END;
 		
 		<div class="uk-form-row">
 			<div class="uk-grid">
-				<div class="uk-width-medium-3-4">
+				<div class="uk-width-medium-2-4">
 					<div class="md-input-wrapper md-input-wrapper-success"><label>Remarks</label>
-						<input type="text" type="text" id="Remarks" name="Remarks" value="$arrDelivery[Remarks]" class="md-input"><span class="md-input-bar"></span></div>
+						<textarea id="Remarks" name="Remarks" class="md-input">$arrDelivery[Remarks]</textarea><span class="md-input-bar"></span></div>
 					
+				</div>
+				<div class="uk-width-medium-1-4">
+					<div class="md-input-wrapper md-input-wrapper-success  divPartialDeliveryAmount" style="display:$displayPartialDelivery"><label>Partial Price Amount (RM)</label>
+						<input type="text" id="PartialDeliveryAmount" name="PartialDeliveryAmount" class="md-input PartialDeliveryAmount" value="$arrDelivery[PartialDeliveryAmount]"><span class="md-input-bar"></span>
+						<input type="hidden" id="PartialDelivery" name="PartialDelivery" class="PartialDelivery" value="$strPartialDelivery">
+					</div>
 				</div>
 				$strButtons
 			</div>
@@ -577,7 +734,7 @@ END;
 			$strButtonsCreateDelivery =<<<END
 				<div class="uk-width-medium-1-4">
 				<div class="md-input-wrapper md-input-wrapper-success">
-					<input type=submit name='CreateDelivery' ID='CreateDelivery' value="Create">
+					<input type=submit name='CreateDelivery' ID='CreateDelivery' class='CreateDelivery' value="Create">
 				<span class="md-input-bar"></span></div>
 				
 			</div>
@@ -590,6 +747,8 @@ END;
 			
 		
 	$PONo = str_replace("|", ", ", substr($PurchaseData[PONo], 1));
+
+
 			
 		$content = <<<END
 <form enctype="multipart/form-data"  action='/default/index/index/#tabs1' method=POST  data-ajax="false">
@@ -724,20 +883,24 @@ END;
 		<div class="uk-form-row">
 			<div class="uk-grid">
 				
-				<div class="uk-width-medium-1-3">
+				<div class="uk-width-medium-1-4">
 					<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Scheduled Shipping</label>
 						<input type="text" name="PurchaseShippingDate" class="md-input PurchaseShippingDate" value="$PurchaseData[PurchaseShippingDate]"><span class="md-input-bar"></span></div>
 				</div>
-				<div class="uk-width-medium-1-3">
+				<div class="uk-width-medium-1-4">
 					<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Actual Shipping</label>
 						<input type="text" name="PurchaseShippingActualDate" class="md-input PurchaseShippingActualDate" value="$PurchaseData[PurchaseShippingActualDate]"><span class="md-input-bar"></span></div>
 					
 				</div>
-				<div class="uk-width-medium-1-3">
+				<div class="uk-width-medium-1-4">
 					<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Payment Date</label>
 						<input type="text" name="PurchasePaymentDate" class="md-input PurchasePaymentDate" value="$PurchaseData[PurchasePaymentDate]"><span class="md-input-bar"></span></div>
 				</div>
-				
+				<div class="uk-width-medium-1-4">
+					<div class="md-input-wrapper md-input-wrapper-success">
+						<input type="checkbox" name="PartialDelivery" class="md-input PartialDelivery" value="1" JobPurchaseID=$JobPurchaseID $chkPartialDelivery><span class="md-input-bar"></span>  Partial Delivery
+						</div>
+				</div>
 			</div>
 		</div>	
 		$strButtons		
@@ -765,21 +928,21 @@ END;
 						<div class="uk-grid">
 							<div class="uk-width-medium-1-4">
 								<div class="md-input-wrapper md-input-wrapper-success"><label>AWB No</label>
-									<input type="text" id="DeliveryAWB" name="DeliveryAWB" class="md-input" value="$PurchaseData[DeliveryAWB]"><span class="md-input-bar"></span></div>
+									<input type="text" id="DeliveryAWB" name="DeliveryAWB" class="md-input" value=""><span class="md-input-bar"></span></div>
 								
 							</div>
 							<div class="uk-width-medium-1-4">
 								<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Good Received</label>
-									<input type="text" name="DeliveryReceivedDate" class="md-input DeliveryReceivedDate" value="$PurchaseData[DeliveryReceivedDate]"><span class="md-input-bar"></span></div>
+									<input type="text" name="DeliveryReceivedDate" class="md-input DeliveryReceivedDate" value=""><span class="md-input-bar"></span></div>
 							</div>
 							<div class="uk-width-medium-1-4">
 								<div class="md-input-wrapper md-input-wrapper-success"><label>Duty & Tax (RM)</label>
-									<input type="text" id="DutyTax" name="DutyTax" class="md-input" value="$PurchaseData[DutyTax]"><span class="md-input-bar"></span></div>
+									<input type="text" id="DutyTax" name="DutyTax" class="md-input" value=""><span class="md-input-bar"></span></div>
 								
 							</div>
 							<div class="uk-width-medium-1-4">
 								<div class="md-input-wrapper md-input-wrapper-success"><label>Freight Cost (RM)</label>
-									<input type="text" id="FreightCost" name="FreightCost" class="md-input" value="$PurchaseData[FreightCost]"><span class="md-input-bar"></span></div>
+									<input type="text" id="FreightCost" name="FreightCost" class="md-input" value=""><span class="md-input-bar"></span></div>
 							</div>
 							
 						</div>
@@ -787,10 +950,16 @@ END;
 					
 					<div class="uk-form-row">
 						<div class="uk-grid">
-							<div class="uk-width-medium-3-4">
+							<div class="uk-width-medium-2-4">
 								<div class="md-input-wrapper md-input-wrapper-success"><label>Remarks</label>
-									<input type="text" type="text" id="Remarks" name="Remarks" value="$PurchaseData[Remarks]" class="md-input"><span class="md-input-bar"></span></div>
+									<textarea id="Remarks" name="Remarks" class="md-input"></textarea><span class="md-input-bar"></span></div>
 								
+							</div>
+							<div class="uk-width-medium-1-4">
+								<div class="md-input-wrapper md-input-wrapper-success divPartialDeliveryAmount" style="display:$displayPartialDelivery"><label>Partial Price Amount (RM)</label>
+									<input type="text" id="PartialDeliveryAmount" name="PartialDeliveryAmount" class="md-input PartialDeliveryAmount" value=""><span class="md-input-bar"></span>
+									<input type="hidden" id="PartialDelivery" name="PartialDelivery" class="PartialDelivery" value="$strPartialDelivery">
+								</div>
 							</div>
 							$strButtonsCreateDelivery
 						</div>
@@ -811,8 +980,29 @@ END;
 END;
 		return $content;
 	}
-	
-	
+
+
+    public function ajaxUpdateSalesPartialAction()
+    {
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $Request = $this->getRequest();
+        $JobSalesID = $Request->getParam('JobSalesID');
+        $PartialDelivery = $Request->getParam('PartialDelivery');
+        $db->update("JobSales", array('PartialDelivery'=>$PartialDelivery), "ID=".$JobSalesID);
+
+        exit();
+    }
+
+	public function ajaxUpdatePurchasePartialAction()
+    {
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $Request = $this->getRequest();
+        $JobPurchaseID = $Request->getParam('JobPurchaseID');
+        $PartialDelivery = $Request->getParam('PartialDelivery');
+        $db->update("JobPurchase", array('PartialDelivery'=>$PartialDelivery), "ID=".$JobPurchaseID);
+
+        exit();
+    }
 	
 	public function ajaxGetDocAction()
 	{
@@ -1660,9 +1850,50 @@ END;
 				$this->_redirect('/default/index/index/edit_job/'.$JobID); 
 			
 			}
-			
-			
-			$CreateSales = $Request->getParam('CreateSales');	
+
+			/////////////////////////////////////////////////////////////
+			/////////////////////// SALES DELIVERY  /////////////////////
+            $DeleteDeliverySales = $Request->getParam('DeleteDeliverySales');
+            $JobSalesDeliveryID = $Request->getParam('JobSalesDeliveryID') ? $Request->getParam('JobSalesDeliveryID') : new Zend_Db_Expr('NULL');
+            if ($DeleteDeliverySales && $isAdmin)
+            {
+                $JobSalesID = $Request->getParam('JobSalesID') ? $Request->getParam('JobSalesID') : new Zend_Db_Expr('NULL');
+                $db->delete("JobSalesDelivery", "ID=".$JobSalesDeliveryID);
+
+                $this->appMessage->setNotice(1, "Delivery has been removed.");
+                $this->_redirect('/default/index/index/edit_job/'.$JobID."/SID/".$JobSalesID);
+            }
+
+            $CreateDeliverySales = $Request->getParam('CreateDeliverySales');
+            $SaveDeliverySales = $Request->getParam('SaveDeliverySales');
+            if (($CreateDeliverySales || $SaveDeliverySales) && $JobID && $isAdmin)
+            {
+                $JobSalesID = $Request->getParam('JobSalesID') ? $Request->getParam('JobSalesID') : new Zend_Db_Expr('NULL');
+                $SalesReadyDatePartial = $Request->getParam('SalesReadyDatePartial') ? $dispFormat->format_date_simple_to_db($Request->getParam('SalesReadyDatePartial')) : new Zend_Db_Expr('NULL');
+                $PartialDeliveryAmount = $Request->getParam('PartialDeliveryAmount') ? preg_replace("/[^0-9\.]/", "",$Request->getParam('PartialDeliveryAmount')) : new Zend_Db_Expr('NULL');
+                $Remarks = $Request->getParam('Remarks') ? $Request->getParam('Remarks') : new Zend_Db_Expr('NULL');
+
+                if ($CreateDeliverySales)
+                {
+                    $arrInsert = array("JobID"=>$JobID,"JobSalesID"=>$JobSalesID,"SalesReadyDatePartial"=>$SalesReadyDatePartial,
+                        "PartialDeliveryAmount"=>$PartialDeliveryAmount,"Remarks"=>$Remarks, "CreatedOn"=>new Zend_Db_Expr('now()'), "CreatedBy"=>$this->userInfo->ID);
+                    $db->insert("JobSalesDelivery", $arrInsert);
+
+                }else
+                {
+                    $JobSalesDeliveryID = $Request->getParam('JobSalesDeliveryID') ? $Request->getParam('JobSalesDeliveryID') : new Zend_Db_Expr('NULL');
+                    $arrUpdate = array("JobID"=>$JobID,"JobSalesID"=>$JobSalesID,"SalesReadyDatePartial"=>$SalesReadyDatePartial,
+                        "PartialDeliveryAmount"=>$PartialDeliveryAmount,"Remarks"=>$Remarks, "CreatedOn"=>new Zend_Db_Expr('now()'), "CreatedBy"=>$this->userInfo->ID);
+                    $db->update("JobSalesDelivery", $arrUpdate, "ID=".$JobSalesDeliveryID);
+
+                }
+                $this->appMessage->setNotice(1, "Delivery details saved.");
+                $this->_redirect('/default/index/index/edit_job/'.$JobID."/SID/".$JobSalesID);
+            }
+
+
+
+            $CreateSales = $Request->getParam('CreateSales');
 			if ($CreateSales && $JobID && $isAdmin)
 			{
 				$SalesCurrency = $Request->getParam('SalesCurrency') ? $Request->getParam('SalesCurrency') : new Zend_Db_Expr('NULL');	
@@ -1742,11 +1973,14 @@ END;
 				$DrawingApprovedDate = $Request->getParam('DrawingApprovedDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('DrawingApprovedDate')) : new Zend_Db_Expr('NULL');	
 				$CustomerPOReceivedDate = $Request->getParam('CustomerPOReceivedDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('CustomerPOReceivedDate')) : new Zend_Db_Expr('NULL');	
 				$SalesExpDate = $Request->getParam('SalesExpDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('SalesExpDate')) : new Zend_Db_Expr('NULL');	
-				$SalesReadyDate = $Request->getParam('SalesReadyDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('SalesReadyDate')) : new Zend_Db_Expr('NULL');	
-						
-				$arrUpdate = array("SalesCurrency"=>$SalesCurrency, "SalesPriceExchangeRate"=>$SalesPriceExchangeRate, "SalesPrice"=>$SalesPrice, 
+				$SalesReadyDate = $Request->getParam('SalesReadyDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('SalesReadyDate')) : new Zend_Db_Expr('NULL');
+
+                $PartialDelivery = $Request->getParam('PartialDelivery') ? $Request->getParam('PartialDelivery') : new Zend_Db_Expr('NULL');
+
+
+                $arrUpdate = array("SalesCurrency"=>$SalesCurrency, "SalesPriceExchangeRate"=>$SalesPriceExchangeRate, "SalesPrice"=>$SalesPrice,
 				"SalesTerms"=>$SalesTerms, "SalesPersonID"=>$SalesPersonID, "DrawingApprovedDate"=>$DrawingApprovedDate, "CustomerPOReceivedDate"=>$CustomerPOReceivedDate, 
-				"SalesExpDate"=>$SalesExpDate, "SalesReadyDate"=>$SalesReadyDate, "Remarks"=>$Remarks);
+				"SalesExpDate"=>$SalesExpDate, "SalesReadyDate"=>$SalesReadyDate,"Remarks"=>$Remarks,"PartialDelivery"=>$PartialDelivery);
 
 
 				if (!$Request->getParam('SalesCurrencyID') && $Request->getParam('SalesCurrency'))
@@ -1828,11 +2062,14 @@ END;
 				$DeliveryReceivedDate = $Request->getParam('DeliveryReceivedDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('DeliveryReceivedDate')) : new Zend_Db_Expr('NULL');	
 				$DutyTax = $Request->getParam('DutyTax') ? preg_replace("/[^0-9\.]/", "",$Request->getParam('DutyTax')) : new Zend_Db_Expr('NULL');	
 				$FreightCost = $Request->getParam('FreightCost') ? preg_replace("/[^0-9\.]/", "",$Request->getParam('FreightCost')) : new Zend_Db_Expr('NULL');	
-				$Remarks = $Request->getParam('Remarks') ? $Request->getParam('Remarks') : new Zend_Db_Expr('NULL');	
-				
-				if ($CreateDelivery)
+				$Remarks = $Request->getParam('Remarks') ? $Request->getParam('Remarks') : new Zend_Db_Expr('NULL');
+                $PartialDelivery = $Request->getParam('PartialDelivery') ? $Request->getParam('PartialDelivery') : new Zend_Db_Expr('NULL');
+                $PartialDeliveryAmount = $Request->getParam('PartialDeliveryAmount') ? $Request->getParam('PartialDeliveryAmount') : new Zend_Db_Expr('NULL');
+
+                if ($CreateDelivery)
 				{
 					$arrInsert = array("JobID"=>$JobID,"JobPurchaseID"=>$JobPurchaseID,"DeliveryAWB"=>$DeliveryAWB,"DeliveryReceivedDate"=>$DeliveryReceivedDate,
+                        "PartialDelivery"=>$PartialDelivery,"PartialDeliveryAmount"=>$PartialDeliveryAmount,
 						"DutyTax"=>$DutyTax,"FreightCost"=>$FreightCost,"Remarks"=>$Remarks, "CreatedOn"=>new Zend_Db_Expr('now()'), "CreatedBy"=>$this->userInfo->ID);
 					$db->insert("JobPurchaseDelivery", $arrInsert);
 					
@@ -1840,7 +2077,8 @@ END;
 				{
 					$JobPurchaseDeliveryID = $Request->getParam('JobPurchaseDeliveryID') ? $Request->getParam('JobPurchaseDeliveryID') : new Zend_Db_Expr('NULL');	
 					$arrUpdate = array("JobID"=>$JobID,"JobPurchaseID"=>$JobPurchaseID,"DeliveryAWB"=>$DeliveryAWB,"DeliveryReceivedDate"=>$DeliveryReceivedDate,
-					"DutyTax"=>$DutyTax,"FreightCost"=>$FreightCost,"Remarks"=>$Remarks, "CreatedOn"=>new Zend_Db_Expr('now()'), "CreatedBy"=>$this->userInfo->ID);
+                        "PartialDelivery"=>$PartialDelivery,"PartialDeliveryAmount"=>$PartialDeliveryAmount,
+						"DutyTax"=>$DutyTax,"FreightCost"=>$FreightCost,"Remarks"=>$Remarks, "CreatedOn"=>new Zend_Db_Expr('now()'), "CreatedBy"=>$this->userInfo->ID);
 					$db->update("JobPurchaseDelivery", $arrUpdate, "ID=".$JobPurchaseDeliveryID);
 
 				}
@@ -1942,14 +2180,17 @@ END;
 				//$PurchaseInvoiceNo = $Request->getParam('PurchaseInvoiceNo') ? $Request->getParam('PurchaseInvoiceNo') : new Zend_Db_Expr('NULL');	
 				$PurchaseShippingDate = $Request->getParam('PurchaseShippingDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('PurchaseShippingDate')) : new Zend_Db_Expr('NULL');	
 				$PurchaseShippingActualDate = $Request->getParam('PurchaseShippingActualDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('PurchaseShippingActualDate')) : new Zend_Db_Expr('NULL');	
-				$PurchasePaymentDate = $Request->getParam('PurchasePaymentDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('PurchasePaymentDate')) : new Zend_Db_Expr('NULL');	
-		/*		
-				$DeliveryAWB = $Request->getParam('DeliveryAWB') ? $Request->getParam('DeliveryAWB') : new Zend_Db_Expr('NULL');	
-				$DeliveryReceivedDate = $Request->getParam('DeliveryReceivedDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('DeliveryReceivedDate')) : new Zend_Db_Expr('NULL');	
-				$DutyTax = $Request->getParam('DutyTax') ? $Request->getParam('DutyTax') : new Zend_Db_Expr('NULL');	
-				$FreightCost = $Request->getParam('FreightCost') ? $Request->getParam('FreightCost') : new Zend_Db_Expr('NULL');	
-				$Remarks = $Request->getParam('Remarks') ? $Request->getParam('Remarks') : new Zend_Db_Expr('NULL');	
-		*/		
+				$PurchasePaymentDate = $Request->getParam('PurchasePaymentDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('PurchasePaymentDate')) : new Zend_Db_Expr('NULL');
+
+                $PartialDelivery = $Request->getParam('PartialDelivery') ? $Request->getParam('PartialDelivery') : new Zend_Db_Expr('NULL');
+
+                /*
+                        $DeliveryAWB = $Request->getParam('DeliveryAWB') ? $Request->getParam('DeliveryAWB') : new Zend_Db_Expr('NULL');
+                        $DeliveryReceivedDate = $Request->getParam('DeliveryReceivedDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('DeliveryReceivedDate')) : new Zend_Db_Expr('NULL');
+                        $DutyTax = $Request->getParam('DutyTax') ? $Request->getParam('DutyTax') : new Zend_Db_Expr('NULL');
+                        $FreightCost = $Request->getParam('FreightCost') ? $Request->getParam('FreightCost') : new Zend_Db_Expr('NULL');
+                        $Remarks = $Request->getParam('Remarks') ? $Request->getParam('Remarks') : new Zend_Db_Expr('NULL');
+                */
 			//	$arrUpdate = array("PONo"=>$PONo,"PODate"=>$PODate,"POFaxedDate"=>$POFaxedDate,"SupplierName"=>$SupplierName,"SupplierID"=>$SupplierID,"SupplierCode"=>$SupplierCode,
 			//	"PurchaseCurrency"=>$PurchaseCurrency,"PurchasePrice"=>$PurchasePrice,"PurchasePriceExchangeRate"=>$PurchasePriceExchangeRate,"PurchaseTerms"=>$PurchaseTerms,
 			//	"PurchaseAckNO"=>$PurchaseAckNO,"PurchaseInvoiceNo"=>$PurchaseInvoiceNo,"PurchaseShippingDate"=>$PurchaseShippingDate,
@@ -1957,7 +2198,7 @@ END;
 			//	"DeliveryReceivedDate"=>$DeliveryReceivedDate,"DutyTax"=>$DutyTax,"FreightCost"=>$FreightCost,"Remarks"=>$Remarks);
 				$arrUpdate = array("PODate"=>$PODate,"POFaxedDate"=>$POFaxedDate,"SupplierName"=>$SupplierName,"SupplierID"=>$SupplierID,"SupplierCode"=>$SupplierCode,
 				"PurchaseCurrency"=>$PurchaseCurrency,"PurchasePrice"=>$PurchasePrice,"PurchasePriceExchangeRate"=>$PurchasePriceExchangeRate,"PurchaseTerms"=>$PurchaseTerms,
-				"PurchaseShippingDate"=>$PurchaseShippingDate,
+				"PurchaseShippingDate"=>$PurchaseShippingDate,"PartialDelivery"=>$PartialDelivery,
 				"PurchaseShippingActualDate"=>$PurchaseShippingActualDate,"PurchasePaymentDate"=>$PurchasePaymentDate);
 			
 
