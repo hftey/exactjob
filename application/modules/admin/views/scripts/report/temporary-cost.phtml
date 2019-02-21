@@ -57,7 +57,9 @@
             "<TD class='report_header' style='text-align: right'><?=$this->totalFreightCost?></TD>"+
             "<TD class='report_header' style='text-align: right'><?=$this->totalPurchasePriceRM?></TD>"+
             "<TD class='report_header' style='text-align: right'><?=$this->totalPurchase?></TD>"+
-            "<TD class='report_header' style='text-align: right'><?=$this->totalSales?></TD></TR>");
+            "<TD class='report_header' style='text-align: right'><?=$this->totalSalesPartial?></TD>"+
+            "<TD class='report_header' style='text-align: right'><?=$this->totalSalesDelivered?></TD>"+
+            "</TR>");
         //$(".report_footer").html("asdasdasd");
 
         console.log($(".report_footer"));
@@ -80,7 +82,7 @@
 					<div class="md-card-content">
 
                         <?= $this->content_tempcost?>
-
+                        *Partial Delivery
 					</div>
 				</div>
 			</div>

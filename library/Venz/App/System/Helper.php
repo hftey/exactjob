@@ -255,20 +255,41 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
         $count = $showPage -1;
 
         $sql_limit = isset($recordsPerPage) ? " limit " . ($count * $recordsPerPage) . ", " . $recordsPerPage : "";
+
         $sqlAll = "SELECT Job.ID, Job.JobNo, Job.CustomerName, Job.Items, Job.JobType, Job.Completed, Job.CompletedDate, ".
             /*7*/"JobPurchase.LatestReceivedDate, JobPurchase.TotalDutyTax, JobPurchase.TotalFreightCost, JobPurchase.TotalPurchasePriceRM, ".
             /*11*/"(IF(JobPurchase.TotalDutyTax IS NULL,0,JobPurchase.TotalDutyTax)+IF(JobPurchase.TotalFreightCost IS NULL,0,JobPurchase.TotalFreightCost)+JobPurchase.TotalPurchasePriceRM) as TotalPurchase, ".
-            /*12*/"JobSales.TotalSalesPriceRM FROM Job LEFT JOIN
+            /*12*/"JobSales.TotalSalesPriceRM, JobPurchase.PartialDelivery, JobSales.PartialDeliveryAmount, JobSalesDelivered.TotalSalesPriceRM FROM Job LEFT JOIN
             (
-                SELECT Count(*) as TotalPurchase, Job.ID as JobID, MAX(DeliveryReceivedDate) as LatestReceivedDate, Sum(DutyTax) as TotalDutyTax, Sum(FreightCost) as TotalFreightCost, Sum(JobPurchaseDelivery.PurchasePriceRM) TotalPurchasePriceRM FROM Job
-                LEFT JOIN
-                (SELECT (JobPurchase.PurchasePrice * JobPurchase.PurchasePriceExchangeRate) as PurchasePriceRM, JobPurchaseDelivery.ID, JobPurchaseDelivery.JobID, sum(DutyTax) as DutyTax,sum(FreightCost) as FreightCost, MAX(DeliveryReceivedDate) as DeliveryReceivedDate FROM JobPurchase, JobPurchaseDelivery WHERE JobPurchase.ID=JobPurchaseDelivery.JobPurchaseID AND DeliveryReceivedDate IS NOT NULL GROUP BY JobPurchaseDelivery.JobPurchaseID) as JobPurchaseDelivery
+                SELECT Count(*) as TotalPurchase, Job.ID as JobID, MAX(DeliveryReceivedDate) as LatestReceivedDate, Sum(DutyTax) as TotalDutyTax, Sum(FreightCost) as TotalFreightCost, 
+                Sum(JobPurchaseDelivery.PurchasePriceRM) as TotalPurchasePriceRM, Sum(JobPurchaseDelivery.PartialDeliveryAmount) as PartialDeliveryAmount, PartialDelivery FROM Job LEFT JOIN
+                (SELECT IF(JobPurchase.PartialDelivery = 1, sum(PartialDeliveryAmount),(JobPurchase.PurchasePrice * JobPurchase.PurchasePriceExchangeRate)) as PurchasePriceRM, JobPurchaseDelivery.ID, JobPurchaseDelivery.JobID, sum(DutyTax) as DutyTax,sum(FreightCost) as FreightCost,sum(PartialDeliveryAmount) as PartialDeliveryAmount, MAX(DeliveryReceivedDate) as DeliveryReceivedDate,JobPurchase.PartialDelivery FROM JobPurchase, JobPurchaseDelivery WHERE JobPurchase.ID=JobPurchaseDelivery.JobPurchaseID AND DeliveryReceivedDate IS NOT NULL GROUP BY JobPurchaseDelivery.JobPurchaseID) as JobPurchaseDelivery
                 ON (JobPurchaseDelivery.JobID=Job.ID AND DeliveryReceivedDate IS NOT NULL)
                 WHERE JobPurchaseDelivery.ID IS NOT NULL AND (Job.JobType!='R' AND Job.JobType!='L') GROUP BY Job.ID
             ) as JobPurchase ON Job.ID=JobPurchase.JobID LEFT JOIN
             (
-                SELECT Count(*) as TotalSales, Job.ID as JobID, Sum(JobSales.SalesPrice * SalesPriceExchangeRate) as TotalSalesPriceRM, JobSales.SalesReadyDate FROM Job LEFT JOIN JobSales ON (JobSales.JobID=Job.ID) WHERE (Job.JobType!='R' AND Job.JobType!='L') GROUP BY Job.ID
-            ) as JobSales ON Job.ID=JobSales.JobID WHERE JobPurchase.LatestReceivedDate IS NOT NULL AND JobSales.SalesReadyDate IS NULL ";
+                SELECT Count(*) as TotalSales, JobSales.ID as SalesID, Job.ID as JobID, Sum(JobSales.TotalSalesPriceRM) as TotalSalesPriceRM, JobSales.SalesReadyDate, sum(JobSales.PartialDeliveryAmount) as PartialDeliveryAmount FROM Job,  
+                (
+                    SELECT JobSales.ID, JobSales.PartialDelivery, JobSales.JobID,IF(JobSales.PartialDelivery = 1,JobSalesDelivery.PartialDeliveryAmount,(JobSales.SalesPrice * JobSales.SalesPriceExchangeRate)) AS TotalSalesPriceRM, JobSales.SalesReadyDate,PartialDeliveryAmount FROM JobSales LEFT JOIN
+                    (
+                        SELECT sum(PartialDeliveryAmount) as PartialDeliveryAmount, JobSalesID FROM JobSalesDelivery GROUP BY JobSalesID
+                    ) JobSalesDelivery ON (JobSalesDelivery.JobSalesID=JobSales.ID) WHERE JobSales.SalesReadyDate IS NULL
+                    
+                ) as JobSales WHERE (JobSales.JobID=Job.ID AND Job.JobType!='R' AND Job.JobType!='L'  AND (JobSales.SalesReadyDate IS NULL AND JobSales.ID IS NOT NULL)) GROUP BY Job.ID ORDER BY JobID DESC
+            ) as JobSales ON Job.ID=JobSales.JobID LEFT JOIN
+            (
+                SELECT Count(*) as TotalSales, JobSales.ID as SalesID, Job.ID as JobID, Sum(JobSales.TotalSalesPriceRM) as TotalSalesPriceRM, JobSales.SalesReadyDate, sum(JobSales.PartialDeliveryAmount) as PartialDeliveryAmount FROM Job,  
+                (
+                    SELECT JobSales.ID, JobSales.PartialDelivery, JobSales.JobID,IF(JobSales.PartialDelivery = 1,JobSalesDelivery.PartialDeliveryAmount,(JobSales.SalesPrice * JobSales.SalesPriceExchangeRate)) AS TotalSalesPriceRM, JobSales.SalesReadyDate,PartialDeliveryAmount FROM JobSales LEFT JOIN
+                    (
+                        SELECT sum(PartialDeliveryAmount) as PartialDeliveryAmount, JobSalesID FROM JobSalesDelivery GROUP BY JobSalesID
+                    ) JobSalesDelivery ON (JobSalesDelivery.JobSalesID=JobSales.ID) WHERE JobSales.SalesReadyDate IS NOT NULL
+                    
+                ) as JobSales WHERE (JobSales.JobID=Job.ID AND Job.JobType!='R' AND Job.JobType!='L'  AND (JobSales.SalesReadyDate IS NOT NULL AND JobSales.ID IS NOT NULL)) GROUP BY Job.ID ORDER BY JobID DESC
+            ) as JobSalesDelivered ON Job.ID=JobSalesDelivered.JobID
+            WHERE JobPurchase.LatestReceivedDate IS NOT NULL AND JobSales.SalesID IS NOT NULL ";
+
+
         if ($searchString)
             $sqlAll .= $searchString;
         $sql .= $sqlAll." order by $sql_orderby $sql_limit";
@@ -282,17 +303,37 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
 
         $sqlAll = "SELECT sum(JobPurchase.TotalDutyTax) as TotalDutyTax, sum(JobPurchase.TotalFreightCost) as TotalFreightCost, sum(JobPurchase.TotalPurchasePriceRM) as TotalPurchasePriceRM, ".
             /*3*/"sum((IF(JobPurchase.TotalDutyTax IS NULL,0,JobPurchase.TotalDutyTax)+IF(JobPurchase.TotalFreightCost IS NULL,0,JobPurchase.TotalFreightCost)+JobPurchase.TotalPurchasePriceRM)) as TotalPurchase, ".
-            /*4*/"sum(JobSales.TotalSalesPriceRM) as TotalSalesPriceRM FROM Job LEFT JOIN
+            /*4*/"sum(JobSales.TotalSalesPriceRM) as TotalSalesPriceRMEx, sum(JobSales.PartialDeliveryAmount) as PartialDeliveryAmount, sum(JobSalesDelivered.TotalSalesPriceRM) as TotalSalesPriceRM
+            
+            FROM Job LEFT JOIN
             (
-                SELECT Count(*) as TotalPurchase, Job.ID as JobID, MAX(DeliveryReceivedDate) as LatestReceivedDate, Sum(DutyTax) as TotalDutyTax, Sum(FreightCost) as TotalFreightCost, Sum(JobPurchaseDelivery.PurchasePriceRM) TotalPurchasePriceRM FROM Job
-                LEFT JOIN
-                (SELECT (JobPurchase.PurchasePrice * JobPurchase.PurchasePriceExchangeRate) as PurchasePriceRM, JobPurchaseDelivery.ID, JobPurchaseDelivery.JobID, sum(DutyTax) as DutyTax,sum(FreightCost) as FreightCost, MAX(DeliveryReceivedDate) as DeliveryReceivedDate FROM JobPurchase, JobPurchaseDelivery WHERE JobPurchase.ID=JobPurchaseDelivery.JobPurchaseID AND DeliveryReceivedDate IS NOT NULL GROUP BY JobPurchaseDelivery.JobPurchaseID) as JobPurchaseDelivery
+                SELECT Count(*) as TotalPurchase, Job.ID as JobID, MAX(DeliveryReceivedDate) as LatestReceivedDate, Sum(DutyTax) as TotalDutyTax, Sum(FreightCost) as TotalFreightCost, 
+                Sum(JobPurchaseDelivery.PurchasePriceRM) TotalPurchasePriceRM, Sum(JobPurchaseDelivery.PartialDeliveryAmount) as PartialDeliveryAmount, PartialDelivery FROM Job LEFT JOIN
+                (SELECT (IF(JobPurchase.PartialDelivery = 1, sum(PartialDeliveryAmount),(JobPurchase.PurchasePrice * JobPurchase.PurchasePriceExchangeRate))) as PurchasePriceRM, JobPurchaseDelivery.ID, JobPurchaseDelivery.JobID, sum(DutyTax) as DutyTax,sum(FreightCost) as FreightCost,sum(PartialDeliveryAmount) as PartialDeliveryAmount, MAX(DeliveryReceivedDate) as DeliveryReceivedDate,JobPurchase.PartialDelivery FROM JobPurchase, JobPurchaseDelivery WHERE JobPurchase.ID=JobPurchaseDelivery.JobPurchaseID AND DeliveryReceivedDate IS NOT NULL GROUP BY JobPurchaseDelivery.JobPurchaseID) as JobPurchaseDelivery
                 ON (JobPurchaseDelivery.JobID=Job.ID AND DeliveryReceivedDate IS NOT NULL)
                 WHERE JobPurchaseDelivery.ID IS NOT NULL AND (Job.JobType!='R' AND Job.JobType!='L') GROUP BY Job.ID
             ) as JobPurchase ON Job.ID=JobPurchase.JobID LEFT JOIN
             (
-                SELECT Count(*) as TotalSales, Job.ID as JobID, Sum(JobSales.SalesPrice * SalesPriceExchangeRate) as TotalSalesPriceRM, JobSales.SalesReadyDate FROM Job LEFT JOIN JobSales ON (JobSales.JobID=Job.ID) WHERE (Job.JobType!='R' AND Job.JobType!='L') GROUP BY Job.ID
-            ) as JobSales ON Job.ID=JobSales.JobID WHERE JobPurchase.LatestReceivedDate IS NOT NULL AND JobSales.SalesReadyDate IS NULL ";
+                SELECT Count(*) as TotalSales, JobSales.ID as SalesID, Job.ID as JobID, Sum(JobSales.TotalSalesPriceRM) as TotalSalesPriceRM, JobSales.SalesReadyDate, sum(JobSales.PartialDeliveryAmount) as PartialDeliveryAmount FROM Job,  
+                (
+                    SELECT JobSales.ID, JobSales.PartialDelivery, JobSales.JobID,IF(JobSales.PartialDelivery = 1,JobSalesDelivery.PartialDeliveryAmount,(JobSales.SalesPrice * JobSales.SalesPriceExchangeRate)) AS TotalSalesPriceRM, JobSales.SalesReadyDate,PartialDeliveryAmount FROM JobSales LEFT JOIN
+                    (
+                        SELECT sum(PartialDeliveryAmount) as PartialDeliveryAmount, JobSalesID FROM JobSalesDelivery GROUP BY JobSalesID
+                    ) JobSalesDelivery ON (JobSalesDelivery.JobSalesID=JobSales.ID) WHERE JobSales.SalesReadyDate IS NULL
+                    
+                ) as JobSales WHERE (JobSales.JobID=Job.ID AND Job.JobType!='R' AND Job.JobType!='L'  AND (JobSales.SalesReadyDate IS NULL AND JobSales.ID IS NOT NULL)) GROUP BY Job.ID ORDER BY JobID DESC
+            ) as JobSales ON Job.ID=JobSales.JobID LEFT JOIN
+            (
+                SELECT Count(*) as TotalSales, JobSales.ID as SalesID, Job.ID as JobID, Sum(JobSales.TotalSalesPriceRM) as TotalSalesPriceRM, JobSales.SalesReadyDate, sum(JobSales.PartialDeliveryAmount) as PartialDeliveryAmount FROM Job,  
+                (
+                    SELECT JobSales.ID, JobSales.PartialDelivery, JobSales.JobID,IF(JobSales.PartialDelivery = 1,JobSalesDelivery.PartialDeliveryAmount,(JobSales.SalesPrice * JobSales.SalesPriceExchangeRate)) AS TotalSalesPriceRM, JobSales.SalesReadyDate,PartialDeliveryAmount FROM JobSales LEFT JOIN
+                    (
+                        SELECT sum(PartialDeliveryAmount) as PartialDeliveryAmount, JobSalesID FROM JobSalesDelivery GROUP BY JobSalesID
+                    ) JobSalesDelivery ON (JobSalesDelivery.JobSalesID=JobSales.ID) WHERE JobSales.SalesReadyDate IS NOT NULL
+                    
+                ) as JobSales WHERE (JobSales.JobID=Job.ID AND Job.JobType!='R' AND Job.JobType!='L'  AND (JobSales.SalesReadyDate IS NOT NULL AND JobSales.ID IS NOT NULL)) GROUP BY Job.ID ORDER BY JobID DESC
+            ) as JobSalesDelivered ON Job.ID=JobSalesDelivered.JobID
+            WHERE JobPurchase.LatestReceivedDate IS NOT NULL AND JobSales.SalesID IS NOT NULL ";
 
 
 
