@@ -1638,22 +1638,24 @@ END;
         $dataJobs = $arrJobs[1];
         $exportSql = $arrJobs[2];
 
-        $arrJobsTotalAmount = $sysHelper->getTempCostAmount($sqlSearch);
-
-        $this->view->totalDutyTax = number_format($arrJobsTotalAmount[0], 2, ".", ",");
-        $this->view->totalFreightCost = number_format($arrJobsTotalAmount[1], 2, ".", ",");
-        $this->view->totalPurchasePriceRM = number_format($arrJobsTotalAmount[2], 2, ".", ",");
-        $this->view->totalPurchase = number_format($arrJobsTotalAmount[3], 2, ".", ",");
-        $this->view->totalSales = number_format($arrJobsTotalAmount[4], 2, ".", ",");
-        $this->view->totalSalesPartial = number_format($arrJobsTotalAmount[5], 2, ".", ",");
-        $this->view->totalSalesDelivered = number_format($arrJobsTotalAmount[6], 2, ".", ",");
-        $totalDutyTax = $arrJobsTotalAmount[0];
-        $totalFreightCost = $arrJobsTotalAmount[1];
-        $totalPurchasePriceRM = $arrJobsTotalAmount[2];
-        $totalPurchase = $arrJobsTotalAmount[3];
-        $totalSales = $arrJobsTotalAmount[4];
-        $totalSalesPartial = $arrJobsTotalAmount[5];
-        $totalSalesDelivered = $arrJobsTotalAmount[6];
+//        $arrJobsTotalAmount = $sysHelper->getTempCostAmount($sqlSearch);
+//
+//        $this->view->totalDutyTax = number_format($arrJobsTotalAmount[0], 2, ".", ",");
+//        $this->view->totalFreightCost = number_format($arrJobsTotalAmount[1], 2, ".", ",");
+//        $this->view->totalPurchasePriceRM = number_format($arrJobsTotalAmount[2], 2, ".", ",");
+//        $this->view->totalPurchase = number_format($arrJobsTotalAmount[3], 2, ".", ",");
+//        $this->view->totalSales = number_format($arrJobsTotalAmount[4], 2, ".", ",");
+//        $this->view->totalSalesPartial = number_format($arrJobsTotalAmount[5], 2, ".", ",");
+//        $this->view->totalSalesDelivered = number_format($arrJobsTotalAmount[6], 2, ".", ",");
+//        $this->view->totalTemporaryCost = number_format($arrJobsTotalAmount[7], 2, ".", ",");
+//        $totalDutyTax = $arrJobsTotalAmount[0];
+//        $totalFreightCost = $arrJobsTotalAmount[1];
+//        $totalPurchasePriceRM = $arrJobsTotalAmount[2];
+//        $totalPurchase = $arrJobsTotalAmount[3];
+//        $totalSales = $arrJobsTotalAmount[4];
+//        $totalSalesPartial = $arrJobsTotalAmount[5];
+//        $totalSalesDelivered = $arrJobsTotalAmount[6];
+//        $totalTemporaryCost = $arrJobsTotalAmount[7];
 
 
         $sessionJobs = new Zend_Session_Namespace('sessionJobs');
@@ -1847,36 +1849,45 @@ END;
         }
 
 
-        function format_partial_sales($colnum, $rowdata, $export)
+
+
+        function format_sales_delivered($colnum, $rowdata, $export)
         {
             $dispFormat = new Venz_App_Display_Format();
-            if ($export)
-                return number_format($rowdata[14],2);
+            $rowdata[14] = $rowdata[14] == '0' ? "" : $rowdata[14];
 
-            if ($rowdata[14])
-                return $dispFormat->format_currency($rowdata[14]);
+            if ($export){
+                if ($rowdata[14]){
+                    return number_format($rowdata[15] - $rowdata[14],2) . " / " . number_format($rowdata[15],2);
+                }else{
+                    return "";
+                }
+            }
+            if ($rowdata[14]){
+                return $dispFormat->format_currency($rowdata[15] - $rowdata[14]) . "<BR><span style='line-height: 5px;'>------</span><BR>" . number_format($rowdata[15],2);
+            }
             else
                 return "";
         }
 
-        function format_partial_sales_delivered($colnum, $rowdata, $export)
+        function format_temporary_cost($colnum, $rowdata, $export)
         {
             $dispFormat = new Venz_App_Display_Format();
             if ($export)
-                return number_format($rowdata[15],2);
+                return number_format($rowdata[16],2);
 
-            if ($rowdata[15])
-                return $dispFormat->format_currency($rowdata[15]);
+            if ($rowdata[16])
+                return "<span style='color: red'>".$dispFormat->format_currency($rowdata[16])."<span>";
             else
                 return "";
         }
 
 
-        $arrHeaderMargin = array('','','Job No', 'Customer', 'Item', 'Job Type','Latest<BR>Received Date','Total<BR>Duty Tax', 'Total<BR>Freight Cost', 'Total<BR>Purchase Price', 'Total Cost','Partial Sales Delivery','Sales Delivered');
+        $arrHeaderMargin = array('','','Job No', 'Customer', 'Item', 'Job Type','Latest<BR>Received Date','Total<BR>Duty Tax', 'Total<BR>Freight Cost', 'Total<BR>Purchase Price', 'Total Cost','Remaining Sales Not Delivered<BR>------<BR>Total Sales Amount','Temporary Cost');
         $arrFormatMargin = array('{format_counterJob}', '{format_action}', '%1%', '{format_customer}', '{format_item}', '{format_jobtype}', '{format_received_date}', '{format_total_duty}', '{format_total_freight}',  '{format_total_purchase}',
-            '{format_total_cost}','{format_partial_sales}','{format_partial_sales_delivered}');
-        $arrSortMargin = array('','','Job.ID', 'Job.CustomerName', 'Job.Items', 'Job.JobType', 'JobPurchase.LatestReceivedDate', 'JobSales.TotalSalesPriceRM','TotalCostRM','ProjectMarginRM','MarginRM', '', '');
-        $arrColParamMargin = array('width=20px','width=50px','width=50px','', '', 'width=100px','width=100px','width=100px', 'nowrap width=120px','nowrap width=120px','width=120px','width=120px', 'width=120px', 'width=120px');
+            '{format_total_cost}','{format_sales_delivered}','{format_temporary_cost}');
+        $arrSortMargin = array('','','Job.ID', 'Job.CustomerName', 'Job.Items', 'Job.JobType', 'JobPurchase.LatestReceivedDate', 'JobSales.TotalSalesPriceRM','TotalCostRM','ProjectMarginRM','MarginRM', 'TotalSalesDelivered', 'TemporaryCost');
+        $arrColParamMargin = array('width=20px','width=50px','width=50px','', '', 'width=100px','width=100px','width=100px', 'nowrap width=120px','nowrap width=120px','width=120px','width=120px', 'width=120px', 'width=120px', 'width=120px');
         $aligndataMargin = 'CCCLLCCRRRRRR'; $tablewidthMargin = '1750px';
 
         $exportReportJobMargin = new Venz_App_Report_Excel(array('exportsql'=> $exportSql,  'export_name'=>'export_excel_jobmargin',  'hiddenparam'=>$strHiddenSearch));
@@ -1919,7 +1930,7 @@ END;
             $exportsql = $Request->getParam('exportsql');
             $exportReportJob = new Venz_App_Report_Excel(array('exportsql'=> base64_decode($exportsql), 'db'=>$db, 'exit'=>'No', 'hiddenparam' 	=> $strHiddenSearch, 'headings'=>$arrHeaderMargin, 'format'=>$arrFormatMargin));
             $exportReportJob->render();
-            echo ",,,,,,,".$totalDutyTax.",".$totalFreightCost.",".$totalPurchasePriceRM.",".$totalPurchase.",".$totalSalesPartial.",".$totalSalesDelivered."\n";
+           // echo ",,,,,,,".$totalDutyTax.",".$totalFreightCost.",".$totalPurchasePriceRM.",".$totalPurchase.",0,".$totalTemporaryCost."\n";
             exit();
 
         }

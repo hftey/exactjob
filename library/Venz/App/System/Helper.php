@@ -259,7 +259,18 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
         $sqlAll = "SELECT Job.ID, Job.JobNo, Job.CustomerName, Job.Items, Job.JobType, Job.Completed, Job.CompletedDate, ".
             /*7*/"JobPurchase.LatestReceivedDate, JobPurchase.TotalDutyTax, JobPurchase.TotalFreightCost, JobPurchase.TotalPurchasePriceRM, ".
             /*11*/"(IF(JobPurchase.TotalDutyTax IS NULL,0,JobPurchase.TotalDutyTax)+IF(JobPurchase.TotalFreightCost IS NULL,0,JobPurchase.TotalFreightCost)+JobPurchase.TotalPurchasePriceRM) as TotalPurchase, ".
-            /*12*/"JobSales.TotalSalesPriceRM, JobPurchase.PartialDelivery, JobSales.PartialDeliveryAmount, JobSalesDelivered.TotalSalesPriceRM FROM Job LEFT JOIN
+            /*12*/"JobSales.TotalSalesPriceRM, JobPurchase.PartialDelivery, ".
+            /*14*/"(IF (JobSales.PartialDeliveryAmount IS NULL, 0, JobSales.PartialDeliveryAmount) + IF (JobSalesDelivered.TotalSalesPriceRM IS NULL, 0, JobSalesDelivered.TotalSalesPriceRM)) AS TotalSalesDelivered, ".
+            /*15*/"JobSalesPure.TotalSalesPriceRMAll, ".
+            /*16*/"(
+                       (1 - (IF(JobSales.PartialDeliveryAmount IS NULL, 0, JobSales.PartialDeliveryAmount) + IF (JobSalesDelivered.TotalSalesPriceRM IS NULL, 0, JobSalesDelivered.TotalSalesPriceRM)) / JobSalesPure.TotalSalesPriceRMAll) * 
+
+                                (IF(JobPurchase.TotalDutyTax IS NULL,0,JobPurchase.TotalDutyTax)+IF(JobPurchase.TotalFreightCost IS NULL,0,JobPurchase.TotalFreightCost)+JobPurchase.TotalPurchasePriceRM)
+
+                                    ) as TemporaryCost
+                
+                
+                FROM Job LEFT JOIN
             (
                 SELECT Count(*) as TotalPurchase, Job.ID as JobID, MAX(DeliveryReceivedDate) as LatestReceivedDate, Sum(DutyTax) as TotalDutyTax, Sum(FreightCost) as TotalFreightCost, 
                 Sum(JobPurchaseDelivery.PurchasePriceRM) as TotalPurchasePriceRM, Sum(JobPurchaseDelivery.PartialDeliveryAmount) as PartialDeliveryAmount, PartialDelivery FROM Job LEFT JOIN
@@ -286,7 +297,9 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
                     ) JobSalesDelivery ON (JobSalesDelivery.JobSalesID=JobSales.ID) WHERE JobSales.SalesReadyDate IS NOT NULL
                     
                 ) as JobSales WHERE (JobSales.JobID=Job.ID AND Job.JobType!='R' AND Job.JobType!='L'  AND (JobSales.SalesReadyDate IS NOT NULL AND JobSales.ID IS NOT NULL)) GROUP BY Job.ID ORDER BY JobID DESC
-            ) as JobSalesDelivered ON Job.ID=JobSalesDelivered.JobID
+            ) as JobSalesDelivered ON Job.ID=JobSalesDelivered.JobID LEFT JOIN (
+                SELECT SUM(JobSales.SalesPrice * JobSales.SalesPriceExchangeRate) as TotalSalesPriceRMAll, JobSales.JobID From JobSales GROUP BY JobSales.JobID
+            )JobSalesPure ON (Job.ID=JobSalesPure.JobID)
             WHERE JobPurchase.LatestReceivedDate IS NOT NULL AND JobSales.SalesID IS NOT NULL ";
 
 
@@ -303,7 +316,8 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
 
         $sqlAll = "SELECT sum(JobPurchase.TotalDutyTax) as TotalDutyTax, sum(JobPurchase.TotalFreightCost) as TotalFreightCost, sum(JobPurchase.TotalPurchasePriceRM) as TotalPurchasePriceRM, ".
             /*3*/"sum((IF(JobPurchase.TotalDutyTax IS NULL,0,JobPurchase.TotalDutyTax)+IF(JobPurchase.TotalFreightCost IS NULL,0,JobPurchase.TotalFreightCost)+JobPurchase.TotalPurchasePriceRM)) as TotalPurchase, ".
-            /*4*/"sum(JobSales.TotalSalesPriceRM) as TotalSalesPriceRMEx, sum(JobSales.PartialDeliveryAmount) as PartialDeliveryAmount, sum(JobSalesDelivered.TotalSalesPriceRM) as TotalSalesPriceRM
+            /*4*/"sum(JobSales.TotalSalesPriceRM) as TotalSalesPriceRMEx, sum(JobSales.PartialDeliveryAmount) as PartialDeliveryAmount, ".
+            /*5*/"sum(JobSalesDelivered.TotalSalesPriceRM) as TotalSalesPriceRM
             
             FROM Job LEFT JOIN
             (
@@ -332,7 +346,9 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
                     ) JobSalesDelivery ON (JobSalesDelivery.JobSalesID=JobSales.ID) WHERE JobSales.SalesReadyDate IS NOT NULL
                     
                 ) as JobSales WHERE (JobSales.JobID=Job.ID AND Job.JobType!='R' AND Job.JobType!='L'  AND (JobSales.SalesReadyDate IS NOT NULL AND JobSales.ID IS NOT NULL)) GROUP BY Job.ID ORDER BY JobID DESC
-            ) as JobSalesDelivered ON Job.ID=JobSalesDelivered.JobID
+            ) as JobSalesDelivered ON Job.ID=JobSalesDelivered.JobID LEFT JOIN (
+                SELECT SUM(JobSales.SalesPrice * JobSales.SalesPriceExchangeRate) as TotalSalesPriceRMAll, JobSales.JobID From JobSales GROUP BY JobSales.JobID
+            )JobSalesPure ON (Job.ID=JobSalesPure.JobID)
             WHERE JobPurchase.LatestReceivedDate IS NOT NULL AND JobSales.SalesID IS NOT NULL ";
 
 
