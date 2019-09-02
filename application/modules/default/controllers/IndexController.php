@@ -3,6 +3,7 @@
 class IndexController extends Venz_Zend_Controller_Action {
 
 	private $_PathJobDoc = '/var/www/html/raymond/exact/exactjob/Doc';
+//	private $_PathJobDoc = 'D:/Websites/exactjob/Doc';
 
 	public function init()
 	{
@@ -621,8 +622,19 @@ END;
 			$listPurchaseInvoiceNo .= $display;
 			$DocPurchaseInvoiceNoCSS = "md-input-success";
 			
-		}		
-		
+		}
+
+		$arrPurchaseDocAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='PurchaseDONoDoc' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." AND JobPurchaseID=".$JobPurchaseID." ORDER BY DateSubmitted DESC");
+		$listPurchaseDONo = ""; $DocPurchaseDONoCSS = "";
+		foreach ($arrPurchaseDocAll as $arrUploads)
+		{
+			$display = "<a target='_blank' href='/default/index/doc-view/JobDocumentsID/".$arrUploads['ID']."'>".
+				"<img title='".$arrUploads['Name']." by ".$arrUploads['Username']."' src='/images/icons/IconViewSmall.png'></a> ".$arrUploads['Name']."<BR>";
+			$listPurchaseDONo .= $display;
+			$DocPurchaseDONoCSS = "md-input-success";
+
+		}
+
 		if ($PID == $JobPurchaseID)
 		{
 			$butExpand = "<img class='clsPurchaseExpand' style='cursor: pointer' status='show' src='/images/icons/IconExpandHide.png'>";
@@ -653,6 +665,17 @@ END;
 					
 				</div>
 END;
+			}
+
+			$arrPurchaseDocAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='PurchaseDeliveryDONoDoc' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." AND JobPurchaseDeliveryID=".$arrDelivery[ID]." ORDER BY DateSubmitted DESC");
+			$listPurchaseDeliveryDONo = ""; $DocPurchaseDeliveryDONoCSS = "";
+			foreach ($arrPurchaseDocAll as $arrUploads)
+			{
+				$display = "<a target='_blank' href='/default/index/doc-view/JobDocumentsID/".$arrUploads['ID']."'>".
+					"<img title='".$arrUploads['Name']." by ".$arrUploads['Username']."' src='/images/icons/IconViewSmall.png'></a> ".$arrUploads['Name']."<BR>";
+				$listPurchaseDeliveryDONo .= $display;
+				$DocPurchaseDeliveryDONoCSS  = "md-input-success";
+
 			}
 			
 			$arrDelivery[DeliveryReceivedDate] = $dispFormat->format_date_db_to_simple($arrDelivery['DeliveryReceivedDate']);
@@ -695,9 +718,23 @@ END;
 					
 				</div>
 				<div class="uk-width-medium-1-4">
-					<div class="md-input-wrapper md-input-wrapper-success  divPartialDeliveryAmount" style="display:$displayPartialDelivery"><label>Partial Price Amount (RM)</label>
-						<input type="text" id="PartialDeliveryAmount" name="PartialDeliveryAmount" class="md-input PartialDeliveryAmount" value="$arrDelivery[PartialDeliveryAmount]"><span class="md-input-bar"></span>
-						<input type="hidden" id="PartialDelivery" name="PartialDelivery" class="PartialDelivery" value="$strPartialDelivery">
+					<div class="uk-grid">
+						<div class="uk-width-medium-1-1">
+							<div class="md-input-wrapper md-input-wrapper-success  divPartialDeliveryAmount" style="display:$displayPartialDelivery"><label>Partial Price Amount (RM)</label>
+								<input type="text" id="PartialDeliveryAmount" name="PartialDeliveryAmount" class="md-input PartialDeliveryAmount" value="$arrDelivery[PartialDeliveryAmount]"><span class="md-input-bar"></span>
+								<input type="hidden" id="PartialDelivery" name="PartialDelivery" class="PartialDelivery" value="$strPartialDelivery">
+							</div>
+						</div>
+						<div class="uk-width-medium-1-1">
+							<div class="md-input-wrapper md-input-wrapper-success md-input-filled divPartialDeliveryDO" style="display:$displayPartialDelivery"><label><i class="material-icons">&#xE89C;</i> Delivery Order</label>
+								<div class="md-input md-input-doc $DocPurchaseDeliveryDONoCSS" style='height: 100%;width: 100%;display: inline-flex;'>
+									<div style='display: inline-block'><img id='idUploadDoc' DocType="PurchaseDeliveryDONoDoc" JobID=$PurchaseData[JobID] JobPurchaseDeliveryID=$arrDelivery[ID] style='cursor: pointer' src='/images/icons/IconUpload2.png'> 
+									&raquo;</div>
+									<div style='display: inline-block'> $listPurchaseDeliveryDONo </div>
+								</div><span class="md-input-bar"></span>
+							</div>
+						</div>
+
 					</div>
 				</div>
 				$strButtons
@@ -859,7 +896,7 @@ END;
 		-->
 		<div class="uk-form-row">
 			<div class="uk-grid">
-				<div class="uk-width-medium-1-2">
+				<div class="uk-width-medium-1-3">
 					<div class="md-input-wrapper md-input-wrapper-success md-input-filled"><label><i class="material-icons">&#xE89C;</i> Order Ack.</label>
 						<div class="md-input md-input-doc $DocPurchaseAckNOCSS" style='height: 100%;width: 100%;display: inline-flex;'>
 							<div style='display: inline-block'><img id='idUploadDoc' DocType="PurchaseAckNODoc" JobID=$PurchaseData[JobID] JobPurchaseID=$PurchaseData[ID] style='cursor: pointer' src='/images/icons/IconUpload2.png'> 
@@ -868,12 +905,21 @@ END;
 						</div><span class="md-input-bar"></span>
 					</div>
 				</div>
-				<div class="uk-width-medium-1-2">
+				<div class="uk-width-medium-1-3">
 					<div class="md-input-wrapper md-input-wrapper-success md-input-filled"><label><i class="material-icons">&#xE89C;</i> Invoice</label>
 						<div class="md-input md-input-doc $DocPurchaseInvoiceNoCSS" style='height: 100%;width: 100%;display: inline-flex;'>
 							<div style='display: inline-block'><img id='idUploadDoc' DocType="PurchaseInvoiceNoDoc" JobID=$PurchaseData[JobID] JobPurchaseID=$PurchaseData[ID] style='cursor: pointer' src='/images/icons/IconUpload2.png'> 
 							&raquo;</div>
 							<div style='display: inline-block'>$listPurchaseInvoiceNo</div>
+						</div><span class="md-input-bar"></span>
+					</div>
+				</div>
+				<div class="uk-width-medium-1-3">
+					<div class="md-input-wrapper md-input-wrapper-success md-input-filled"><label><i class="material-icons">&#xE89C;</i> Delivery Order</label>
+						<div class="md-input md-input-doc $DocPurchaseDONoCSS" style='height: 100%;width: 100%;display: inline-flex;'>
+							<div style='display: inline-block'><img id='idUploadDoc' DocType="PurchaseDONoDoc" JobID=$PurchaseData[JobID] JobPurchaseID=$PurchaseData[ID] style='cursor: pointer' src='/images/icons/IconUpload2.png'> 
+							&raquo;</div>
+							<div style='display: inline-block'>$listPurchaseDONo</div>
 						</div><span class="md-input-bar"></span>
 					</div>
 				</div>
@@ -956,9 +1002,16 @@ END;
 								
 							</div>
 							<div class="uk-width-medium-1-4">
-								<div class="md-input-wrapper md-input-wrapper-success divPartialDeliveryAmount" style="display:$displayPartialDelivery"><label>Partial Price Amount (RM)</label>
-									<input type="text" id="PartialDeliveryAmount" name="PartialDeliveryAmount" class="md-input PartialDeliveryAmount" value=""><span class="md-input-bar"></span>
-									<input type="hidden" id="PartialDelivery" name="PartialDelivery" class="PartialDelivery" value="$strPartialDelivery">
+								<div class="uk-grid">
+									<div class="uk-width-medium-1-1">
+										<div class="md-input-wrapper md-input-wrapper-success divPartialDeliveryAmount" style="display:$displayPartialDelivery"><label>Partial Price Amount (RM)</label>
+											<input type="text" id="PartialDeliveryAmount" name="PartialDeliveryAmount" class="md-input PartialDeliveryAmount" value=""><span class="md-input-bar"></span>
+											<input type="hidden" id="PartialDelivery" name="PartialDelivery" class="PartialDelivery" value="$strPartialDelivery">
+										</div>
+									</div>
+									<div class="uk-width-medium-1-1 divPartialDeliveryDO" style="display:$displayPartialDelivery">
+									Delivery Order documents can be uploaded once the details are created.
+									</div>
 								</div>
 							</div>
 							$strButtonsCreateDelivery
@@ -1255,6 +1308,9 @@ END;
 		}else if ($DocType=="PurchaseInvoiceNoDoc"){
 			$strName = str_replace("|".$arrDoc["Name"], "", $arrJobPurchase['PurchaseInvoiceNo']);
 			$db->Update("JobPurchase", array("PurchaseInvoiceNo"=>$strName), "ID=".$arrJobPurchase['ID']);
+		}else if ($DocType=="PurchaseDODoc"){
+			$strName = str_replace("|".$arrDoc["Name"], "", $arrJobPurchase['PurchaseDONo']);
+			$db->Update("JobPurchase", array("PurchaseInvoiceNo"=>$strName), "ID=".$arrJobPurchase['ID']);
 		}
 		
 		
@@ -1324,6 +1380,7 @@ END;
 		$db = Zend_Db_Table::getDefaultAdapter();
 		$JobID = $Request->getParam('JobID');
 		$JobPurchaseID = $Request->getParam('JobPurchaseID');
+		$JobPurchaseDeliveryID = $Request->getParam('JobPurchaseDeliveryID');
 		$JobSalesID = $Request->getParam('JobSalesID');
 		if (!$JobID)
 			exit();
@@ -1334,6 +1391,8 @@ END;
 		$arrJob = $db->fetchRow("SELECT * FROM Job where ID=".$JobID);
 		if ($JobPurchaseID)
 			$arrJobPurchase = $db->fetchRow("SELECT * FROM JobPurchase where ID=".$JobPurchaseID);
+		if ($JobPurchaseDeliveryID)
+			$arrJobPurchaseDelivery = $db->fetchRow("SELECT * FROM JobPurchaseDelivery where ID=".$JobPurchaseDeliveryID);
 		if ($JobSalesID)
 			$arrJobSales = $db->fetchRow("SELECT * FROM JobSales where ID=".$JobSalesID);
 		
@@ -1356,6 +1415,8 @@ END;
 		if (!$errorFile){
 		
 			$arrInsert = array("JobID"=>$JobID, "Name"=>$Name, "DocType"=>$DocType, "DateSubmitted"=>new Zend_Db_Expr("NOW()"), "SubmittedBy"=>$this->userInfo->ID);
+			if ($JobPurchaseDeliveryID)
+				$arrInsert['JobPurchaseDeliveryID'] = $JobPurchaseDeliveryID;
 			if ($JobPurchaseID)
 				$arrInsert['JobPurchaseID'] = $JobPurchaseID;
 			if ($JobSalesID)
@@ -1386,6 +1447,10 @@ END;
 				$db->Update("JobPurchase", array("PurchaseAckNO"=>$arrJobPurchase['PurchaseAckNO']."|".$Name), "ID=".$arrJobPurchase['ID']);
 			}else if ($DocType=="PurchaseInvoiceNoDoc"){
 				$db->Update("JobPurchase", array("PurchaseInvoiceNo"=>$arrJobPurchase['PurchaseInvoiceNo']."|".$Name), "ID=".$arrJobPurchase['ID']);
+			}else if ($DocType=="PurchaseDONoDoc"){
+				$db->Update("JobPurchase", array("PurchaseDONo"=>$arrJobPurchase['PurchaseDONo']."|".$Name), "ID=".$arrJobPurchase['ID']);
+			}else if ($DocType=="PurchaseDeliveryDONoDoc"){
+				$db->Update("JobPurchaseDelivery", array("PurchaseDONo"=>$arrJobPurchaseDelivery['PurchaseDONo']."|".$Name), "ID=".$arrJobPurchaseDelivery['ID']);
 			}
 			
 			
@@ -1521,6 +1586,7 @@ END;
 		$db = Zend_Db_Table::getDefaultAdapter();
 		$JobID = $Request->getParam('JobID');
 		$JobPurchaseID = $Request->getParam('JobPurchaseID');
+		$JobPurchaseDeliveryID = $Request->getParam('JobPurchaseDeliveryID');
 		$JobSalesID = $Request->getParam('JobSalesID');
 		$DocType = $Request->getParam('DocType');
 		$this->view->JobID = $JobID;
@@ -1530,13 +1596,25 @@ END;
 		$arrJob = $db->fetchRow("SELECT * FROM Job where ID=".$JobID);
 		
 	
-		if ($JobPurchaseID)
+		if ($JobPurchaseID){
+			$listUploads = "<div style='display: inline-block'><img id='idUploadDoc' DocType='".$DocType."' JobID='".$JobID."' JobPurchaseID='".$JobPurchaseID."' style='cursor: pointer' src='/images/icons/IconUpload2.png'> &raquo;</div><div style='display: inline-block'>";
 			$arrUploadsAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='".$DocType."' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." AND JobPurchaseID='".$JobPurchaseID."' ORDER BY DateSubmitted DESC");
-		else if ($JobSalesID)
+		}
+		else if ($JobSalesID){
+
+			$listUploads = "<div style='display: inline-block'><img id='idUploadDoc' DocType='".$DocType."' JobID='".$JobID."' JobSalesID='".$JobSalesID."' style='cursor: pointer' src='/images/icons/IconUpload2.png'> &raquo;</div><div style='display: inline-block'>";
 			$arrUploadsAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='".$DocType."' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." AND JobSalesID='".$JobSalesID."' ORDER BY DateSubmitted DESC");
-		else
+		}
+		else if ($JobPurchaseDeliveryID){
+
+			$listUploads = "<div style='display: inline-block'><img id='idUploadDoc' DocType='".$DocType."' JobID='".$JobID."' JobPurchaseDeliveryID='".$JobPurchaseDeliveryID."' style='cursor: pointer' src='/images/icons/IconUpload2.png'> &raquo;</div><div style='display: inline-block'>";
+			$arrUploadsAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='".$DocType."' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." AND JobPurchaseDeliveryID='".$JobPurchaseDeliveryID."' ORDER BY DateSubmitted DESC");
+		}
+		else{
+
+			$listUploads = "<div style='display: inline-block'><img id='idUploadDoc' DocType='".$DocType."' JobID='".$JobID."' style='cursor: pointer' src='/images/icons/IconUpload2.png'> &raquo;</div><div style='display: inline-block'>";
 			$arrUploadsAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='".$DocType."' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." ORDER BY DateSubmitted DESC");
-		$listUploads = "<div style='display: inline-block'><img id='idUploadDoc' DocType='".$DocType."' JobID='".$JobID."' style='cursor: pointer' src='/images/icons/IconUpload2.png'> &raquo;</div><div style='display: inline-block'>";
+		}
 		foreach ($arrUploadsAll as $arrUploads)
 		{
 			
@@ -1575,10 +1653,12 @@ END;
 		$db = Zend_Db_Table::getDefaultAdapter();
 		$JobID = $Request->getParam('JobID');
 		$JobPurchaseID = $Request->getParam('JobPurchaseID');
+		$JobPurchaseDeliveryID = $Request->getParam('JobPurchaseDeliveryID');
 		$JobSalesID = $Request->getParam('JobSalesID');
 		$DocType = $Request->getParam('DocType');
 		$this->view->JobID = $JobID;
 		$this->view->JobPurchaseID = $JobPurchaseID;
+		$this->view->JobPurchaseDeliveryID = $JobPurchaseDeliveryID;
 		$this->view->JobSalesID = $JobSalesID;
 		$this->view->DocType = $DocType;
 		$arrJob = $db->fetchRow("SELECT * FROM Job where ID=".$JobID);
@@ -1628,6 +1708,14 @@ END;
 			$this->view->DefaultName = "";
 			$this->view->DocTitle = "Purchasing: Invoice";
 			$this->view->DocName = "Purchasing: Invoice No.";
+		}else if ($DocType=="PurchaseDONoDoc"){
+			$this->view->DefaultName = "";
+			$this->view->DocTitle = "Purchasing: Delivery Order";
+			$this->view->DocName = "Purchasing: Delivery Order No.";
+		}else if ($DocType=="PurchaseDeliveryDONoDoc"){
+			$this->view->DefaultName = "";
+			$this->view->DocTitle = "Purchasing: Delivery Order";
+			$this->view->DocName = "Purchasing: Delivery Order No.";
 		}
 		
 	
@@ -1635,6 +1723,8 @@ END;
 			$arrUploadsAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='".$DocType."' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." AND JobPurchaseID='".$JobPurchaseID."' ORDER BY DateSubmitted DESC");
 		else if ($JobSalesID)
 			$arrUploadsAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='".$DocType."' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." AND JobSalesID='".$JobSalesID."' ORDER BY DateSubmitted DESC");
+		else if ($JobPurchaseDeliveryID)
+			$arrUploadsAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='".$DocType."' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." AND JobPurchaseDeliveryID='".$JobPurchaseDeliveryID."' ORDER BY DateSubmitted DESC");
 		else
 			$arrUploadsAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='".$DocType."' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." ORDER BY DateSubmitted DESC");
 		$this->view->listUploads = "";
