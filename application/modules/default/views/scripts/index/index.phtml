@@ -391,6 +391,16 @@ $(document).ready(function() {
             }
         })
 
+        objParent.find(".divPartialDeliveryDO").each(function(){
+            if (objCheck.is(':checked')){
+                $(this).show();
+            }else{
+                $(this).hide();
+            }
+        })
+
+
+
     })
 
 	
@@ -866,6 +876,7 @@ $(document).ready(function() {
 	$(document).on("click", "#idUploadDoc", function(event){	
 		var JobID = $(this).attr("JobID");
 		var JobPurchaseID = $(this).attr("JobPurchaseID");
+        var JobPurchaseDeliveryID = $(this).attr("JobPurchaseDeliveryID");
 		var JobSalesID = $(this).attr("JobSalesID");
 		var objUpload = $(this).parent().parent();
 		var DocType = $(this).attr("DocType");
@@ -875,7 +886,7 @@ $(document).ready(function() {
 				'Close': function() {
 					$('#idDialog').dialog('close');
 					objUpload.html("<img src='/images/icons/IconIndicator.gif'>");
-					$.post("/default/index/doc-get-list",{JobID:JobID,JobPurchaseID:JobPurchaseID,JobSalesID:JobSalesID,DocType:DocType},function(result){
+					$.post("/default/index/doc-get-list",{JobID:JobID,JobPurchaseID:JobPurchaseID,JobSalesID:JobSalesID,JobPurchaseDeliveryID:JobPurchaseDeliveryID, DocType:DocType},function(result){
 						console.log(result);
 						objUpload.html(result);
 						objUpload.addClass("md-input-success");
@@ -886,9 +897,7 @@ $(document).ready(function() {
 			},
 			open: function( event, ui ) {
 				$(this).html("<img src='/images/icons/IconIndicator.gif'>");
-				$(this).load("/default/index/doc-upload-form",{JobID:JobID, JobPurchaseID:JobPurchaseID, JobSalesID:JobSalesID, DocType:DocType});
-				
-				
+				$(this).load("/default/index/doc-upload-form",{JobID:JobID, JobPurchaseID:JobPurchaseID, JobSalesID:JobSalesID, JobPurchaseDeliveryID:JobPurchaseDeliveryID, DocType:DocType});
 			},
 			destroy: function( event, ui ) {
 			}

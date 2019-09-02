@@ -463,3 +463,10 @@ CREATE TABLE IF NOT EXISTS `JobSalesDelivery` (
   `CreatedBy` int(11) DEFAULT NULL,
   PRIMARY KEY  (`ID`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+/* 1 Sept 2019 */
+ALTER TABLE `JobPurchase` ADD PurchaseDONo varchar(32) default NULL;
+ALTER TABLE `JobPurchaseDelivery` ADD PurchaseDONo varchar(32) default NULL;
+
+ALTER TABLE `JobDocuments` ADD JobPurchaseDeliveryID int(12) default NULL;
