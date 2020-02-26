@@ -470,3 +470,7 @@ ALTER TABLE `JobPurchase` ADD PurchaseDONo varchar(32) default NULL;
 ALTER TABLE `JobPurchaseDelivery` ADD PurchaseDONo varchar(32) default NULL;
 
 ALTER TABLE `JobDocuments` ADD JobPurchaseDeliveryID int(12) default NULL;
+
+/* 24 Jan 2020 */
+ALTER TABLE `JobPurchase` ADD PurchasePLNo varchar(32) default NULL;
+ALTER TABLE `JobPurchaseDelivery` ADD PurchasePLNo varchar(32) default NULL;

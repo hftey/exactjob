@@ -635,6 +635,19 @@ END;
 
 		}
 
+
+		$arrPurchaseDocAll = $db->fetchAll("SELECT JobDocuments.*, ACLUsers.Name as Username FROM JobDocuments, ACLUsers WHERE DocType='PurchasePLNoDoc' AND JobDocuments.SubmittedBy=ACLUsers.ID AND JobID=".$JobID." AND JobPurchaseID=".$JobPurchaseID." ORDER BY DateSubmitted DESC");
+		$listPurchasePLNo = ""; $DocPurchasePLNoCSS = "";
+		foreach ($arrPurchaseDocAll as $arrUploads)
+		{
+			$display = "<a target='_blank' href='/default/index/doc-view/JobDocumentsID/".$arrUploads['ID']."'>".
+				"<img title='".$arrUploads['Name']." by ".$arrUploads['Username']."' src='/images/icons/IconViewSmall.png'></a> ".$arrUploads['Name']."<BR>";
+			$listPurchasePLNo .= $display;
+			$DocPurchasePLNoCSS = "md-input-success";
+
+		}
+
+
 		if ($PID == $JobPurchaseID)
 		{
 			$butExpand = "<img class='clsPurchaseExpand' style='cursor: pointer' status='show' src='/images/icons/IconExpandHide.png'>";
@@ -896,7 +909,7 @@ END;
 		-->
 		<div class="uk-form-row">
 			<div class="uk-grid">
-				<div class="uk-width-medium-1-3">
+				<div class="uk-width-medium-1-2">
 					<div class="md-input-wrapper md-input-wrapper-success md-input-filled"><label><i class="material-icons">&#xE89C;</i> Order Ack.</label>
 						<div class="md-input md-input-doc $DocPurchaseAckNOCSS" style='height: 100%;width: 100%;display: inline-flex;'>
 							<div style='display: inline-block'><img id='idUploadDoc' DocType="PurchaseAckNODoc" JobID=$PurchaseData[JobID] JobPurchaseID=$PurchaseData[ID] style='cursor: pointer' src='/images/icons/IconUpload2.png'> 
@@ -905,7 +918,7 @@ END;
 						</div><span class="md-input-bar"></span>
 					</div>
 				</div>
-				<div class="uk-width-medium-1-3">
+				<div class="uk-width-medium-1-2">
 					<div class="md-input-wrapper md-input-wrapper-success md-input-filled"><label><i class="material-icons">&#xE89C;</i> Invoice</label>
 						<div class="md-input md-input-doc $DocPurchaseInvoiceNoCSS" style='height: 100%;width: 100%;display: inline-flex;'>
 							<div style='display: inline-block'><img id='idUploadDoc' DocType="PurchaseInvoiceNoDoc" JobID=$PurchaseData[JobID] JobPurchaseID=$PurchaseData[ID] style='cursor: pointer' src='/images/icons/IconUpload2.png'> 
@@ -914,12 +927,25 @@ END;
 						</div><span class="md-input-bar"></span>
 					</div>
 				</div>
-				<div class="uk-width-medium-1-3">
+			</div>
+		</div>		
+		<div class="uk-form-row">
+			<div class="uk-grid">
+				<div class="uk-width-medium-1-2">
 					<div class="md-input-wrapper md-input-wrapper-success md-input-filled"><label><i class="material-icons">&#xE89C;</i> Delivery Order</label>
 						<div class="md-input md-input-doc $DocPurchaseDONoCSS" style='height: 100%;width: 100%;display: inline-flex;'>
 							<div style='display: inline-block'><img id='idUploadDoc' DocType="PurchaseDONoDoc" JobID=$PurchaseData[JobID] JobPurchaseID=$PurchaseData[ID] style='cursor: pointer' src='/images/icons/IconUpload2.png'> 
 							&raquo;</div>
 							<div style='display: inline-block'>$listPurchaseDONo</div>
+						</div><span class="md-input-bar"></span>
+					</div>
+				</div>
+				<div class="uk-width-medium-1-2">
+					<div class="md-input-wrapper md-input-wrapper-success md-input-filled"><label><i class="material-icons">&#xE89C;</i> Packing List</label>
+						<div class="md-input md-input-doc $DocPurchasePLNoCSS" style='height: 100%;width: 100%;display: inline-flex;'>
+							<div style='display: inline-block'><img id='idUploadDoc' DocType="PurchasePLNoDoc" JobID=$PurchaseData[JobID] JobPurchaseID=$PurchaseData[ID] style='cursor: pointer' src='/images/icons/IconUpload2.png'> 
+							&raquo;</div>
+							<div style='display: inline-block'>$listPurchasePLNo</div>
 						</div><span class="md-input-bar"></span>
 					</div>
 				</div>
