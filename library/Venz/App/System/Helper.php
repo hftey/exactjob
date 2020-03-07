@@ -143,7 +143,7 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
 		/*21*/ "JobSales.DrawingApprovedDate, Job.Completed, JobPayments.PaymentAmountRM, JobClaims.TotalClaimsRM, (ifnull(JobPayments.PaymentAmountRM, 0) - ifnull(JobClaims.TotalClaimsRM, 0) - ifnull(JobPurchase.TotalDeliveryCost,0)) as MarginRM, ".
 		/*26*/ "(JobSales.SalesPrice * JobSales.SalesPriceExchangeRate) as SalesRM, SalesPriceExchangeRate, Job.CompletedDate, JobPurchase.TotalDeliveryCost, ".
 		/*30*/ " (ifnull((JobSales.SalesPrice * JobSales.SalesPriceExchangeRate), 0) - ifnull(JobPurchase.TotalPurchasePriceRM, 0) - ifnull(JobClaims.TotalClaimsRM, 0) - ifnull(JobPurchase.TotalDeliveryCost,0)) as ProjectMarginRM, ".
-		/*31*/ " JobSales.ID as JobSalesID ".
+		/*31*/ " JobSales.ID as JobSalesID, Job.PrincipleName ".
 		" FROM Job, JobSales LEFT JOIN ACLUsers ON (JobSales.SalesPersonID=ACLUsers.ID) ".
 		" LEFT JOIN (SELECT SUM(PaymentAmountRM) as PaymentAmountRM, JobID FROM  ".
 		" (SELECT IF(PaymentReceive, PaymentCurrencyExchangeRate * PaymentAmount, PaymentCurrencyExchangeRate * PaymentAmount * -1) as PaymentAmountRM, JobID FROM JobPayments) as JobPayments GROUP BY JobID) as JobPayments ON (JobPayments.JobID = JobSales.JobID) ".
