@@ -3559,20 +3559,44 @@ END;
 			{
 				return $rowdata[1];
 			}
+
+			function format_customer_sales($colnum, $rowdata)
+			{
+				return $rowdata[2];
+			}
+
+			function format_enduser($colnum, $rowdata)
+			{
+				$strPrinciple = "";
+				if ($rowdata[32])
+					$strPrinciple = $rowdata[32];
+
+				return $strPrinciple;
+
+			}
+
+			function format_item($colnum, $rowdata){
+
+				return $rowdata[6];
+
+			}
 			
 
 			
-			$arrHeader = array ('', '', 'Job No', 'Date<BR>Received<BR>Cust. PO.', 'Customer /<BR>Items', 'Purchase<BR>Order', 'Selling Price', 'Inspection<BR>Report', 
-				'Sales Order<BR>Ack', 'Customer<BR>Expected<BR>Date', 'Goods<BR>Ready<BR>Date', 'Exact<BR>Invoice', 'Delivery<BR>Order', 
+//			$arrHeader = array ('', '', 'Job No', 'Date<BR>Received<BR>Cust. PO.', 'Customer /<BR>Items', 'Purchase<BR>Order', 'Selling Price', 'Inspection<BR>Report',
+//				'Sales Order<BR>Ack', 'Customer<BR>Expected<BR>Date', 'Goods<BR>Ready<BR>Date', 'Exact<BR>Invoice', 'Delivery<BR>Order',
+//				'Service<BR>Report', 'Drawing<BR>Approved', 'Sales<BR>Person', '');
+			$arrHeader = array ('', '', 'Job No', 'Date<BR>Received<BR>Cust. PO.', 'Customer','End User','Items', 'Purchase<BR>Order', 'Selling Price', 'Inspection<BR>Report',
+				'Sales Order<BR>Ack', 'Customer<BR>Expected<BR>Date', 'Goods<BR>Ready<BR>Date', 'Exact<BR>Invoice', 'Delivery<BR>Order',
 				'Service<BR>Report', 'Drawing<BR>Approved', 'Sales<BR>Person', '');
-			$arrFormat = array('{format_counterSales}',  '{format_action}', '{format_jobnosales}', '{format_CustPOReceiveddate}', '{format_customer}', '{format_PO}', '{format_sellingprice}',   
+			$arrFormat = array('{format_counterSales}',  '{format_action}', '{format_jobnosales}', '{format_CustPOReceiveddate}', '{format_customer_sales}','{format_enduser}', '{format_item}', '{format_PO}', '{format_sellingprice}',
 				'{format_inspreport}', '{format_soa}', '{format_expecteddate}', '{format_goodsreadydate}', '{format_docExactInv}', 
 				'{format_docDO}','{format_docServiceReport}', '{format_drawingapproveddate}','%19%',  '{format_action}');
 		
-			$arrHeaderEx = array ('', '', 'Job No', 'Date<BR>Received<BR>Cust. PO.', 'Customer /<BR>Items', 'Purchase<BR>Order', 'Selling Price', 'Selling Price<BR>RM', 'Inspection<BR>Report', 
+			$arrHeaderEx = array ('', '', 'Job No', 'Date<BR>Received<BR>Cust. PO.', 'Customer','End User','Items', 'Purchase<BR>Order', 'Selling Price', 'Selling Price<BR>RM', 'Inspection<BR>Report',
 				'Sales Order<BR>Ack', 'Customer<BR>Expected<BR>Date', 'Goods<BR>Ready<BR>Date', 'Exact<BR>Invoice', 'Delivery<BR>Order', 
 				'Service<BR>Report', 'Drawing<BR>Approved', 'Sales<BR>Person', '');
-			$arrFormatEx = array('{format_counterSales}',  '{format_action}', '{format_jobnosales}', '{format_CustPOReceiveddate}', '{format_customer}', '{format_PO}', '{format_sellingprice_ex}','{format_sellingprice_ex_rm}',   
+			$arrFormatEx = array('{format_counterSales}',  '{format_action}', '{format_jobnosales}', '{format_CustPOReceiveddate}', '{format_customer_sales}', '{format_enduser}',  '{format_item}', '{format_PO}', '{format_sellingprice_ex}','{format_sellingprice_ex_rm}',
 				'{format_inspreport}', '{format_soa}', '{format_expecteddate}', '{format_goodsreadydate}', '{format_docExactInv}', 
 				'{format_docDO}','{format_docServiceReport}', '{format_drawingapproveddate}','%19%',  '{format_action}');
 		
@@ -3580,7 +3604,7 @@ END;
 			$arrSort = array('','','Job.JobNo', 'Job.CustomerPOReceivedDate', 'Job.CustomerName', '', '', 'ProjectMarginRM', 'MarginRM', '',
 				'', 'Job.SalesExpDate', 'Job.SalesReadyDate', '', '', '', 'Job.DrawingApprovedDate', 'SalesPerson');
 			$arrColParam = array('','width=30px','width=75px', 'width=75px', '', '', '','','nowrap','nowrap', '','width=75px','width=75px','','','','width=75px','width=100px','width=30px');
-			$aligndata = 'CCCCLLRRRLLCCLLLCCC'; $tablewidth = '1650px';
+			$aligndata = 'CCCCLLLLRRRLLCCLLLCCC'; $tablewidth = '1850px';
 
 			$exportReport = new Venz_App_Report_Excel(array('exportsql'=> $exportSql, 'hiddenparam'=>'<input type=hidden name="Search" value="Search">'));	
 				
