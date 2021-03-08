@@ -3,7 +3,7 @@
 class IndexController extends Venz_Zend_Controller_Action {
 
 	private $_PathJobDoc = '/var/www/html/raymond/exact/exactjob/Doc';
-//	private $_PathJobDoc = 'D:/Websites/exactjob/Doc';
+//	private $_PathJobDoc = 'C:/Websites/exactjob/Doc';
 
 	public function init()
 	{
@@ -1382,7 +1382,8 @@ END;
 			
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-stream');
-			header('Content-Disposition: attachment; filename="'.$arrDoc['Name'].".".$ext.'"');
+            header('Content-Type: '.mime_content_type($arrDoc['Name'].".".$ext.'"'));
+			header('Content-Disposition: inline; filename="'.$arrDoc['Name'].".".$ext.'"');
 			header('Expires: 0');
 			header('Cache-Control: must-revalidate');
 			header('Pragma: public');
