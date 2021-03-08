@@ -439,10 +439,22 @@ END;
 	public function deliveryObjectiveAction()
     {
 		$db = Zend_Db_Table::getDefaultAdapter();
-		$systemSetting = new Zend_Session_Namespace('systemSetting');	
+        $Request = $this->getRequest();
+        $systemSetting = new Zend_Session_Namespace('systemSetting');
+
+        $this->view->SelYear = Date("Y");
+        $SelYear = $Request->getParam('SelYear');
+        if ($SelYear){
+            $this->view->SelYear = $SelYear;
+        }
+
 		$this->view->percent = $systemSetting->arrReportDeliveryObjective[Date("Y", time())];
-		$fromPeriod = Date("Y-01-01 00:00:00", time());
-		$toPeriod = Date("Y-12-31 23:59:59", time());
+//		$fromPeriod = Date("Y-01-01 00:00:00", time());
+//		$toPeriod = Date("Y-12-31 23:59:59", time());
+
+        $fromPeriod = $this->view->SelYear."-01-01 00:00:00";
+        $toPeriod = $this->view->SelYear."-12-31 23:59:59";
+
 		
 	//	$arrJobAll = $db->fetchAll("SELECT Job.CustomerPOReceivedDate, JobSales.SalesExpDate, JobSales.SalesReadyDate FROM Job, JobSales where JobSales.JobID=Job.ID AND Job.CustomerPOReceivedDate > '".$fromPeriod."' AND Job.CustomerPOReceivedDate < '".$toPeriod."'  AND (Job.Cancelled=0 OR Job.Cancelled IS NULL)");
 		$arrJobAll = $db->fetchAll("SELECT * FROM Job where CustomerPOReceivedDate > '".$fromPeriod."' AND CustomerPOReceivedDate < '".$toPeriod."' AND  (Cancelled=0 OR Cancelled IS NULL) ");
@@ -620,13 +632,26 @@ END;
 		
 		
 		$db = Zend_Db_Table::getDefaultAdapter();
+        $Request = $this->getRequest();
 		$dispFormat = new Venz_App_Display_Format();
-		$systemSetting = new Zend_Session_Namespace('systemSetting');	
+		$systemSetting = new Zend_Session_Namespace('systemSetting');
+
+        $this->view->SelYear = Date("Y");
+        $SelYear = $Request->getParam('SelYear');
+        if ($SelYear){
+            $this->view->SelYear = $SelYear;
+        }
+
 		$this->view->percent = $systemSetting->arrReportPurchaseObjective[Date("Y", time())];
 		$this->view->days = $systemSetting->arrReportPurchaseObjectiveDays[Date("Y", time())];
-		$fromPeriod = Date("Y-01-01 00:00:00", time());
-		$toPeriod = Date("Y-12-31 23:59:59", time());
-		
+
+
+		//		$fromPeriod = Date("Y-01-01 00:00:00", time());
+//		$toPeriod = Date("Y-12-31 23:59:59", time());
+
+        $fromPeriod = $this->view->SelYear."-01-01 00:00:00";
+        $toPeriod = $this->view->SelYear."-12-31 23:59:59";
+
 //		$arrJobAll = $db->fetchAll("SELECT * FROM Job where CustomerPOReceivedDate > '".$fromPeriod."' AND CustomerPOReceivedDate < '".$toPeriod."' AND (Cancelled=0 OR Cancelled IS NULL)");
 		
 //		$arrJobAll = $db->fetchAll("SELECT Job.*, JobPurchase.POFaxedDate FROM Job, JobPurchase where Job.JobType != 'P' AND JobPurchase.JobID=Job.ID AND Job.CustomerPOReceivedDate > '".$fromPeriod."' AND Job.CustomerPOReceivedDate < '".$toPeriod."' AND (Job.Cancelled=0 OR Job.Cancelled IS NULL)");
@@ -804,13 +829,25 @@ END;
 		
 		
 		$db = Zend_Db_Table::getDefaultAdapter();
+        $Request = $this->getRequest();
 		$dispFormat = new Venz_App_Display_Format();
-		$systemSetting = new Zend_Session_Namespace('systemSetting');	
+		$systemSetting = new Zend_Session_Namespace('systemSetting');
+
+
+        $this->view->SelYear = Date("Y");
+        $SelYear = $Request->getParam('SelYear');
+        if ($SelYear){
+            $this->view->SelYear = $SelYear;
+        }
+
 		$this->view->percent = $systemSetting->arrReportPurchaseObjective2[Date("Y", time())];
 		$this->view->days = $systemSetting->arrReportPurchaseObjective2Days[Date("Y", time())];
-		$fromPeriod = Date("Y-01-01 00:00:00", time());
-		$toPeriod = Date("Y-12-31 23:59:59", time());
-		
+//		$fromPeriod = Date("Y-01-01 00:00:00", time());
+//		$toPeriod = Date("Y-12-31 23:59:59", time());
+
+        $fromPeriod = $this->view->SelYear."-01-01 00:00:00";
+        $toPeriod = $this->view->SelYear."-12-31 23:59:59";
+
 //		$arrJobAll = $db->fetchAll("SELECT * FROM Job where CustomerPOReceivedDate > '".$fromPeriod."' AND CustomerPOReceivedDate < '".$toPeriod."' AND (Cancelled=0 OR Cancelled IS NULL)");
 		
 //		$arrJobAll = $db->fetchAll("SELECT Job.*, JobPurchase.POFaxedDate FROM Job, JobPurchase where Job.JobType = 'P' AND JobPurchase.JobID=Job.ID AND Job.CustomerPOReceivedDate > '".$fromPeriod."' AND Job.CustomerPOReceivedDate < '".$toPeriod."' AND (Job.Cancelled=0 OR Job.Cancelled IS NULL)");
@@ -985,10 +1022,21 @@ END;
 	public function lateDeliveryAction()
     {
 		$db = Zend_Db_Table::getDefaultAdapter();
-		$systemSetting = new Zend_Session_Namespace('systemSetting');	
+        $Request = $this->getRequest();
+		$systemSetting = new Zend_Session_Namespace('systemSetting');
+
+        $this->view->SelYear = Date("Y");
+        $SelYear = $Request->getParam('SelYear');
+        if ($SelYear){
+            $this->view->SelYear = $SelYear;
+        }
+
 		$this->view->percent = $systemSetting->arrReportLateDelivery[Date("Y", time())];
-		$fromPeriod = Date("Y-01-01 00:00:00", time());
-		$toPeriod = Date("Y-12-31 23:59:59", time());
+//		$fromPeriod = Date("Y-01-01 00:00:00", time());
+//		$toPeriod = Date("Y-12-31 23:59:59", time());
+
+        $fromPeriod = $this->view->SelYear."-01-01 00:00:00";
+        $toPeriod = $this->view->SelYear."-12-31 23:59:59";
 		
 		$arrJobAll = $db->fetchAll("SELECT * FROM Job where CustomerPOReceivedDate > '".$fromPeriod."' AND CustomerPOReceivedDate < '".$toPeriod."' AND  (Job.Cancelled=0 OR Job.Cancelled IS NULL) ");
 		//print "---".sizeof($arrJobAll);

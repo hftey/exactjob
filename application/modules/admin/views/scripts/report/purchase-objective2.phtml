@@ -48,6 +48,21 @@ $(document).ready(function() {
 						
 					</div>
 					<div class="md-card-content">
+                        <div class="uk-width-medium-1-6" style="margin-bottom: 15px;">
+                            <div class="md-input-wrapper  md-input-filled">
+                                <label>Select Year</label>
+                                <form>
+                                    <select name="SelYear" class="md-input" onchange="this.form.submit()">
+
+                                        <?php for ($i = Date("Y"); $i >= 2016; $i--) {  ?>
+                                            <option value="<?=$i?>" <?=($this->SelYear == $i ? "selected" : "")?>><?=$i?></option>
+                                        <?php } ?>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+
+
 						Purchase Order Issue Out To Principal / Supplier Should Not be<BR>
 						More Than <?=$this->percent?>% Of Total Orders On Quarterly Basis That Exceed <?=number_format($this->days, 0)?><BR>
 						Working Days<BR><BR>
