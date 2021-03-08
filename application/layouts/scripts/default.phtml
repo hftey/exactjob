@@ -74,28 +74,28 @@ function initInput()
 }
 
 $(document).ready(function() {
-	$('.shop-toggler').click (function () {
-		$('#shop-container').html("<img src='/images/icons/IconIndicator.gif'>");
-		$.post( "/default/index/ajax-not-read", function( return_data ) { 
-			$('#shop-container').html(return_data);
-			$('.Notification').hide();
-		});
-	})
-	
-	$(document).on("click", ".notification_link", function () {
-		$.post( "/default/index/ajax-notification-clicked", { NotificationID: $(this).attr("NotificationID")}, function( return_data ) { 
-			console.log(return_data);
-		});
-	})
-	
-	$(document).on("click", ".notification_allread", function () {
-		$.post( "/default/index/ajax-notification-allread", function( return_data ) { 
-			$('.notification_item').each(function(i, obj) {
-				$(obj).removeClass( "item_not_read");
-				$(obj).addClass( "item_read");
-			});
-		});
-	})
+	// $('.shop-toggler').click (function () {
+	// 	$('#shop-container').html("<img src='/images/icons/IconIndicator.gif'>");
+	// 	$.post( "/default/index/ajax-not-read", function( return_data ) {
+	// 		$('#shop-container').html(return_data);
+	// 		$('.Notification').hide();
+	// 	});
+	// })
+	//
+	// $(document).on("click", ".notification_link", function () {
+	// 	$.post( "/default/index/ajax-notification-clicked", { NotificationID: $(this).attr("NotificationID")}, function( return_data ) {
+	// 		console.log(return_data);
+	// 	});
+	// })
+	//
+	// $(document).on("click", ".notification_allread", function () {
+	// 	$.post( "/default/index/ajax-notification-allread", function( return_data ) {
+	// 		$('.notification_item').each(function(i, obj) {
+	// 			$(obj).removeClass( "item_not_read");
+	// 			$(obj).addClass( "item_read");
+	// 		});
+	// 	});
+	// })
 
 	
 	//$('.md-input').focus(function () {
@@ -269,7 +269,7 @@ $(document).ready(function() {
 		
 	})
 	
-	setInterval( "checkNewNotification()",10000 );
+//	setInterval( "checkNewNotification()",10000 );
 	
 });	
 
