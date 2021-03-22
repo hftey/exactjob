@@ -474,3 +474,9 @@ ALTER TABLE `JobDocuments` ADD JobPurchaseDeliveryID int(12) default NULL;
 /* 24 Jan 2020 */
 ALTER TABLE `JobPurchase` ADD PurchasePLNo varchar(32) default NULL;
 ALTER TABLE `JobPurchaseDelivery` ADD PurchasePLNo varchar(32) default NULL;
+
+-- 20210321 -
+ALTER TABLE `Job` ADD `ExchangeProgram` int(2) default 0;
+
+ALTER TABLE `Job` ADD `ExchangePreviousJobID` int(2) default NULL;
+ALTER TABLE `Job` ADD `ExchangeReturnDate` Date default NULL;

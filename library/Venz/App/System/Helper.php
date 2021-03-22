@@ -201,9 +201,12 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
 			/*8*/"(ifnull((JobSales.TotalSalesPriceRM), 0) - ifnull(JobPurchase.TotalPurchasePriceRM, 0) - ifnull(JobClaims.TotalClaimsRM, 0) - ifnull(JobPurchase.TotalDeliveryCost,0)) as ProjectMarginRM, ".
 			/*9*/"Job.CustomerPOReceivedDate, JobSales.TotalSalesPriceRM, JobPurchase.TotalPurchasePriceRM, JobClaims.TotalClaimsRM,  JobPurchase.TotalDeliveryCost, Job.Cancelled, Job.PrincipleName, ".
 			/*16*/"JobSalesData.SalesPrice,JobSalesData.SalesPriceRM,JobSalesData.SalesPerson, Job.Closed, Job.ClosedDate, Customers.PaymentTerms, Customers.CreditLimit, ".
-            /*23*/"JobSalesData.SalesPersonGroupID, (ifnull(JobPurchase.TotalPurchasePriceRM, 0) + ifnull(JobClaims.TotalClaimsRM,0) + ifnull(JobPurchase.TotalDeliveryCost,0)) as TotalCostRM, Job.InitialGrossMargin".
-				" FROM Job ".
-				" LEFT JOIN Customers ON (Job.CustomerID=Customers.ID) " .
+            /*23*/"JobSalesData.SalesPersonGroupID, (ifnull(JobPurchase.TotalPurchasePriceRM, 0) + ifnull(JobClaims.TotalClaimsRM,0) + ifnull(JobPurchase.TotalDeliveryCost,0)) as TotalCostRM, Job.InitialGrossMargin, ".
+            /*26*/"Job.ExchangeProgram, Job.ExchangePreviousJobID, Job.ExchangeReturnDate, ExchangePreviousJob.JobNo ".
+            " FROM Job ".
+                " LEFT JOIN Job as ExchangePreviousJob ON (ExchangePreviousJob.ID=Job.ExchangePreviousJobID) " .
+
+                " LEFT JOIN Customers ON (Job.CustomerID=Customers.ID) " .
 				" LEFT JOIN (SELECT GROUP_CONCAT(IF(SalesCurrency='RM', '&nbsp;', CONCAT(SalesCurrency, ' ', SalesPrice)) separator '<BR>') as SalesPrice, GROUP_CONCAT(CONCAT(SalesPrice * SalesPriceExchangeRate) separator '<BR>') as SalesPriceRM, ".
 				" GROUP_CONCAT(SalesPerson separator '<BR>') as SalesPerson, GROUP_CONCAT(SalesPersonGroupID separator ',') as SalesPersonGroupID, ".
 				" JobID FROM (SELECT JobSales.*, ACLUsers.Name as SalesPerson, ACLUsers.ID as SalesPersonGroupID FROM JobSales LEFT JOIN ACLUsers ON (ACLUsers.ID=JobSales.SalesPersonID)) as JobSales GROUP BY JobID) as JobSalesData ON (JobSalesData.JobID=Job.ID) ".
