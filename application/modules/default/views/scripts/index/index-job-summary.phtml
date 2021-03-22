@@ -24,7 +24,7 @@
 				</div>
 				</div><div class="uk-width-medium-1-3">
 					<div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Cust. PO Received* </label>
-						<input type="text" name="CustomerPOReceivedDate" class="md-input CustomerPOReceivedDate" value="<?=$this->CustomerPOReceivedDate?>"><span class="md-input-bar"></span>
+						<input type="text" name="CustomerPOReceivedDate" id="CustomerPOReceivedDate" class="md-input CustomerPOReceivedDate" value="<?=$this->CustomerPOReceivedDate?>"><span class="md-input-bar"></span>
 					</div>
 				</div>
 				
@@ -66,6 +66,29 @@
                 </div>
 			</div>
 		</div>
+
+        <div class="uk-form-row">
+            <div class="uk-grid">
+                <div class="uk-width-medium-1-3 clsDivExchangeProgram" style="display: <?=($this->JobType == "T" ? "block" : "none")?>">
+                    <div class="md-input-wrapper md-input-wrapper-success">
+                        <input type=checkbox name='ExchangeProgram' ID='ExchangeProgram' class="md-input" value='1' <?=($this->ExchangeProgram ? "checked" : "")?>> <B style="color: gray;">Exchange Program</B>
+                    </div>
+                </div>
+                <div class="uk-width-medium-1-3 clsDivExchangeProgramReturn" style="display: none;">
+                    <div class="md-input-wrapper md-input-wrapper-success"><label>Previous Job No</label>
+                        <select class="md-input" name="ExchangePreviousJobID" id="ExchangePreviousJobID">
+                            <option></option>
+                        </select>
+                        <span class="md-input-bar"></span>
+                    </div>
+                </div>
+                <div class="uk-width-medium-1-3 clsDivExchangeProgramReturn" style="display: none;">
+                    <div class="md-input-wrapper md-input-wrapper-success"><label>Item Return Date</label>
+                        <input type="text" id="ExchangeReturnDate" name="ExchangeReturnDate" class="md-input" value="<?=$this->ExchangeReturnDate?>"><span class="md-input-bar"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 		
 
 		<? if (!$this->edit_job) { ?>
@@ -137,7 +160,7 @@
 			<div class="uk-grid">
 				<div class="uk-width-medium-1-1">
 					<input type="submit" id="Save" name="Save" value="Save">
-					<input type="submit" id="Cancel" name="Cancel" value="Cancel" onclick='document.location="/"'>
+					<input type="submit" name="Cancel" value="Cancel" onclick='document.location="/"'>
 					<input type="hidden" id="JobID" name="JobID" value="<?=$this->edit_job?>">
 				</div>
 			</div>

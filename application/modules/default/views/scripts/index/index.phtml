@@ -98,10 +98,10 @@ var autocomp_opt={
 		var value = ui.item.value;
 		var objClient = $(this);
 		$.get("/default/index/ajax-get-customer-details", {CustomerName: value}, function (data) {
-			console.log(data);
 			var customerData = $.parseJSON(data);
 			objClient.parent().find("#CustomerID").val(customerData.ID);
 			selecting = false;
+            checkDisplayExchangeReturn();
 		});
 		
 		
@@ -226,13 +226,61 @@ var autocomp_items_opt={
 				response(responseData);
 			});
 	},
-	minLength: 0
+	minLength: 0,
+    select: function (event, ui) {
+	    $(this).val(ui.item.value);
+        setTimeout(checkDisplayExchangeReturn(), 1000);
+    }
 }	
 
+function checkDisplayExchangeReturn(){
+    var Items = $("#Items").val();
+    var CustomerName = $("#CustomerName").val();
+    var JobType = $("#JobType").val();
+    var ExchangeProgram = $("#ExchangeProgram").is(":checked");
+    console.log(Items, CustomerName, JobType, ExchangeProgram);
+    if (Items.length > 0 && CustomerName.length > 0 && JobType == "T" && ExchangeProgram){
+        $(".clsDivExchangeProgramReturn").show();
+        $("#ExchangePreviousJobID").html("<option value=''>-</option>");
+        $.getJSON('/default/index/ajax-get-exchange-previous', {CustomerName: CustomerName, Items: Items}, function(JobData){
+            console.log(JobData);
+            $.each(JobData, function (key, entry) {
+                if ('<?=$this->ExchangePreviousJobID?>' == entry.ID){
+                    $("#ExchangePreviousJobID").append($('<option selected></option>').attr('value', entry.ID).text(entry.JobNo));
+                }else{
+                    $("#ExchangePreviousJobID").append($('<option></option>').attr('value', entry.ID).text(entry.JobNo));
 
+                }
+            })
+
+            $("#ExchangePreviousJobID").blur();
+        })
+
+    }else{
+        $(".clsDivExchangeProgramReturn").hide();
+    }
+
+}
 
 
 $(document).ready(function() {
+
+    checkDisplayExchangeReturn();
+
+    $('#JobType').change(function(){
+        if ($(this).val() == "T"){
+            $(".clsDivExchangeProgram").show();
+        }else{
+            $(".clsDivExchangeProgram").hide();
+        }
+
+        checkDisplayExchangeReturn();
+    })
+
+    $("#ExchangeProgram").click(function(){
+        checkDisplayExchangeReturn();
+    })
+
 
     $(".SaveDelivery").click(function(e){
         var objform = $(this).parents("form:first");
@@ -466,6 +514,7 @@ $(document).ready(function() {
 	
 	$("#CustomerName").autocomplete(autocomp_opt);
 	$('#CustomerName').change(function () {
+	    console.log("Come CHange Cusgtomer Name");
 		$('#CustomerID').val("");
 	});
 	
@@ -1111,7 +1160,9 @@ $(document).ready(function() {
 	$( ".SalesReadyDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
     $( ".SalesReadyDatePartial" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 //	$( ".SalesInvoiceDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
-	
+    $( "#SearchExchangeReturnDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+    $( "#SearchExchangeReturnDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+
 	
 	$( ".PODate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 	$( ".POFaxedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
@@ -1145,11 +1196,11 @@ $(document).ready(function() {
 	$( "#SearchDeliveryReceivedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 	$( "#SearchDrawingApprovedDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 	$( "#SearchDrawingApprovedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
-	
-	$( "#CompletedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+
+    $( "#ExchangeReturnDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+
+    $( "#CompletedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 	$( "#ClosedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
-	
-	
 	$( ".PaymentDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 	
  
@@ -1553,6 +1604,35 @@ $(document).ready(function() {
 										</div>
 									</div>
 								</div>
+
+                                <div class="uk-form-row">
+                                    <div class="uk-grid">
+                                        <div class="uk-width-medium-1-3">
+                                            <div class="md-input-wrapper md-input-wrapper-success">
+                                                <input type=checkbox name='SearchExchangeProgram' ID='SearchExchangeProgram' class="md-input" value='1' <?=($this->SearchExchangeProgram ? "checked" : "")?>> Exchange Program
+                                            </div>
+
+                                        </div>
+                                        <div class="uk-width-medium-2-3">
+                                            <div class="md-input-wrapper md-input-filled"><label>Exchange Program Item Return Date</label>
+                                                <div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+                                                    <div class="uk-grid">
+                                                        <div class="uk-width-medium-1-2">
+                                                            <div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> From </label>
+                                                                <input type="text" id="SearchExchangeReturnDateFrom" name="SearchExchangeReturnDateFrom" class="md-input" value="<?=$this->SearchExchangeReturnDateFrom?>">
+                                                            </div>
+                                                        </div>
+                                                        <div class="uk-width-medium-1-2">
+                                                            <div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
+                                                                <input type="text" id="SearchExchangeReturnDateTo" name="SearchExchangeReturnDateTo" class="md-input" value="<?=$this->SearchExchangeReturnDateTo?>">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div><span class="md-input-bar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 								
 								<div class="uk-form-row">
 									<div class="uk-grid">
@@ -1573,7 +1653,7 @@ $(document).ready(function() {
 									<div class="uk-grid">
 										<div class="uk-width-medium-1-1">
 											<input type="submit" id="SearchJob" name="SearchJob" value="Search Job">
-											<input type="button" id="Cancel" name="Cancel" value="Cancel" onclick='document.location="/?<?=time()?>#tabs2"'>
+											<input type="button" name="Cancel" value="Cancel" onclick='document.location="/?<?=time()?>#tabs2"'>
 										</div>
 										
 									</div>

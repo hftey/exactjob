@@ -1123,7 +1123,7 @@ END;
 		$Items = $Request->getParam('query');
 		$db = Zend_Db_Table::getDefaultAdapter();
 		$arrReturn = array();
-		$arrAll = $db->fetchAll("SELECT Items FROM Job WHERE Job.Items LIKE '%".$Items."%' GROUP BY LOWER(TRIM(Job.Items)) LIMIT 15");
+		$arrAll = $db->fetchAll("SELECT Items FROM Job WHERE Job.Items LIKE '%".$Items."%' GROUP BY LOWER(TRIM(Job.Items)) ORDER BY Job.Items LIKE '".$Items."%' DESC LIMIT 15 ");
 		foreach ($arrAll as $arrData)
 		{
 			$arrReturn[] = trim($arrData['Items']);
@@ -1280,6 +1280,23 @@ END;
 		
 		exit();
 	}
+
+
+    public function ajaxGetExchangePreviousAction()
+    {
+        $Request = $this->getRequest();
+        $CustomerName = $Request->getParam('CustomerName');
+        $Items = $Request->getParam('Items');
+
+        $db = Zend_Db_Table::getDefaultAdapter();
+        $arrReturn = array();
+        $arrExchangeJobs = $db->fetchAll("SELECT * FROM Job WHERE CustomerName='".$CustomerName."' AND Items='".$Items."' AND JobType='T' AND ExchangeProgram=1 order by ID Desc");
+        if ($arrExchangeJobs){
+            echo json_encode($arrExchangeJobs);
+        }
+
+        exit();
+    }
 	
 	public function docDeleteAction()
 	{
@@ -2411,9 +2428,13 @@ END;
 				$CustomerID = $Request->getParam('CustomerID') ? $Request->getParam('CustomerID') : new Zend_Db_Expr('NULL');	
 				$Items = $Request->getParam('Items') ? $Request->getParam('Items') : new Zend_Db_Expr('NULL');
                 $InitialGrossMargin = $Request->getParam('InitialGrossMargin') ? $Request->getParam('InitialGrossMargin') : new Zend_Db_Expr('NULL');
+                $ExchangeProgram = $Request->getParam('ExchangeProgram') ? $Request->getParam('ExchangeProgram') : 0;
+                $ExchangePreviousJobID = $Request->getParam('ExchangePreviousJobID') ? $Request->getParam('ExchangePreviousJobID') : new Zend_Db_Expr('NULL');
+                $ExchangeReturnDate = $Request->getParam('ExchangeReturnDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('ExchangeReturnDate')) : new Zend_Db_Expr('NULL');
 
-                $arrInsert = array("JobNo"=>$JobNo,
-				"CustomerName"=>$CustomerName, "PrincipleName"=>$PrincipleName, "JobType"=>$JobType, "Items"=>$Items, "InitialGrossMargin"=>$InitialGrossMargin, "CustomerPOReceivedDate"=>$CustomerPOReceivedDate, "CreatedOn"=>new Zend_Db_Expr('now()'), "CreatedBy"=>$this->userInfo->ID);
+                $arrInsert = array("JobNo"=>$JobNo,"CustomerName"=>$CustomerName, "PrincipleName"=>$PrincipleName, "JobType"=>$JobType, "Items"=>$Items,
+                    "ExchangeProgram"=>$ExchangeProgram, "ExchangePreviousJobID"=>$ExchangePreviousJobID, "ExchangeReturnDate"=>$ExchangeReturnDate,
+					"InitialGrossMargin"=>$InitialGrossMargin, "CustomerPOReceivedDate"=>$CustomerPOReceivedDate, "CreatedOn"=>new Zend_Db_Expr('now()'), "CreatedBy"=>$this->userInfo->ID);
 
 				if ($Request->getParam('CustomerID'))
 				{
@@ -2449,6 +2470,9 @@ END;
 				$CustomerPOReceivedDate = $Request->getParam('CustomerPOReceivedDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('CustomerPOReceivedDate')) : new Zend_Db_Expr('NULL');	
 				$Items = $Request->getParam('Items') ? $Request->getParam('Items') : new Zend_Db_Expr('NULL');
                 $InitialGrossMargin = $Request->getParam('InitialGrossMargin') ? $Request->getParam('InitialGrossMargin') : new Zend_Db_Expr('NULL');
+                $ExchangeProgram = $Request->getParam('ExchangeProgram') ? $Request->getParam('ExchangeProgram') : 0;
+                $ExchangePreviousJobID = $Request->getParam('ExchangePreviousJobID') ? $Request->getParam('ExchangePreviousJobID') : new Zend_Db_Expr('NULL');
+                $ExchangeReturnDate = $Request->getParam('ExchangeReturnDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('ExchangeReturnDate')) : new Zend_Db_Expr('NULL');
 
                 $Cancelled = $Request->getParam('Cancelled') ? $Request->getParam('Cancelled') : new Zend_Db_Expr('NULL');
 				$Completed = $Request->getParam('Completed') ? $Request->getParam('Completed') : new Zend_Db_Expr('NULL');	
@@ -2462,7 +2486,8 @@ END;
 
 				
 				$arrUpdate = array("JobNo"=>$JobNo, "JobType"=>$JobType, "Items"=>$Items, "InitialGrossMargin"=>$InitialGrossMargin, "CustomerPOReceivedDate"=>$CustomerPOReceivedDate, "PrincipleName"=>$PrincipleName, "Completed"=>$Completed, "Closed"=>$Closed,
-					"Cancelled"=>$Cancelled, "CompletedDate"=>$CompletedDate, "ClosedDate"=>$ClosedDate);
+					"Cancelled"=>$Cancelled, "CompletedDate"=>$CompletedDate, "ClosedDate"=>$ClosedDate, "ExchangeProgram"=>$ExchangeProgram,
+                    "ExchangePreviousJobID"=>$ExchangePreviousJobID, "ExchangeReturnDate"=>$ExchangeReturnDate);
 				
 				if ($Request->getParam('CustomerID'))
 				{
@@ -2512,6 +2537,9 @@ END;
 				$this->view->CustomerID = $arrJob['CustomerID'];	
 				$this->view->Items = $arrJob['Items'];
                 $this->view->InitialGrossMargin = $arrJob['InitialGrossMargin'];
+                $this->view->ExchangeProgram = $arrJob['ExchangeProgram'];
+                $this->view->ExchangePreviousJobID = $arrJob['ExchangePreviousJobID'];
+                $this->view->ExchangeReturnDate = $dispFormat->format_date_db_to_simple($arrJob['ExchangeReturnDate']);
 
                 $this->view->CustomerPOReceivedDate = $dispFormat->format_date_db_to_simple($arrJob['CustomerPOReceivedDate']);
 				$this->view->EOGSTSBPO = $arrJob['EOGSTSBPO'];	
@@ -2777,7 +2805,10 @@ END;
 				$SearchItems = $Request->getParam('SearchItems');	
 				$SearchCompleted = $Request->getParam('SearchCompleted');	
 				$SearchClosed = $Request->getParam('SearchClosed');	
-				$SearchCancelled = $Request->getParam('SearchCancelled');	
+				$SearchCancelled = $Request->getParam('SearchCancelled');
+				$SearchExchangeProgram = $Request->getParam('SearchExchangeProgram');
+				$SearchExchangeReturnDateFrom = $Request->getParam('SearchExchangeReturnDateFrom');
+            	$SearchExchangeReturnDateTo = $Request->getParam('SearchExchangeReturnDateTo');
 			
 				
 				$sqlSearchJob .= $SearchJobNo ? " and Job.JobNo LIKE '%".$SearchJobNo."%'" : "";
@@ -2790,7 +2821,10 @@ END;
 				$sqlSearchJob .= $SearchCompleted ? " and Job.Completed = ".$SearchCompleted : "";
 				$sqlSearchJob .= $SearchClosed ? " and Job.Closed = ".$SearchClosed : "";
 				$sqlSearchJob .= $SearchCancelled ? " and Job.Cancelled = ".$SearchCancelled : "";
-				
+            	$sqlSearchJob .= $SearchExchangeProgram ? " and Job.ExchangeProgram = 1" : "";
+				$sqlSearchJob .= $SearchExchangeReturnDateFrom ? " and Job.ExchangeReturnDate >= '".$dispFormat->format_date_simple_to_db($SearchExchangeReturnDateFrom)."'" : "";
+				$sqlSearchJob .= $SearchExchangeReturnDateTo ? " and Job.ExchangeReturnDate <= '".$dispFormat->format_date_simple_to_db($SearchExchangeReturnDateTo)."'" : "";
+
 				
 				$this->view->SearchJobNo = $SearchJobNo ? $SearchJobNo : "";
 				$this->view->SearchCustomerName = $SearchCustomerName ? $SearchCustomerName : "";
@@ -2802,7 +2836,11 @@ END;
 				$this->view->SearchCompleted = $SearchCompleted ? $SearchCompleted : "";
 				$this->view->SearchClosed = $SearchClosed ? $SearchClosed : "";
 				$this->view->SearchCancelled = $SearchCancelled ? $SearchCancelled : "";
-				
+            	$this->view->SearchExchangeProgram = $SearchExchangeProgram ? $SearchExchangeProgram : "";
+				$this->view->SearchExchangeReturnDateFrom = $SearchExchangeReturnDateFrom ? $SearchExchangeReturnDateFrom : "";
+				$this->view->SearchExchangeReturnDateTo = $SearchExchangeReturnDateTo ? $SearchExchangeReturnDateTo : "";
+
+
 				$strHiddenSearchJob = "<input type=hidden name='SearchJob' value='true'>";
 				$strHiddenSearchJob .= "<input type=hidden name='SearchJobNo' value='".$SearchJobNo."'>";
 				$strHiddenSearchJob .= "<input type=hidden name='SearchCustomerName' value=\"".$SearchCustomerName."\">";
@@ -2814,7 +2852,10 @@ END;
 				$strHiddenSearchJob .= "<input type=hidden name='SearchCompleted' value='".$SearchCompleted."'>";
 				$strHiddenSearchJob .= "<input type=hidden name='SearchClosed' value='".$SearchClosed."'>";
 				$strHiddenSearchJob .= "<input type=hidden name='SearchCancelled' value='".$SearchCancelled."'>";
-				
+            	$strHiddenSearchJob .= "<input type=hidden name='SearchExchangeProgram' value='".$SearchExchangeProgram."'>";
+				$strHiddenSearchJob .= "<input type=hidden name='SearchExchangeReturnDateFrom' value='".$SearchExchangeReturnDateFrom."'>";
+				$strHiddenSearchJob .= "<input type=hidden name='SearchExchangeReturnDateTo' value='".$SearchExchangeReturnDateTo."'>";
+
 //			}
 			
 			$this->view->optionSearchJobType = $libDb->getSystemOptions("arrJobType", $this->view->SearchJobType);
@@ -2952,18 +2993,19 @@ END;
 
 			function format_customer($colnum, $rowdata)
 			{
-				$strPrinciple = "";
+                $dispFormat = new Venz_App_Display_Format();
+                $strPrinciple = "";
 				if ($rowdata[15])
 					$strPrinciple = "<BR>(".$rowdata[15].")";
 				
-				return $rowdata[2].$strPrinciple.":<BR>".$rowdata[6];
+				return $rowdata[2].$strPrinciple.":<BR>".$dispFormat->format_date_db_to_simple($rowdata[6]);
 				
 			}
 			
 			function format_jobtype($colnum, $rowdata)
 			{
 				$systemSetting = new Zend_Session_Namespace('systemSetting');
-				return $systemSetting->arrJobType[$rowdata[4]];
+				return $systemSetting->arrJobType[$rowdata[4]] . ($rowdata[26] ? "<BR><small>*Exchange Program</small>" : "");
 			}
 			
 			function format_balance($colnum, $rowdata, $export)
@@ -3030,12 +3072,26 @@ END;
             }
 
 
+            function format_items($colnum, $rowdata, $export)
+            {
+                $dispFormat = new Venz_App_Display_Format();
+                $strExchange = "";
+            	if ($rowdata[26]){
+            		if ($rowdata[29]){
+                        $strExchange = "<BR>Item returned from Job No: <B>".$rowdata[29]."</B> on <B>".$dispFormat->format_date_db_to_simple($rowdata[28])."</B>";
+
+                    }
+                }
+
+                return $rowdata[3].$strExchange;
+            }
+
 
             $arrHeader = array ('', '', 'Job No',  'Job Status',  'PO Received<BR>Date', 'Customer', 'Items', 'Job Type','Selling Price', 'Selling Price<BR>RM', 'Initial Cost<BR>in Value', 'Sales Person', '');
-			$arrFormat = array('{format_counterJob}', '{format_action}','%1%', '{format_jobstatus}', '{format_poreceived}', '{format_customer}', '%3%','{format_jobtype}', '{format_sellingprice_margin}',  '{format_sellingpricerm_margin}', '{format_initial_margin}',  '{format_salesperson}', '{format_action}');
+			$arrFormat = array('{format_counterJob}', '{format_action}','%1%', '{format_jobstatus}', '{format_poreceived}', '{format_customer}', '{format_items}','{format_jobtype}', '{format_sellingprice_margin}',  '{format_sellingpricerm_margin}', '{format_initial_margin}',  '{format_salesperson}', '{format_action}');
 			$arrSort = array('','','Job.ID', 'JobSort.Completed', 'Job.CustomerPOReceivedDate', 'Job.CustomerName', 'Job.Items', 'Job.JobType', '','','Job.InitialGrossMargin','','');
-			$arrColParam = array('width=20px','width=20px','width=50px', 'width=100px', 'width=100px', 'width=250px', '','width=100px','width=120px nowrap','nowrap','nowrap','nowrap','width=30px');
-			$aligndata = 'CCCCCLLCRRRRC'; $tablewidth = '1550px';
+			$arrColParam = array('width=20px','width=20px','width=50px', 'width=100px', 'width=100px', 'width=250px', '','nowrap width=120px','width=120px nowrap','nowrap','nowrap','nowrap','width=30px');
+			$aligndata = 'CCCCCLLCRRRRC'; $tablewidth = '100%';
 
             $arrHeaderMargin = array('', '', 'Job No',  'PO Received<BR>Date', 'Customer', 'Payment Term',  'Credit Limit',  'Job Type','Selling Price', 'Selling Price<BR>RM', 'Job/Project<BR>Margin', 'Current<BR>Margin', '');
             $arrFormatMargin = array('{format_counterJob}', '{format_action}','%1%', '{format_poreceived}', '{format_customer}', '%21%', '%22%', '{format_jobtype}', '{format_sellingprice_margin}',  '{format_sellingpricerm_margin}',  '{format_balanceproject}',  '{format_balance}', '{format_action}');
