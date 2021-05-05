@@ -2474,6 +2474,12 @@ END;
                 $ExchangePreviousJobID = $Request->getParam('ExchangePreviousJobID') ? $Request->getParam('ExchangePreviousJobID') : new Zend_Db_Expr('NULL');
                 $ExchangeReturnDate = $Request->getParam('ExchangeReturnDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('ExchangeReturnDate')) : new Zend_Db_Expr('NULL');
 
+                $FactoryReturned = $Request->getParam('FactoryReturned') ? $Request->getParam('FactoryReturned') : new Zend_Db_Expr('NULL');
+                $FactoryReturnedDate = $Request->getParam('FactoryReturnedDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('FactoryReturnedDate')) : new Zend_Db_Expr('NULL');
+                $SerialNoReturned = $Request->getParam('SerialNoReturned') ? $Request->getParam('SerialNoReturned') : new Zend_Db_Expr('NULL');
+                $SerialNoDelivered = $Request->getParam('SerialNoDelivered') ? $Request->getParam('SerialNoDelivered') : new Zend_Db_Expr('NULL');
+
+
                 $Cancelled = $Request->getParam('Cancelled') ? $Request->getParam('Cancelled') : new Zend_Db_Expr('NULL');
 				$Completed = $Request->getParam('Completed') ? $Request->getParam('Completed') : new Zend_Db_Expr('NULL');	
 				$CompletedDate = $Request->getParam('CompletedDate') ? $dispFormat->format_date_simple_to_db($Request->getParam('CompletedDate')) : new Zend_Db_Expr('NULL');	
@@ -2487,7 +2493,9 @@ END;
 				
 				$arrUpdate = array("JobNo"=>$JobNo, "JobType"=>$JobType, "Items"=>$Items, "InitialGrossMargin"=>$InitialGrossMargin, "CustomerPOReceivedDate"=>$CustomerPOReceivedDate, "PrincipleName"=>$PrincipleName, "Completed"=>$Completed, "Closed"=>$Closed,
 					"Cancelled"=>$Cancelled, "CompletedDate"=>$CompletedDate, "ClosedDate"=>$ClosedDate, "ExchangeProgram"=>$ExchangeProgram,
-                    "ExchangePreviousJobID"=>$ExchangePreviousJobID, "ExchangeReturnDate"=>$ExchangeReturnDate);
+                    "ExchangePreviousJobID"=>$ExchangePreviousJobID, "ExchangeReturnDate"=>$ExchangeReturnDate,
+                    "FactoryReturned"=>$FactoryReturned,"FactoryReturnedDate"=>$FactoryReturnedDate,"SerialNoReturned"=>$SerialNoReturned,"SerialNoDelivered"=>$SerialNoDelivered
+					);
 				
 				if ($Request->getParam('CustomerID'))
 				{
@@ -2540,6 +2548,11 @@ END;
                 $this->view->ExchangeProgram = $arrJob['ExchangeProgram'];
                 $this->view->ExchangePreviousJobID = $arrJob['ExchangePreviousJobID'];
                 $this->view->ExchangeReturnDate = $dispFormat->format_date_db_to_simple($arrJob['ExchangeReturnDate']);
+
+                $this->view->FactoryReturnedDate = $dispFormat->format_date_db_to_simple($arrJob['FactoryReturnedDate']);
+                $this->view->FactoryReturned = $arrJob['FactoryReturned'];
+                $this->view->SerialNoReturned = $arrJob['SerialNoReturned'];
+                $this->view->SerialNoDelivered = $arrJob['SerialNoDelivered'];
 
                 $this->view->CustomerPOReceivedDate = $dispFormat->format_date_db_to_simple($arrJob['CustomerPOReceivedDate']);
 				$this->view->EOGSTSBPO = $arrJob['EOGSTSBPO'];	
@@ -2809,9 +2822,15 @@ END;
 				$SearchExchangeProgram = $Request->getParam('SearchExchangeProgram');
 				$SearchExchangeReturnDateFrom = $Request->getParam('SearchExchangeReturnDateFrom');
             	$SearchExchangeReturnDateTo = $Request->getParam('SearchExchangeReturnDateTo');
-			
-				
-				$sqlSearchJob .= $SearchJobNo ? " and Job.JobNo LIKE '%".$SearchJobNo."%'" : "";
+
+            	$SearchFactoryReturned = $Request->getParam('SearchFactoryReturned');
+				$SearchFactoryReturnedDateFrom = $Request->getParam('SearchFactoryReturnedDateFrom');
+				$SearchFactoryReturnedDateTo = $Request->getParam('SearchFactoryReturnedDateTo');
+				$SearchSerialNoReturned = $Request->getParam('SearchSerialNoReturned');
+				$SearchSerialNoDelivered = $Request->getParam('SearchSerialNoDelivered');
+
+
+            	$sqlSearchJob .= $SearchJobNo ? " and Job.JobNo LIKE '%".$SearchJobNo."%'" : "";
 				$sqlSearchJob .= $SearchCustomerName ? " and Job.CustomerName LIKE \"%".trim($SearchCustomerName)."%\"" : "";
 				$sqlSearchJob .= $SearchPrincipleName ? " and Job.PrincipleName LIKE \"%".trim($SearchPrincipleName)."%\"" : "";
 				$sqlSearchJob .= $SearchJobType ? " and Job.JobType LIKE '%".$SearchJobType."%'" : "";
@@ -2825,8 +2844,15 @@ END;
 				$sqlSearchJob .= $SearchExchangeReturnDateFrom ? " and Job.ExchangeReturnDate >= '".$dispFormat->format_date_simple_to_db($SearchExchangeReturnDateFrom)."'" : "";
 				$sqlSearchJob .= $SearchExchangeReturnDateTo ? " and Job.ExchangeReturnDate <= '".$dispFormat->format_date_simple_to_db($SearchExchangeReturnDateTo)."'" : "";
 
-				
-				$this->view->SearchJobNo = $SearchJobNo ? $SearchJobNo : "";
+
+				$sqlSearchJob .= $SearchFactoryReturned ? " and Job.FactoryReturned = 1" : "";
+				$sqlSearchJob .= $SearchFactoryReturnedDateFrom ? " and Job.FactoryReturnedDate >= '".$dispFormat->format_date_simple_to_db($SearchFactoryReturnedDateFrom)."'" : "";
+				$sqlSearchJob .= $SearchFactoryReturnedDateTo ? " and Job.FactoryReturnedDate <= '".$dispFormat->format_date_simple_to_db($SearchFactoryReturnedDateTo)."'" : "";
+				$sqlSearchJob .= $SearchSerialNoReturned ? " and Job.SerialNoReturned LIKE \"%".trim($SearchSerialNoReturned)."%\"" : "";
+				$sqlSearchJob .= $SearchSerialNoDelivered ? " and Job.SerialNoDelivered LIKE \"%".trim($SearchSerialNoDelivered)."%\"" : "";
+
+
+            	$this->view->SearchJobNo = $SearchJobNo ? $SearchJobNo : "";
 				$this->view->SearchCustomerName = $SearchCustomerName ? $SearchCustomerName : "";
 				$this->view->SearchPrincipleName = $SearchPrincipleName ? $SearchPrincipleName : "";
 				$this->view->SearchJobType = $SearchJobType ? $SearchJobType : "";
@@ -2841,7 +2867,15 @@ END;
 				$this->view->SearchExchangeReturnDateTo = $SearchExchangeReturnDateTo ? $SearchExchangeReturnDateTo : "";
 
 
-				$strHiddenSearchJob = "<input type=hidden name='SearchJob' value='true'>";
+				$this->view->SearchFactoryReturned = $SearchFactoryReturned ? $SearchFactoryReturned : "";
+				$this->view->SearchFactoryReturnedDateFrom = $SearchFactoryReturnedDateFrom ? $SearchFactoryReturnedDateFrom : "";
+				$this->view->SearchFactoryReturnedDateTo = $SearchFactoryReturnedDateTo ? $SearchFactoryReturnedDateTo : "";
+				$this->view->SearchSerialNoReturned = $SearchSerialNoReturned ? $SearchSerialNoReturned : "";
+				$this->view->SearchSerialNoDelivered = $SearchSerialNoDelivered ? $SearchSerialNoDelivered : "";
+
+
+
+            	$strHiddenSearchJob = "<input type=hidden name='SearchJob' value='true'>";
 				$strHiddenSearchJob .= "<input type=hidden name='SearchJobNo' value='".$SearchJobNo."'>";
 				$strHiddenSearchJob .= "<input type=hidden name='SearchCustomerName' value=\"".$SearchCustomerName."\">";
 				$strHiddenSearchJob .= "<input type=hidden name='SearchPrincipleName' value=\"".$SearchPrincipleName."\">";
@@ -2855,6 +2889,13 @@ END;
             	$strHiddenSearchJob .= "<input type=hidden name='SearchExchangeProgram' value='".$SearchExchangeProgram."'>";
 				$strHiddenSearchJob .= "<input type=hidden name='SearchExchangeReturnDateFrom' value='".$SearchExchangeReturnDateFrom."'>";
 				$strHiddenSearchJob .= "<input type=hidden name='SearchExchangeReturnDateTo' value='".$SearchExchangeReturnDateTo."'>";
+
+				$strHiddenSearchJob .= "<input type=hidden name='SearchFactoryReturned' value='".$SearchFactoryReturned."'>";
+				$strHiddenSearchJob .= "<input type=hidden name='SearchFactoryReturnedDateFrom' value='".$SearchFactoryReturnedDateFrom."'>";
+				$strHiddenSearchJob .= "<input type=hidden name='SearchFactoryReturnedDateTo' value='".$SearchFactoryReturnedDateTo."'>";
+				$strHiddenSearchJob .= "<input type=hidden name='SearchSerialNoReturned' value='".$SearchSerialNoReturned."'>";
+				$strHiddenSearchJob .= "<input type=hidden name='SearchSerialNoDelivered' value='".$SearchSerialNoDelivered."'>";
+
 
 //			}
 			
@@ -3079,7 +3120,18 @@ END;
             	if ($rowdata[26]){
             		if ($rowdata[29]){
                         $strExchange = "<BR>Item returned from Job No: <B>".$rowdata[29]."</B> on <B>".$dispFormat->format_date_db_to_simple($rowdata[28])."</B>";
+                    }
 
+                    if ($rowdata[30]){
+                        $strExchange .= "<BR><B>Returned serial no: ".$rowdata[30]."</B>";
+                    }
+
+                    if ($rowdata[31]){
+                        $strExchange .= "<BR><B>Delivered serial no: ".$rowdata[31]."</B>";
+                    }
+
+                    if ($rowdata[32]){
+                        $strExchange .= "<BR><B>Returned to Factory on: ".$rowdata[33]."</B>";
                     }
                 }
 

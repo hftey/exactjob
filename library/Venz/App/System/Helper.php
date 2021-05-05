@@ -202,7 +202,8 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
 			/*9*/"Job.CustomerPOReceivedDate, JobSales.TotalSalesPriceRM, JobPurchase.TotalPurchasePriceRM, JobClaims.TotalClaimsRM,  JobPurchase.TotalDeliveryCost, Job.Cancelled, Job.PrincipleName, ".
 			/*16*/"JobSalesData.SalesPrice,JobSalesData.SalesPriceRM,JobSalesData.SalesPerson, Job.Closed, Job.ClosedDate, Customers.PaymentTerms, Customers.CreditLimit, ".
             /*23*/"JobSalesData.SalesPersonGroupID, (ifnull(JobPurchase.TotalPurchasePriceRM, 0) + ifnull(JobClaims.TotalClaimsRM,0) + ifnull(JobPurchase.TotalDeliveryCost,0)) as TotalCostRM, Job.InitialGrossMargin, ".
-            /*26*/"Job.ExchangeProgram, Job.ExchangePreviousJobID, Job.ExchangeReturnDate, ExchangePreviousJob.JobNo ".
+            /*26*/"Job.ExchangeProgram, Job.ExchangePreviousJobID, Job.ExchangeReturnDate, ExchangePreviousJob.JobNo, ".
+            /*30*/"Job.SerialNoReturned, Job.SerialNoDelivered, Job.FactoryReturned, Job.FactoryReturnedDate ".
             " FROM Job ".
                 " LEFT JOIN Job as ExchangePreviousJob ON (ExchangePreviousJob.ID=Job.ExchangePreviousJobID) " .
 

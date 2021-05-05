@@ -480,3 +480,9 @@ ALTER TABLE `Job` ADD `ExchangeProgram` int(2) default 0;
 
 ALTER TABLE `Job` ADD `ExchangePreviousJobID` int(2) default NULL;
 ALTER TABLE `Job` ADD `ExchangeReturnDate` Date default NULL;
+
+-- 20210504 -
+ALTER TABLE `Job` ADD `SerialNoReturned` varchar(128) default '';
+ALTER TABLE `Job` ADD `SerialNoDelivered` varchar(128) default '';
+ALTER TABLE `Job` ADD `FactoryReturned` int(2) default 0;
+ALTER TABLE `Job` ADD `FactoryReturnedDate` Date default NULL;

@@ -1162,6 +1162,9 @@ $(document).ready(function() {
 //	$( ".SalesInvoiceDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
     $( "#SearchExchangeReturnDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
     $( "#SearchExchangeReturnDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+    $( "#SearchFactoryReturnedDateFrom" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+    $( "#SearchFactoryReturnedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+
 
 	
 	$( ".PODate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
@@ -1198,6 +1201,7 @@ $(document).ready(function() {
 	$( "#SearchDrawingApprovedDateTo" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 
     $( "#ExchangeReturnDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
+    $( "#FactoryReturnedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 
     $( "#CompletedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
 	$( "#ClosedDate" ).datepicker({changeYear: true , yearRange: '2010:<?=Date("Y", time())+1?>', dateFormat: 'dd-mm-yy'});
@@ -1625,6 +1629,54 @@ $(document).ready(function() {
                                                         <div class="uk-width-medium-1-2">
                                                             <div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
                                                                 <input type="text" id="SearchExchangeReturnDateTo" name="SearchExchangeReturnDateTo" class="md-input" value="<?=$this->SearchExchangeReturnDateTo?>">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div><span class="md-input-bar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="uk-form-row">
+                                    <div class="uk-grid">
+                                        <div class="uk-width-medium-1-5">
+                                            <div class="md-input-wrapper md-input-wrapper-success">
+                                                <input type=checkbox name='SearchFactoryReturned' ID='SearchFactoryReturned' class="md-input" value='1' <?=($this->SearchFactoryReturned ? "checked" : "")?>> Factory Returned
+                                            </div>
+
+                                        </div>
+                                        <div class="uk-width-medium-2-5">
+                                            <div class="md-input-wrapper md-input-filled"><label>Factory Return Date</label>
+                                                <div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+                                                    <div class="uk-grid">
+                                                        <div class="uk-width-medium-1-2">
+                                                            <div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> From </label>
+                                                                <input type="text" id="SearchFactoryReturnedDateFrom" name="SearchFactoryReturnedDateFrom" class="md-input" value="<?=$this->SearchFactoryReturnedDateFrom?>">
+                                                            </div>
+                                                        </div>
+                                                        <div class="uk-width-medium-1-2">
+                                                            <div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> To </label>
+                                                                <input type="text" id="SearchFactoryReturnedDateTo" name="SearchFactoryReturnedDateTo" class="md-input" value="<?=$this->SearchFactoryReturnedDateTo?>">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div><span class="md-input-bar"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="uk-width-medium-2-5">
+                                            <div class="md-input-wrapper md-input-filled"><label>Serial No.</label>
+                                                <div class="md-input md-input-group" style='height: 100%;width: 100%;'>
+                                                    <div class="uk-grid">
+                                                        <div class="uk-width-medium-1-2">
+                                                            <div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Returned </label>
+                                                                <input type="text" id="SearchSerialNoReturned" name="SearchSerialNoReturned" class="md-input" value="<?=$this->SearchSerialNoReturned?>">
+                                                            </div>
+                                                        </div>
+                                                        <div class="uk-width-medium-1-2">
+                                                            <div class="md-input-wrapper md-input-wrapper-success"><label><i class="uk-input-group-icon uk-icon-calendar"></i> Delivered </label>
+                                                                <input type="text" id="SearchSerialNoDelivered" name="SearchSerialNoDelivered" class="md-input" value="<?=$this->SearchSerialNoDelivered?>">
                                                             </div>
                                                         </div>
                                                     </div>
