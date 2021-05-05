@@ -89,6 +89,32 @@
                 </div>
             </div>
         </div>
+
+        <div class="uk-form-row clsDivExchangeProgramReturn">
+            <div class="uk-grid">
+                <div class="uk-width-medium-1-4 clsDivExchangeProgramReturn" style="display: none;">
+                    <div class="md-input-wrapper md-input-wrapper-success">
+                        <input type=checkbox name='FactoryReturned' ID='FactoryReturned'  class="md-input" value='1' <?=($this->FactoryReturned ? "checked" : "")?>> Factory Returned
+                    </div>
+                </div>
+                <div class="uk-width-medium-1-4 clsDivExchangeProgramReturn" style="display: none;">
+                    <div class="md-input-wrapper md-input-wrapper-success"><label>Factory Returned Date</label>
+                        <input type="text" id="FactoryReturnedDate" name="FactoryReturnedDate" class="md-input" value="<?=$this->FactoryReturnedDate?>"><span class="md-input-bar"></span>
+                    </div>
+                </div>
+                <div class="uk-width-medium-1-4 clsDivExchangeProgramReturn" style="display: none;">
+                    <div class="md-input-wrapper md-input-wrapper-success"><label>Serial No (Returned)</label>
+                        <input type="text" id="SerialNoReturned" name="SerialNoReturned" class="md-input" value="<?=$this->SerialNoReturned?>"><span class="md-input-bar"></span>
+                        <span class="md-input-bar"></span>
+                    </div>
+                </div>
+                <div class="uk-width-medium-1-4 clsDivExchangeProgramReturn" style="display: none;">
+                    <div class="md-input-wrapper md-input-wrapper-success"><label>Serial No (Delivered)</label>
+                        <input type="text" id="SerialNoDelivered" name="SerialNoDelivered" class="md-input" value="<?=$this->SerialNoDelivered?>"><span class="md-input-bar"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 		
 
 		<? if (!$this->edit_job) { ?>
