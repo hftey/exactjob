@@ -58,11 +58,15 @@ class Venz_App_System_Helper extends Zend_Db_Table_Abstract
 		$sql_orderby .= strlen($sql_orderby) == 0 ? "" : " " . $ascdesc ;
 		$count = $showPage -1;
 		$sql_limit = isset($recordsPerPage) ? " limit " . ($count * $recordsPerPage) . ", " . $recordsPerPage : "";
-		$sqlAll = "SELECT Supplier.ID, Supplier.Name, Supplier.Code, Supplier.Phone, Supplier.FaxNo, Supplier.Email, Supplier.PaymentTerms, Supplier.Address, JobPurchase.TotalJob FROM Supplier ".
-			" LEFT JOIN (SELECT COUNT(*) as TotalJob, JobPurchase.SupplierID FROM JobPurchase Group BY SupplierID) as JobPurchase ON (JobPurchase.SupplierID=Supplier.ID) WHERE 1=1 ";
+//		$sqlAll = "SELECT Supplier.ID, Supplier.Name, Supplier.Code, Supplier.Phone, Supplier.FaxNo, Supplier.Email, Supplier.PaymentTerms, Supplier.Address, JobPurchase.TotalJob FROM Supplier ".
+//			" LEFT JOIN (SELECT COUNT(*) as TotalJob, JobPurchase.SupplierID FROM JobPurchase Group BY SupplierID) as JobPurchase ON (JobPurchase.SupplierID=Supplier.ID) WHERE 1=1 ";
+        $sqlAll = "SELECT Supplier.ID, Supplier.Name, Supplier.Code, Supplier.Phone, Supplier.FaxNo, Supplier.Email, Supplier.PaymentTerms, Supplier.Address, JobPurchase.TotalJob FROM Supplier ".
+            " LEFT JOIN (SELECT COUNT(*) as TotalJob, JobPurchase.SupplierID, Supplier.Name as SupplierName FROM JobPurchase, Supplier WHERE Supplier.ID=JobPurchase.SupplierID Group BY Supplier.Name) as JobPurchase ON (JobPurchase.SupplierName=Supplier.Name) WHERE 1=1 ";
 		if ($searchString)
 			$sqlAll .= $searchString;
-		$sql .= $sqlAll." order by $sql_orderby $sql_limit";
+
+        $sqlAll .= " group by Supplier.Name ";
+        $sql .= $sqlAll."order by $sql_orderby $sql_limit";
 
 
 		return array(sizeof($this->_db->fetchAll($sqlAll)), $this->_db->fetchAll($sql));
