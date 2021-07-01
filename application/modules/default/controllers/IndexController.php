@@ -3112,6 +3112,16 @@ END;
                 }
             }
 
+            function format_gross_margin($colnum, $rowdata, $export)
+            {
+            	if ($rowdata[10] && $rowdata[25]){
+					return number_format((($rowdata[10] - $rowdata[25]) / $rowdata[10]) * 100, 2) . "%";
+                }else{
+            		return "";
+                }
+                
+            }
+
 
             function format_items($colnum, $rowdata, $export)
             {
@@ -3139,11 +3149,11 @@ END;
             }
 
 
-            $arrHeader = array ('', '', 'Job No',  'Job Status',  'PO Received<BR>Date', 'Customer', 'Items', 'Job Type','Selling Price', 'Selling Price<BR>RM', 'Initial Cost<BR>in Value', 'Sales Person', '');
-			$arrFormat = array('{format_counterJob}', '{format_action}','%1%', '{format_jobstatus}', '{format_poreceived}', '{format_customer}', '{format_items}','{format_jobtype}', '{format_sellingprice_margin}',  '{format_sellingpricerm_margin}', '{format_initial_margin}',  '{format_salesperson}', '{format_action}');
-			$arrSort = array('','','Job.ID', 'JobSort.Completed', 'Job.CustomerPOReceivedDate', 'Job.CustomerName', 'Job.Items', 'Job.JobType', '','','Job.InitialGrossMargin','','');
-			$arrColParam = array('width=20px','width=20px','width=50px', 'width=100px', 'width=100px', 'width=250px', '','nowrap width=120px','width=120px nowrap','nowrap','nowrap','nowrap','width=30px');
-			$aligndata = 'CCCCCLLCRRRRC'; $tablewidth = '100%';
+            $arrHeader = array ('', '', 'Job No',  'Job Status',  'PO Received<BR>Date', 'Customer', 'Items', 'Job Type','Selling Price', 'Selling Price<BR>RM', 'Initial Cost<BR>in Value', 'Initial GP %', 'Sales Person', '');
+			$arrFormat = array('{format_counterJob}', '{format_action}','%1%', '{format_jobstatus}', '{format_poreceived}', '{format_customer}', '{format_items}','{format_jobtype}', '{format_sellingprice_margin}',  '{format_sellingpricerm_margin}', '{format_initial_margin}', '{format_gross_margin}',  '{format_salesperson}', '{format_action}');
+			$arrSort = array('','','Job.ID', 'JobSort.Completed', 'Job.CustomerPOReceivedDate', 'Job.CustomerName', 'Job.Items', 'Job.JobType', '','','Job.InitialGrossMargin','','','');
+			$arrColParam = array('width=20px','width=20px','width=50px', 'width=100px', 'width=100px', 'width=250px', '','nowrap width=120px','width=120px nowrap','nowrap','nowrap','nowrap','nowrap','width=30px');
+			$aligndata = 'CCCCCLLCRRRRRC'; $tablewidth = '100%';
 
             $arrHeaderMargin = array('', '', 'Job No',  'PO Received<BR>Date', 'Customer', 'Payment Term',  'Credit Limit',  'Job Type','Selling Price', 'Selling Price<BR>RM', 'Job/Project<BR>Margin', 'Current<BR>Margin', '');
             $arrFormatMargin = array('{format_counterJob}', '{format_action}','%1%', '{format_poreceived}', '{format_customer}', '%21%', '%22%', '{format_jobtype}', '{format_sellingprice_margin}',  '{format_sellingpricerm_margin}',  '{format_balanceproject}',  '{format_balance}', '{format_action}');
